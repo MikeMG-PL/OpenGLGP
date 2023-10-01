@@ -6,7 +6,9 @@
 #include "imgui_impl/imgui_impl_glfw.h"
 #include "imgui_impl/imgui_impl_opengl3.h"
 #include <stdio.h>
+#include <filesystem>
 #include "Input.h"
+#include "ShaderLoader.h"
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 
@@ -23,6 +25,7 @@
 #include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #endif
 
+#include <iostream>
 #include <GLFW/glfw3.h> // Include glfw3.h after our OpenGL definitions
 #include <spdlog/spdlog.h>
 
@@ -118,16 +121,61 @@ int main(int, char**)
 						 0.0f,  0.5f, 0.0f
 	};
 
-	GLuint VBO;
+	// Get vertex shader source
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	std::string vertexShaderSource = loadShaderFromFile("../../lib/shaders/vertexShader.vert");
+
+	// Get fragment shader source
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	std::string fragmentShaderSource = loadShaderFromFile("../../lib/shaders/fragmentShader.frag");
+
+	const char* vs_str = vertexShaderSource.c_str();
+	const char* fs_str = fragmentShaderSource.c_str();
+
+	glShaderSource(vertexShader, 1, &vs_str, NULL);
+	glCompileShader(vertexShader);
+
+	glShaderSource(fragmentShader, 1, &fs_str, NULL);
+	glCompileShader(fragmentShader);
+
+	GLint successv, successf, successl;
+	GLchar infoLogv[512], infoLogf[512], infoLogl[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &successv);
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &successf);
+
+	if (!successv)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLogv);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLogv << std::endl;
+	}
+
+	if (!successf)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLogf);
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLogf << std::endl;
+	}
+
+	GLuint shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &successl);
+	if (!successl) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLogl);
+	}
+
+	GLuint VAO, VBO;
+
+	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-
-
-
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -193,6 +241,10 @@ int main(int, char**)
 		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 		glfwMakeContextCurrent(window);
 		glfwSwapBuffers(window);
 	}
@@ -201,6 +253,11 @@ int main(int, char**)
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+	glDeleteProgram(shaderProgram);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
