@@ -205,10 +205,14 @@ int main(int, char**)
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		GLint vertexColorLocation = glGetUniformLocation(shader.ID, "vertexColor");
 		shader.use();
-		glUniform4f(vertexColorLocation, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
 
+		// Delete this when sure that uniform setters work properly
+
+		// GLint vertexColorLocation = glGetUniformLocation(shader.ID, "vertexColor");
+		//glUniform4f(vertexColorLocation, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
+
+		shader.setVector4("vertexColor", glm::vec4(drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w));
 
 
 		// Draw ImGui

@@ -2,9 +2,8 @@
 
 #include "glad/glad.h"
 #include <string>
-#include <fstream>
 #include <sstream>
-#include <iostream>
+#include "glm/glm.hpp"
 
 class Shader
 {
@@ -22,9 +21,11 @@ public:
     // Cleanup
     void cleanup();
 
-    // Manipulating uniforms  
+    // Setters for uniforms
     void setBool(const std::string& name, bool value) const;
     void setInt(const std::string& name, int value) const;
     void setFloat(const std::string& name, float value) const;
+    void setVector3(const std::string& name, glm::vec3 value) const;
+    void setVector4(const std::string& name, glm::vec4 value) const;
 };
 
