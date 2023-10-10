@@ -8,8 +8,10 @@
 #include <stdio.h>
 #include <filesystem>
 #include "Input.h"
-#include "ShaderLoader.h"
+#include "Shader.h"
 
+#define VERTEX_PATH "../../lib/shaders/vertexShader.vert"
+#define FRAGMENT_PATH "../../lib/shaders/fragmentShader.frag"
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually. 
@@ -110,16 +112,16 @@ int main(int, char**)
 	//IM_ASSERT(font != NULL);
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	ImVec4 drawing_color = ImVec4(0, 0, 1.00f, 1.00f);
+	ImVec4 drawingColor = ImVec4(0, 0, 1.00f, 1.00f);
 	bool show_demo_window = false, tool_window = true;
 
 	// Declarations
 
 	GLfloat vertices[] = {
-						-0.5f, -0.5f, 0.0f,
-						 0.5f, -0.5f, 0.0f,
-						 0.5f,  0.5f, 0.0f,
-						 -0.5f,  0.5f, 0.0f
+						-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+						 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+						 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+						 -0.5f,  0.5f, 0.0f, 0.2f, 0.5f, 0.7f,
 	};
 
 	GLuint indices[] = {
@@ -127,49 +129,7 @@ int main(int, char**)
 		2, 0, 3
 	};
 
-	// Get vertex shader source
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	std::string vertexShaderSource = loadShaderFromFile("../../lib/shaders/vertexShader.vert");
-
-	// Get fragment shader source
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	std::string fragmentShaderSource = loadShaderFromFile("../../lib/shaders/fragmentShader.frag");
-
-	const char* vs_str = vertexShaderSource.c_str();
-	const char* fs_str = fragmentShaderSource.c_str();
-
-	glShaderSource(vertexShader, 1, &vs_str, NULL);
-	glCompileShader(vertexShader);
-
-	glShaderSource(fragmentShader, 1, &fs_str, NULL);
-	glCompileShader(fragmentShader);
-
-	GLint successv, successf, successl;
-	GLchar infoLogv[512], infoLogf[512], infoLogl[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &successv);
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &successf);
-
-	if (!successv)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLogv);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLogv << std::endl;
-	}
-
-	if (!successf)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLogf);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLogf << std::endl;
-	}
-
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &successl);
-	if (!successl) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLogl);
-	}
+	Shader shader(0, VERTEX_PATH, FRAGMENT_PATH);
 
 	GLuint VAO, VBO, EBO;
 
@@ -182,12 +142,20 @@ int main(int, char**)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), indices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (GLvoid*)0);
+
+	// Position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
+
+	// Color
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	shader.use();
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -211,14 +179,14 @@ int main(int, char**)
 			ImGui::ShowDemoWindow(&show_demo_window);
 
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-		if(tool_window)
+		if (tool_window)
 		{
 			static float f = 0.0f;
 			static int counter = 0;
 
 			ImGui::Begin("Tool window");                          // Create a window
 			ImGui::ColorEdit3("Background color", (float*)&clear_color); // Edit 3 floats representing a color
-			ImGui::ColorEdit3("Drawing color", (float*)&drawing_color); // Edit 3 floats representing a color
+			ImGui::ColorEdit3("Drawing color", (float*)&drawingColor); // Edit 3 floats representing a color
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
@@ -234,14 +202,14 @@ int main(int, char**)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Code here
-
-		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "vertexColor");
-		glUseProgram(shaderProgram);
-		glUniform4f(0, drawing_color.x, drawing_color.y, drawing_color.z, drawing_color.w);
+		GLint vertexColorLocation = glGetUniformLocation(shader.ID, "vertexColor");
+		shader.use();
+		glUniform4f(vertexColorLocation, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
+
+
 
 		// Draw ImGui
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -255,9 +223,8 @@ int main(int, char**)
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	glDeleteProgram(shaderProgram);
+	
+	shader.cleanup();
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
