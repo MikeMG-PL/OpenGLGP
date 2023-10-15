@@ -10,6 +10,9 @@
 #include "Input.h"
 #include "Shader.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #define VERTEX_PATH "../../lib/shaders/vertexShader.vert"
 #define FRAGMENT_PATH "../../lib/shaders/fragmentShader.frag"
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
@@ -118,10 +121,18 @@ int main(int, char**)
 	// Declarations
 
 	GLfloat vertices[] = {
-						-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-						 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-						 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-						 -0.5f,  0.5f, 0.0f, 0.2f, 0.5f, 0.7f,
+						// Positions        // Colors        // TexCoords
+						-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+						 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+						 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+						 -0.5f,  0.5f, 0.0f, 0.2f, 0.5f, 0.7f, 0.0f, 1.0f,
+	};
+
+	GLfloat texCoords[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
 	};
 
 	GLuint indices[] = {
@@ -131,8 +142,31 @@ int main(int, char**)
 
 	Shader shader(0, VERTEX_PATH, FRAGMENT_PATH);
 
-	GLuint VAO, VBO, EBO;
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("../../res/textures/cow.jpg", &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+
+	GLuint VAO, VBO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -144,12 +178,16 @@ int main(int, char**)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), indices, GL_STATIC_DRAW);
 
 	// Position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GL_FLOAT), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
 	// Color
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), (GLvoid*)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	// TexCoord
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -202,18 +240,13 @@ int main(int, char**)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Code here
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		shader.use();
 
-		// Delete this when sure that uniform setters work properly
-
-		// GLint vertexColorLocation = glGetUniformLocation(shader.ID, "vertexColor");
-		//glUniform4f(vertexColorLocation, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
-
 		shader.setVector4("vertexColor", glm::vec4(drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w));
-
 
 		// Draw ImGui
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -227,7 +260,7 @@ int main(int, char**)
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
-	
+
 	shader.cleanup();
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
