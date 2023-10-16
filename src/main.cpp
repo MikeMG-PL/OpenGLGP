@@ -5,6 +5,9 @@
 #include "imgui.h"
 #include "imgui_impl/imgui_impl_glfw.h"
 #include "imgui_impl/imgui_impl_opengl3.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
 #include <stdio.h>
 #include <filesystem>
 #include "Input.h"
@@ -115,7 +118,7 @@ int main(int, char**)
 	//IM_ASSERT(font != NULL);
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	ImVec4 drawingColor = ImVec4(0, 0, 1.00f, 1.00f);
+	ImVec4 drawingColor = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	bool show_demo_window = false, tool_window = true;
 
 	// Declarations
@@ -153,6 +156,7 @@ int main(int, char**)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
 	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load("../../res/textures/cow.jpg", &width, &height, &nrChannels, 0);
 
 	if (data)
@@ -194,6 +198,14 @@ int main(int, char**)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	shader.use();
+
+	GLint customColorLocation = glGetUniformLocation(shader.ID, "customColor");
+
+	// something's wrong here
+	glm::mat4 transformation = glm::mat4(1.0f);
+	transformation = glm::rotate(transformation, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	GLuint transformLoc = glGetUniformLocation(shader.ID, "transform");
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation));
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -240,13 +252,13 @@ int main(int, char**)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Code here
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
+		glUniform4f(customColorLocation, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		shader.use();
-
-		shader.setVector4("vertexColor", glm::vec4(drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w));
 
 		// Draw ImGui
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
