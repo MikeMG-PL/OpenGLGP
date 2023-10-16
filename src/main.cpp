@@ -119,6 +119,7 @@ int main(int, char**)
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	ImVec4 drawingColor = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+	float rotation = 0, previousRotation = 0;
 	bool show_demo_window = false, tool_window = true;
 
 	// Declarations
@@ -201,11 +202,8 @@ int main(int, char**)
 
 	GLint customColorLocation = glGetUniformLocation(shader.ID, "customColor");
 
-	// something's wrong here
 	glm::mat4 transformation = glm::mat4(1.0f);
-	transformation = glm::rotate(transformation, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	GLuint transformLoc = glGetUniformLocation(shader.ID, "transform");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation));
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -237,6 +235,7 @@ int main(int, char**)
 			ImGui::Begin("Tool window");                          // Create a window
 			ImGui::ColorEdit3("Background color", (float*)&clear_color); // Edit 3 floats representing a color
 			ImGui::ColorEdit3("Drawing color", (float*)&drawingColor); // Edit 3 floats representing a color
+			ImGui::SliderFloat("Rotation", &rotation, 0, 360);
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
@@ -256,6 +255,13 @@ int main(int, char**)
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
 		glUniform4f(customColorLocation, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
+
+		if(previousRotation != rotation)
+			transformation = glm::rotate(transformation, glm::radians(rotation-previousRotation), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		previousRotation = rotation;
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation));
+
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		shader.use();
