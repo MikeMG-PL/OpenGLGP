@@ -66,8 +66,11 @@ int main(int, char**)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
+#define WIDTH 1600
+#define HEIGHT 900
+
 	// Create window with graphics context
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
 	if (window == NULL)
 		return 1;
 	glfwMakeContextCurrent(window);
@@ -119,30 +122,38 @@ int main(int, char**)
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	ImVec4 drawingColor = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	float rotation = 0, previousRotation = 0;
 	bool show_demo_window = false, tool_window = true;
 
-	// Declarations
+	glEnable(GL_DEPTH_TEST);
 
+	// Declarations
 	GLfloat vertices[] = {
-						// Positions        // Colors        // TexCoords
-						-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-						 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-						 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-						 -0.5f,  0.5f, 0.0f, 0.2f, 0.5f, 0.7f, 0.0f, 1.0f,
+		// Base
+		-0.5f, 0.0f, -0.5f, 0, 0, 0, 0.0f, 1.0f, // Left-back vertex
+		0.5f, 0.0f, -0.5f, 0, 0, 0, 1.0f, 1.0f, // Right-back vertex
+		0.0f, 0.0f, 0.5f, 0, 0, 0, 0.5f, 0.0f, // Front vertex
+
+		// Apex
+		0.0f, 1.0f, 0.0f, 0, 0, 0, 0.5f, 0.5f  // Top vertex
 	};
 
 	GLfloat texCoords[] = {
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
+		// Base
+		0.5f, 1.0f, // Back vertex
+		1.0f, 0.0f, // Right vertex
+		0.0f, 0.0f, // Left vertex
+
+		// Apex
+		0.5f, 0.5f  // Top vertex
 	};
 
 	GLuint indices[] = {
-		0, 1, 2,
-		2, 0, 3
+	0, 1, 2,  // Base
+	0, 1, 3,  // First side
+	1, 2, 3,  // Second side
+	2, 0, 3   // Third side
 	};
+
 
 	Shader shader(0, VERTEX_PATH, FRAGMENT_PATH);
 
@@ -166,9 +177,8 @@ int main(int, char**)
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
-	{
 		std::cout << "Failed to load texture" << std::endl;
-	}
+
 	stbi_image_free(data);
 
 	GLuint VAO, VBO, EBO;
@@ -200,10 +210,20 @@ int main(int, char**)
 
 	shader.use();
 
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 projection = glm::mat4(1.0f);
+
+	GLuint modelLoc = glGetUniformLocation(shader.ID, "model");
+	GLuint viewLoc = glGetUniformLocation(shader.ID, "view");
+	GLuint projectionLoc = glGetUniformLocation(shader.ID, "projection");
+
 	GLint customColorLocation = glGetUniformLocation(shader.ID, "customColor");
 
-	glm::mat4 transformation = glm::mat4(1.0f);
-	GLuint transformLoc = glGetUniformLocation(shader.ID, "transform");
+	float rotation = 0;
+
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -214,6 +234,8 @@ int main(int, char**)
 		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
 		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 		processInput(window);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glfwPollEvents();
 
@@ -235,9 +257,9 @@ int main(int, char**)
 			ImGui::Begin("Tool window");                          // Create a window
 			ImGui::ColorEdit3("Background color", (float*)&clear_color); // Edit 3 floats representing a color
 			ImGui::ColorEdit3("Drawing color", (float*)&drawingColor); // Edit 3 floats representing a color
-			ImGui::SliderFloat("Rotation", &rotation, 0, 360);
+			ImGui::SliderFloat("Rotation", &rotation, -180, 180);
 
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::Text("Frametime: %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
 
@@ -256,14 +278,17 @@ int main(int, char**)
 		glBindVertexArray(VAO);
 		glUniform4f(customColorLocation, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
 
-		if(previousRotation != rotation)
-			transformation = glm::rotate(transformation, glm::radians(rotation-previousRotation), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::mat4(1.0f);
+		model = glm::rotate(model, glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f));
 
-		previousRotation = rotation;
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+		//////////////////////////////////////////////////////////////////////////
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+		// glDrawArrays(GL_TRIANGLES, 0, 4);
 		shader.use();
 
 		// Draw ImGui
