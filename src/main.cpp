@@ -129,12 +129,12 @@ int main(int, char**)
 	// Declarations
 	GLfloat vertices[] = {
 		// Base
-		-0.5f, 0.0f, -0.5f, 0, 0, 0, 0.0f, 1.0f, // Left-back vertex
-		0.5f, 0.0f, -0.5f, 0, 0, 0, 1.0f, 1.0f, // Right-back vertex
-		0.0f, 0.0f, 0.5f, 0, 0, 0, 0.5f, 0.0f, // Front vertex
+		-0.5f, 0.0f, -0.333f, 0, 0, 0, 0.0f, 1.0f, // Left-back vertex
+		0.5f, 0.0f, -0.333f, 0, 0, 0, 1.0f, 1.0f, // Right-back vertex
+		0.0f, 0.0f, 0.666f, 0, 0, 0, 0.5f, 0.0f, // Front vertex
 
 		// Apex
-		0.0f, 1.0f, 0.0f, 0, 0, 0, 0.5f, 0.5f  // Top vertex
+		0.0f, 0.816f, 0.0f, 0, 0, 0, 0.5f, 0.5f  // Top vertex
 	};
 
 	GLfloat texCoords[] = {
@@ -220,7 +220,8 @@ int main(int, char**)
 
 	GLint customColorLocation = glGetUniformLocation(shader.ID, "customColor");
 
-	float rotation = 0;
+	float rotationX = 0;
+	float rotationY = 0;
 
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 	projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
@@ -257,7 +258,8 @@ int main(int, char**)
 			ImGui::Begin("Tool window");                          // Create a window
 			ImGui::ColorEdit3("Background color", (float*)&clear_color); // Edit 3 floats representing a color
 			ImGui::ColorEdit3("Drawing color", (float*)&drawingColor); // Edit 3 floats representing a color
-			ImGui::SliderFloat("Rotation", &rotation, -180, 180);
+			ImGui::SliderFloat("Rotation X", &rotationX, -180, 180);
+			ImGui::SliderFloat("Rotation Y", &rotationY, -180, 180);
 
 			ImGui::Text("Frametime: %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
@@ -279,16 +281,18 @@ int main(int, char**)
 		glUniform4f(customColorLocation, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
 
 		model = glm::mat4(1.0f);
-		model = glm::rotate(model, glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(0.0f, -0.272f, 0.0f));
 
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		//////////////////////////////////////////////////////////////////////////
+
+
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-		// glDrawArrays(GL_TRIANGLES, 0, 4);
 		shader.use();
 
 		// Draw ImGui
