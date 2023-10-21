@@ -128,10 +128,11 @@ int main(int, char**)
 
 	// Declarations
 	GLfloat vertices[] = {
+
 		// Base
-		-0.5f, 0.0f, -0.333f, 0, 0, 0, 0.0f, 1.0f, // Left-back vertex
-		0.5f, 0.0f, -0.333f, 0, 0, 0, 1.0f, 1.0f, // Right-back vertex
-		0.0f, 0.0f, 0.666f, 0, 0, 0, 0.5f, 0.0f, // Front vertex
+		-0.5f, 0.0f, -0.289f, 0, 0, 0, 0.0f, 1.0f, // Left-back vertex
+		0.5f, 0.0f, -0.289f, 0, 0, 0, 1.0f, 1.0f, // Right-back vertex
+		0.0f, 0.0f, 0.577f, 0, 0, 0, 0.5f, 0.0f, // Front vertex
 
 		// Apex
 		0.0f, 0.816f, 0.0f, 0, 0, 0, 0.5f, 0.5f  // Top vertex
