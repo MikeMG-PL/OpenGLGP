@@ -47,6 +47,7 @@ void drawRecursive(const Shader& shader, int const depth, int const maxDepth, gl
 	if (depth == maxDepth)
 	{
 		model = glm::rotate(model, 45.0f, glm::vec3(0, 1, 0));
+		model = glm::translate(model, glm::vec3(0, 0.272f / 2.0f, 0));
 		float const scale = 1.0f / glm::pow(2.0f, static_cast<float>(depth) - 1.0f);
 		shader.setMat4("model", glm::scale(model, glm::vec3(scale, scale, scale)));
 		glDrawArrays(GL_TRIANGLES, 0, 12);
@@ -55,10 +56,11 @@ void drawRecursive(const Shader& shader, int const depth, int const maxDepth, gl
 
 	int const next_depth = depth + 1;
 	float const translation = 1.0f / glm::pow(2.0f, next_depth);
-	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(0.0f, translation, -translation)));
-	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(translation, -translation, 0.0f)));
-	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(-translation, -translation, 0.0f)));
-	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(0.0f, -translation, -(translation * 2.0f))));
+
+	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(0.0f, translation * 0.816f, 0.0)));
+	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(-translation, -translation * 0.816f, translation * 0.6f)));
+	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(translation, -translation * 0.816f, translation * 0.6f)));
+	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(0.0f, -translation * 0.816f, -translation * 1.15f)));
 }
 
 int main(int, char**)
@@ -236,8 +238,10 @@ int main(int, char**)
 
 	float rotationX = 0;
 	float rotationY = 0;
+	int recursionLevels = 1;
+	float zoom = -3.0f;
 
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, zoom));
 	projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
 	// Main loop
@@ -274,6 +278,8 @@ int main(int, char**)
 			ImGui::ColorEdit3("Drawing color", (float*)&drawingColor); // Edit 3 floats representing a color
 			ImGui::SliderFloat("Rotation X", &rotationX, -180, 180);
 			ImGui::SliderFloat("Rotation Y", &rotationY, -180, 180);
+			ImGui::SliderFloat("Zoom", &zoom, -6, 0);
+			ImGui::SliderInt("Recursion level", &recursionLevels, 1, 10);
 
 			ImGui::Text("Frametime: %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
@@ -297,14 +303,14 @@ int main(int, char**)
 		model = glm::mat4(1.0f);
 		model = glm::rotate(model, glm::radians(rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(0.0f, -0.272f, 0.0f));
+		view = glm::mat4(1.0f);
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, zoom));
 
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		// glDrawArrays(GL_TRIANGLES, 0, 12);
-		drawRecursive(shader, 1, 2, model);
+		drawRecursive(shader, 1, recursionLevels, model);
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		glBindVertexArray(0);
