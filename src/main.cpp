@@ -42,6 +42,25 @@ static void glfw_error_callback(int error, const char* description)
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
+void drawRecursive(const Shader& shader, int const depth, int const maxDepth, glm::mat4 model)
+{
+	if (depth == maxDepth)
+	{
+		model = glm::rotate(model, 45.0f, glm::vec3(0, 1, 0));
+		float const scale = 1.0f / glm::pow(2.0f, static_cast<float>(depth) - 1.0f);
+		shader.setMat4("model", glm::scale(model, glm::vec3(scale, scale, scale)));
+		glDrawArrays(GL_TRIANGLES, 0, 12);
+		return;
+	}
+
+	int const next_depth = depth + 1;
+	float const translation = 1.0f / glm::pow(2.0f, next_depth);
+	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(0.0f, translation, -translation)));
+	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(translation, -translation, 0.0f)));
+	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(-translation, -translation, 0.0f)));
+	drawRecursive(shader, next_depth, maxDepth, glm::translate(model, glm::vec3(0.0f, -translation, -(translation * 2.0f))));
+}
+
 int main(int, char**)
 {
 	// Setup window
@@ -130,31 +149,25 @@ int main(int, char**)
 	GLfloat vertices[] = {
 
 		// Base
-		-0.5f, 0.0f, -0.289f, 0, 0, 0, 0.0f, 1.0f, // Left-back vertex
-		0.5f, 0.0f, -0.289f, 0, 0, 0, 1.0f, 1.0f, // Right-back vertex
-		0.0f, 0.0f, 0.577f, 0, 0, 0, 0.5f, 0.0f, // Front vertex
+		-0.5f, 0.0f, -0.289f, 0, 0, 0, 0.0f, 1.0f,
+		0.5f, 0.0f, -0.289f, 0, 0, 0, 1.0f, 1.0f,
+		0.0f, 0.0f, 0.577f, 0, 0, 0, 0.5f, 0.0f,
 
-		// Apex
-		0.0f, 0.816f, 0.0f, 0, 0, 0, 0.5f, 0.5f  // Top vertex
+		// Front
+		-0.5f, 0.0f, -0.289f, 0, 0, 0, 0.0f, 1.0f,
+		0.5f, 0.0f, -0.289f, 0, 0, 0, 1.0f, 1.0f,
+		0.0f, 0.816f, 0.0f, 0, 0, 0, 0.5f, 0.5f,
+
+		// Right
+		0.5f, 0.0f, -0.289f, 0, 0, 0, 1.0f, 1.0f,
+		0.0f, 0.0f, 0.577f, 0, 0, 0, 0.5f, 0.0f,
+		0.0f, 0.816f, 0.0f, 0, 0, 0, 0.5f, 0.5f,
+
+		// Left
+		0.0f, 0.0f, 0.577f, 0, 0, 0, 0.5f, 0.0f,
+		-0.5f, 0.0f, -0.289f, 0, 0, 0, 0.0f, 1.0f,
+		0.0f, 0.816f, 0.0f, 0, 0, 0, 0.5f, 0.5f,
 	};
-
-	GLfloat texCoords[] = {
-		// Base
-		0.5f, 1.0f, // Back vertex
-		1.0f, 0.0f, // Right vertex
-		0.0f, 0.0f, // Left vertex
-
-		// Apex
-		0.5f, 0.5f  // Top vertex
-	};
-
-	GLuint indices[] = {
-	0, 1, 2,  // Base
-	0, 1, 3,  // First side
-	1, 2, 3,  // Second side
-	2, 0, 3   // Third side
-	};
-
 
 	Shader shader(0, VERTEX_PATH, FRAGMENT_PATH);
 
@@ -185,13 +198,13 @@ int main(int, char**)
 	GLuint VAO, VBO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	//glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), indices, GL_STATIC_DRAW);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), indices, GL_STATIC_DRAW);
 
 	// Position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GL_FLOAT), (GLvoid*)0);
@@ -207,7 +220,7 @@ int main(int, char**)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	shader.use();
 
@@ -290,11 +303,12 @@ int main(int, char**)
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-
+		// glDrawArrays(GL_TRIANGLES, 0, 12);
+		drawRecursive(shader, 1, 2, model);
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-		shader.use();
+		glBindVertexArray(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 		// Draw ImGui
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
