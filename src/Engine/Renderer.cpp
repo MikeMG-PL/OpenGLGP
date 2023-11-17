@@ -129,6 +129,11 @@ void Renderer::Prepare()
 
 void Renderer::Render()
 {
+	int display_w, display_h;
+	glfwMakeContextCurrent(GameInstance::Get().GetWindow());
+	glfwGetFramebufferSize(GameInstance::Get().GetWindow(), &display_w, &display_h);
+	glViewport(0, 0, display_w, display_h);
+
 	// glActiveTexture(GL_TEXTURE0);
 	// glBindTexture(GL_TEXTURE_2D, texture);
 	// glBindVertexArray(VAO);
@@ -160,7 +165,7 @@ void Renderer::Cleanup()
 	// glDeleteBuffers(1, &VBO);
 }
 
-void Renderer::BackgroundColor(ImVec4 color)
+void Renderer::SetBackgroundColor(ImVec4 color)
 {
 	glClearColor(color.x, color.y, color.z, color.w);
 	glClear(GL_COLOR_BUFFER_BIT);

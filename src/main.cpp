@@ -15,39 +15,37 @@ int main(int, char**)
 		return 1;
 
 	Renderer::Get().Prepare();
+	GLFWwindow* window = GameInstance::Get().GetWindow();
 
 	// TODO: Make Editor and Renderer parts of GameInstance, preferably a singleton
 
 	// Main loop
 	while (!GameInstance::Get().ShouldCloseWindow())
 	{
-		processInput(GameInstance::Get().GetWindow());
+		processInput(window);
 
 		Editor::Get().ClearBuffer();
 		glfwPollEvents();
 		Editor::Get().Update();
-		
-		int display_w, display_h;
-		glfwMakeContextCurrent(GameInstance::Get().GetWindow());
-		glfwGetFramebufferSize(GameInstance::Get().GetWindow(), &display_w, &display_h);
-		glViewport(0, 0, display_w, display_h);
-		Renderer::Get().BackgroundColor(Editor::Get().GetBackgroundColor());
+		Renderer::Get().SetBackgroundColor(Editor::Get().GetBackgroundColor());
 
 		// Rendering code inside Render function
 		Renderer::Get().Render();
+
+		// Unbind everything here
 		Renderer::Get().Unbind();
 
 		// Draw ImGui
 		Editor::Get().RenderDrawData();
 
 		// Swap context and buffer
-		glfwMakeContextCurrent(GameInstance::Get().GetWindow());
-		glfwSwapBuffers(GameInstance::Get().GetWindow());
+		glfwMakeContextCurrent(window);
+		glfwSwapBuffers(window);
 	}
 
 	// Cleanup
 	Editor::Get().Cleanup();
-	glfwDestroyWindow(GameInstance::Get().GetWindow());
+	glfwDestroyWindow(window);
 	glfwTerminate();
 
 	return 0;

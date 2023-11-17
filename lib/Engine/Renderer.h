@@ -32,7 +32,7 @@ public:
 	void Render();
 	void Unbind();
 	void Cleanup();
-	void BackgroundColor(ImVec4 color);
+	void SetBackgroundColor(ImVec4 color);
 	void DrawRecursiveSierpinski(const Shader& shader, int const depth, int const maxDepth, glm::mat4 model);
 
 private:

@@ -174,12 +174,6 @@ const char* GameInstance::GetGLSLVersion() const
 	return glsl_version;
 }
 
-// SDL_Renderer* GameInstance::GetRenderer() const
-// {
-// 	return renderer;
-//	Maybe should cut out rendering to rendering """component"""?
-// }
-
 void GameInstance::close()
 {
 	// Close, final cleanup
