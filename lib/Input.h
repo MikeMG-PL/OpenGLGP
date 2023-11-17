@@ -1,5 +1,5 @@
 #pragma once
 
-class GLFWwindow;
+struct GLFWwindow;
 
 void processInput(GLFWwindow* window);
