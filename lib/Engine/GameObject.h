@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 
-#include "GameInstance.h"
 #include "Components/Transform.h"
 
 class Component;

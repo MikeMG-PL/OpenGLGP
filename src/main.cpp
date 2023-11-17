@@ -2,7 +2,7 @@
 #define WINDOW_Y 900
 
 #include "GLFW/glfw3.h"
-#include "Input.h"
+#include "Helpers/Input.h"
 #include "Engine/Editor.h"
 #include "Engine/GameInstance.h"
 #include "Engine/Renderer.h"

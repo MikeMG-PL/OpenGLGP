@@ -4,10 +4,11 @@
 
 class Transform : public Component
 {
+
 public:
 
-	glm::vec2 position = { 0.0f, 0.0f };
-	float angle = 0.0f;
-	glm::vec2 scale = { 1.0f, 1.0f };
+	glm::vec3 position = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 eulerAngles = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 scale = { 1.0f, 1.0f, 1.0f };
 };
 

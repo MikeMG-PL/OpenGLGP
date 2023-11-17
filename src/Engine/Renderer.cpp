@@ -1,24 +1,21 @@
 #include "Engine/Renderer.h"
-#include "Shader.h"
-
 #include <iostream>
 #include "imgui.h"
 #include "imgui_impl/imgui_impl_glfw.h"
-#include "imgui_impl/imgui_impl_opengl3.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
 #include <stdio.h>
 #include <filesystem>
-#include "Input.h"
-#include "Shader.h"
+
 #include <iostream>
 #include <GLFW/glfw3.h> // Include glfw3.h after our OpenGL definitions
 #include <spdlog/spdlog.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "Helpers/stb_image.h"
 #include "Engine/Editor.h"
+#include "Engine/Shader.h"
 
 Renderer& Renderer::Get()
 {
@@ -37,21 +34,11 @@ bool Renderer::Init(int X, int Y)
 	windowY = Y;
 
 	// Decide GL+GLSL versions
-#if __APPLE__
-	// GL 3.2 + GLSL 150
-	const char* glsl_version = "#version 150";
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
-#else
-	// GL 4.3 + GLSL 430
 	glsl_version = "#version 430";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-#endif
 
 	// Create window with graphics context
 	window = glfwCreateWindow(X, Y, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
@@ -60,15 +47,7 @@ bool Renderer::Init(int X, int Y)
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // Enable vsync
 
-	// Initialize OpenGL loader
-#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-	bool err = gl3wInit() != 0;
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-	bool err = glewInit() != GLEW_OK;
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-	bool err = !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-#endif
-	if (err)
+	if (bool err = !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		spdlog::error("Failed to initialize OpenGL loader!");
 		return false;

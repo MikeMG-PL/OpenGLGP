@@ -1,42 +1,6 @@
 #include "Engine/GameInstance.h"
-#include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/glm.hpp>
-#include <stdio.h>
-#include <filesystem>
-
-#define IMGUI_IMPL_OPENGL_LOADER_GLAD
-
-// About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually. 
-// Helper libraries are often used for this purpose! Here we are supporting a few common ones: gl3w, glew, glad.
-// You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
-#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h>    // Initialize with gl3wInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-#include <GL/glew.h>    // Initialize with glewInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h>  // Initialize with gladLoadGL()
-#else
-#include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#endif
-
-#include <iostream>
-#include <GLFW/glfw3.h> // Include glfw3.h after our OpenGL definitions
-#include <spdlog/spdlog.h>
-
-// #include "Components/Camera.h"
-
 #include "Engine/Component.h"
-#include "Engine/Editor.h"
 #include "Engine/GameObject.h"
-
-bool GameInstance::init(int X, int Y)
-{
-	
-
-	return true;
-}
 
 GameInstance::~GameInstance()
 {
@@ -51,6 +15,7 @@ GameInstance& GameInstance::Get()
 
 void GameInstance::StartGame()
 {
+
 	return;
 }
 
@@ -66,7 +31,7 @@ void GameInstance::UpdateGame()
 	{
 		auto allComponents = gameObjectPtr->GetComponents();
 
-		// Camera handling (or in rendering loop?)
+		// Camera handling (moved to rendering loop)
 
 		for (const auto& componentPtr : allComponents)
 		{
@@ -84,16 +49,6 @@ void GameInstance::UpdateGameFixed()
 			componentPtr.get()->FixedUpdate();
 		}
 	}
-}
-
-void GameInstance::ClearScreen()
-{
-	// Rendering cleanup
-}
-
-void GameInstance::UpdateScreen()
-{
-	// Rendering update
 }
 
 void GameInstance::Count()
