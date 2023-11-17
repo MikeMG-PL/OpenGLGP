@@ -17,6 +17,10 @@ int main(int, char**)
 	GLFWwindow* window = Renderer::Get().GetWindow();
 	GameInstance::Get().StartGame();
 
+	/// Declare your GameObjects here ///
+
+
+
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())
 	{
@@ -27,7 +31,12 @@ int main(int, char**)
 		Editor::Get().Update();
 
 		// Rendering code inside Render function
+		// You will need to iterate through each Mesh in this function just as GameInstance's UpdateGame does to render it
 		Renderer::Get().Render();
+
+		// Update GameObjects
+		GameInstance::Get().UpdateGame();
+		GameInstance::Get().UpdateGameFixed();
 
 		// Unbind everything here
 		Renderer::Get().Unbind();
