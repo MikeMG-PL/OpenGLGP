@@ -14,6 +14,7 @@ public:
 
     // Reading shader code, constructing it, compiling and linking  
     Shader(const GLuint ID, const GLchar* vertexPath, const GLchar* fragmentPath);
+    Shader() = default;
 
     // Shader activation
 	void use();

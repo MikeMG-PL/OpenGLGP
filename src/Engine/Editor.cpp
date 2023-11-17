@@ -4,6 +4,7 @@
 
 #include "imgui.h"
 #include "Engine/GameInstance.h"
+#include "Engine/Renderer.h"
 #include "imgui_impl/imgui_impl_glfw.h"
 #include "imgui_impl/imgui_impl_opengl3.h"
 
@@ -19,8 +20,8 @@ void Editor::Init()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
-	ImGui_ImplGlfw_InitForOpenGL(GameInstance::Get().GetWindow(), true);
-	ImGui_ImplOpenGL3_Init(GameInstance::Get().GetGLSLVersion());
+	ImGui_ImplGlfw_InitForOpenGL(Renderer::Get().GetWindow(), true);
+	ImGui_ImplOpenGL3_Init(Renderer::Get().GetGLSLVersion());
 
 	// Setup style
 	ImGui::StyleColorsDark();
@@ -86,4 +87,9 @@ void Editor::Cleanup()
 ImVec4 Editor::GetBackgroundColor() const
 {
 	return clearColor;
+}
+
+ImVec4 Editor::GetDrawingColor() const
+{
+	return drawingColor;
 }

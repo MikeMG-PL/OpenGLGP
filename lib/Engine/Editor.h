@@ -16,6 +16,7 @@ public:
 	void RenderDrawData();
 	void Cleanup();
 	ImVec4 GetBackgroundColor() const;
+	ImVec4 GetDrawingColor() const;
 
 private:
 

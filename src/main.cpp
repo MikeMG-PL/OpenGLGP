@@ -11,23 +11,20 @@
 
 int main(int, char**)
 {
-	if (!GameInstance::Get().StartGame(WINDOW_X, WINDOW_Y))
+	if (!Renderer::Get().Init(WINDOW_X, WINDOW_Y))
 		return 1;
 
-	Renderer::Get().Prepare();
-	GLFWwindow* window = GameInstance::Get().GetWindow();
-
-	// TODO: Make Editor and Renderer parts of GameInstance, preferably a singleton
+	GLFWwindow* window = Renderer::Get().GetWindow();
+	GameInstance::Get().StartGame();
 
 	// Main loop
-	while (!GameInstance::Get().ShouldCloseWindow())
+	while (!Renderer::Get().ShouldCloseWindow())
 	{
 		processInput(window);
 
 		Editor::Get().ClearBuffer();
 		glfwPollEvents();
 		Editor::Get().Update();
-		Renderer::Get().SetBackgroundColor(Editor::Get().GetBackgroundColor());
 
 		// Rendering code inside Render function
 		Renderer::Get().Render();
