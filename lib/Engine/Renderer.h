@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include "Shader.h"
 
+class Camera;
 class ImVec4;
 struct GLFWwindow;
 
@@ -15,7 +16,7 @@ public:
 	static Renderer& Get();
 
 	bool Init(int X, int Y);
-	void Render();
+	void Render(const Camera& camera);
 	void Unbind();
 	void Cleanup();
 	glm::vec2 GetWindowSize() const;

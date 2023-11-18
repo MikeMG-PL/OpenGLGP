@@ -13,6 +13,7 @@
 #include <spdlog/spdlog.h>
 
 #define STB_IMAGE_IMPLEMENTATION
+#include "Components/Camera.h"
 #include "Helpers/stb_image.h"
 #include "Engine/Editor.h"
 #include "Engine/Shader.h"
@@ -133,7 +134,7 @@ bool Renderer::Init(int X, int Y)
 
 	InitUniformLocs();
 
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, zoom));
+	//view = glm::translate(view, glm::vec3(0.0f, 0.0f, zoom));
 	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowX) / static_cast<float>(windowY), 0.1f, 100.0f);
 
 	/////////////////////////////////////////////////////////////////////////
@@ -156,7 +157,7 @@ const char* Renderer::GetGLSLVersion() const
 	return glsl_version;
 }
 
-void Renderer::Render()
+void Renderer::Render(const Camera& camera)
 {
 	int display_w, display_h;
 	glfwMakeContextCurrent(window);
@@ -174,8 +175,8 @@ void Renderer::Render()
 	model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
-	view = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, zoom));
+	view = camera.view;
+	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, zoom));
 
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));

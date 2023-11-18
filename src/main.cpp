@@ -5,9 +5,9 @@
 #include "Helpers/Input.h"
 #include "Engine/Editor.h"
 #include "Engine/GameInstance.h"
+#include "Engine/GameObject.h"
 #include "Engine/Renderer.h"
-
-// TODO: Prepare "EngineComponent" class which also has Start and Update methods but doesn't require being attached to GameObject
+#include "Components/Camera.h"
 
 int main(int, char**)
 {
@@ -19,7 +19,9 @@ int main(int, char**)
 
 	/// Declare your GameObjects here ///
 
-
+	auto camera = GameObject::CreateObject();
+	camera->AddComponent<Camera>();
+	camera->GetTransform()->position = glm::vec3(0, 0, 3);
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())
@@ -32,7 +34,7 @@ int main(int, char**)
 
 		// Rendering code inside Render function
 		// You will need to iterate through each Mesh in this function just as GameInstance's UpdateGame does to render it
-		Renderer::Get().Render();
+		Renderer::Get().Render(*camera->GetComponent<Camera>());
 
 		// Update GameObjects
 		GameInstance::Get().UpdateGame();
