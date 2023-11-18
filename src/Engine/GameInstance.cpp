@@ -1,6 +1,7 @@
 #include "Engine/GameInstance.h"
 #include "Engine/Component.h"
 #include "Engine/GameObject.h"
+#include "GLFW/glfw3.h"
 
 GameInstance::~GameInstance()
 {
@@ -53,11 +54,10 @@ void GameInstance::UpdateGameFixed()
 
 void GameInstance::Count()
 {
-	// Delta time
-	// LAST = NOW;
-	// NOW = SDL_GetPerformanceCounter();
-	//
-	// deltaTime = (NOW - LAST) * 1000 / static_cast<float>(SDL_GetPerformanceFrequency()); // Convert to seconds for more natural movement speeds
+	const GLfloat currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+	std::cout << deltaTime << std::endl;
 }
 
 float GameInstance::GetDeltaTime() const

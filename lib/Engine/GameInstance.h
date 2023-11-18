@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include "glad/glad.h"
 
 class GameObject;
 struct GLFWwindow;
@@ -19,16 +20,15 @@ public:
 	void UpdateGame();
 	void UpdateGameFixed();
 	void Count();
-	float GetDeltaTime() const;
+	float GetDeltaTime() const; // In seconds
 
 	// Public for convenience
 	std::vector<std::shared_ptr<GameObject>> allGameObjects;
 
 private:
 	
-	// Uint64 NOW = SDL_GetPerformanceCounter();
-	// Uint64 LAST = 0;
-	float deltaTime = 0;
+	GLfloat deltaTime = 0.0f;
+	GLfloat lastFrame = 0.0f;
 
 	void close();
 	GameInstance() = default;

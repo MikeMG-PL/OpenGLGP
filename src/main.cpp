@@ -2,12 +2,13 @@
 #define WINDOW_Y 900
 
 #include "GLFW/glfw3.h"
-#include "Helpers/Input.h"
+#include "Helpers/GlobalInput.h"
 #include "Engine/Editor.h"
 #include "Engine/GameInstance.h"
 #include "Engine/GameObject.h"
 #include "Engine/Renderer.h"
 #include "Components/Camera.h"
+#include "Components/CameraMovement.h"
 
 int main(int, char**)
 {
@@ -21,12 +22,14 @@ int main(int, char**)
 
 	auto camera = GameObject::CreateObject();
 	camera->AddComponent<Camera>();
+	camera->AddComponent<CameraMovement>();
 	camera->GetTransform()->position = glm::vec3(0, 0, 3);
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())
 	{
-		processInput(window);
+		GameInstance::Get().Count();
+		globalInput(window);
 
 		Editor::Get().ClearBuffer();
 		glfwPollEvents();

@@ -7,9 +7,19 @@ void Camera::Update()
 	cameraLogic();
 }
 
+glm::vec3 Camera::GetWorldUp() const
+{
+	return worldUp;
+}
+
+glm::vec3 Camera::GetWorldFront() const
+{
+	return worldFront;
+}
+
 void Camera::cameraLogic()
 {
-	target = glm::vec3(0, 0, 0);
+	target = parent->GetTransform()->position + worldFront;
 	direction = glm::normalize(parent->GetTransform()->position - target);
 	right = glm::normalize(glm::cross(worldUp, direction));
 	up = glm::cross(direction, right);
