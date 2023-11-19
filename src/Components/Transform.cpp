@@ -24,13 +24,8 @@ glm::mat4 Transform::GetLocalModelMatrix() const
 	// Z * Y * X
 	const glm::mat4 rotationMatrix = transformZ * transformY * transformX;
 
-	// Apply the pivot offset by combining translation and rotation
-	glm::mat4 pivotOffset = glm::translate(glm::mat4(1.0f), -pivot);
-	pivotOffset = rotationMatrix * pivotOffset; // Rotate the translation offset
-
-	// translation * pivot offset * rotation * scale (also known as TRS matrix)
+	// translation * rotation * scale (also know as TRS matrix)
 	return glm::translate(glm::mat4(1.0f), localPosition) *
-		pivotOffset *
 		rotationMatrix *
 		glm::scale(glm::mat4(1.0f), localScale);
 }
@@ -50,6 +45,7 @@ void Transform::UpdateSelfAndChild()
 
 void Transform::AddChild(const std::shared_ptr<Transform>& child)
 {
-	child->parentNode = shared_from_this();
-	children.emplace_back(std::make_unique<Transform>(*child));
+    child->parentNode = shared_from_this();
+    children.emplace_back(child);
 }
+

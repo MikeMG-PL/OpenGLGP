@@ -16,7 +16,6 @@ public:
 	glm::vec3 localPosition = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 localEulerAngles = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 localScale = { 1.0f, 1.0f, 1.0f };
-	glm::vec3 pivot = { 0.0f, 0.0f, 0.0f };
 
 	// Global space
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
