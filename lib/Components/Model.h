@@ -6,6 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "Transform.h"
 #include "Engine/Component.h"
 #include "Engine/Texture.h"
 #include "Engine/Mesh.h"
@@ -15,10 +16,16 @@ class Model : public Component
 {
 public:
 	explicit Model(const std::string& path);
+    void Start() override;
     void Draw(Shader shader);
+    glm::mat4 GetModelMatrix() const;
+    //void SetModelMatrix(const glm::mat4& mat);
+    void UpdateModelMatrix();
 
 private:
 
+    std::shared_ptr<Transform> transform;
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
     std::vector<Texture> texturesLoaded;
     std::vector<Mesh> meshes;
     std::string directory;

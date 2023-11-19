@@ -28,6 +28,7 @@ int main(int, char**)
 
 	auto nanosuit = GameObject::CreateObject();
 	nanosuit->AddComponent<Model>("../../res/models/nanosuit/nanosuit.obj");
+	nanosuit->GetTransform()->scale = glm::vec3(0.1f, 0.1f, 0.1f);
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

@@ -106,9 +106,8 @@ void Renderer::Render(const Camera& camera)
 	{
 		if(const auto modelComponent = gameObjectPtr->GetComponent<Model>())
 		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0, -1, 0));
-			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+			modelComponent->UpdateModelMatrix();
+			model = modelComponent->GetModelMatrix();
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 			modelComponent->Draw(shader);
 		}
