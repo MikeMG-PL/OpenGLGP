@@ -29,27 +29,17 @@ int main(int, char**)
 
 	auto sun = GameObject::CreateObject();
 	sun->AddComponent<Model>("../../res/models/sun/sun.obj");
-	sun->AddComponent<Planet>(10);
-
-	auto earthPivot = GameObject::CreateObject();
-	earthPivot->AddComponent<Planet>(30);
-	earthPivot->GetTransform()->localEulerAngles = glm::vec3(0, 0, 65);
+	//sun->AddComponent<Planet>(10);
 
 	auto earth = GameObject::CreateObject();
 	earth->AddComponent<Model>("../../res/models/earth/earth.obj");
-	earth->GetTransform()->localEulerAngles = glm::vec3(0, 0, 25);
-	earth->GetTransform()->localPosition = glm::vec3(2.5f, 0, 0);
+	earth->AddComponent<Planet>(30);
+	earth->GetTransform()->pivot = glm::vec3(-2.5f, 0, 0);
+	//earth->GetTransform()->localPosition = glm::vec3(2.5f, 0, 0);
 	earth->GetTransform()->localScale = glm::vec3(0.2f, 0.2f, 0.2f);
 
-	earthPivot->GetTransform()->AddChild(earth->GetTransform());
+	sun->GetTransform()->AddChild(earth->GetTransform());
 
-	auto moon = GameObject::CreateObject();
-	moon->AddComponent<Model>("../../res/models/jupiter/jupiter.obj");
-	moon->AddComponent<Planet>(50);
-	moon->GetTransform()->localPosition = glm::vec3(2.5f, 0, 0);
-	moon->GetTransform()->localScale = glm::vec3(0.2f, 0.2f, 0.2f);
-
-	earth->GetTransform()->AddChild(moon->GetTransform());
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

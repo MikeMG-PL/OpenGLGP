@@ -22,11 +22,16 @@ glm::mat4 Transform::GetLocalModelMatrix() const
 		glm::vec3(0.0f, 0.0f, 1.0f));
 
 	// Z * Y * X
-	const glm::mat4 roationMatrix = transformZ * transformY * transformX;
+	const glm::mat4 rotationMatrix = transformZ * transformY * transformX;
 
-	// translation * rotation * scale (also know as TRS matrix)
+	// Apply the pivot offset by combining translation and rotation
+	glm::mat4 pivotOffset = glm::translate(glm::mat4(1.0f), -pivot);
+	pivotOffset = rotationMatrix * pivotOffset; // Rotate the translation offset
+
+	// translation * pivot offset * rotation * scale (also known as TRS matrix)
 	return glm::translate(glm::mat4(1.0f), localPosition) *
-		roationMatrix *
+		pivotOffset *
+		rotationMatrix *
 		glm::scale(glm::mat4(1.0f), localScale);
 }
 
