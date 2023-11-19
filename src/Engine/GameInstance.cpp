@@ -57,7 +57,6 @@ void GameInstance::Count()
 	const GLfloat currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
-	std::cout << deltaTime << std::endl;
 }
 
 float GameInstance::GetDeltaTime() const

@@ -12,6 +12,8 @@ public:
 	glm::vec3 right;
 	glm::vec3 up;
 
+	// TODO: Eurler angles and rotating camera
+
 	void Update() override;
 	glm::vec3 GetWorldUp() const;
 	glm::vec3 GetWorldFront() const;
