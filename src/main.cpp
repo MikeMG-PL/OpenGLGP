@@ -10,6 +10,7 @@
 #include "Components/Camera.h"
 #include "Components/CameraMovement.h"
 #include "Components/Model.h"
+#include "Components/Planet.h"
 
 int main(int, char**)
 {
@@ -26,17 +27,29 @@ int main(int, char**)
 	camera->AddComponent<CameraMovement>();
 	camera->GetTransform()->localPosition = glm::vec3(0, 0, 3);
 
-	auto nanosuit = GameObject::CreateObject();
-	nanosuit->AddComponent<Model>("../../res/models/nanosuit/nanosuit.obj");
-	nanosuit->GetTransform()->localScale = glm::vec3(0.1f, 0.1f, 0.1f);
+	auto sun = GameObject::CreateObject();
+	sun->AddComponent<Model>("../../res/models/sun/sun.obj");
+	sun->AddComponent<Planet>(10);
 
-	auto nanosuit2 = GameObject::CreateObject();
-	nanosuit2->AddComponent<Model>("../../res/models/nanosuit/nanosuit.obj");
-	nanosuit2->GetTransform()->localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+	auto earthPivot = GameObject::CreateObject();
+	earthPivot->AddComponent<Planet>(30);
+	earthPivot->GetTransform()->localEulerAngles = glm::vec3(0, 0, 65);
 
-	nanosuit->GetTransform()->AddChild(nanosuit2->GetTransform());
-	nanosuit->GetTransform()->localPosition = glm::vec3(0, 0, -10);
-	nanosuit2->GetTransform()->localPosition = glm::vec3(10, 0, 0);
+	auto earth = GameObject::CreateObject();
+	earth->AddComponent<Model>("../../res/models/earth/earth.obj");
+	earth->GetTransform()->localEulerAngles = glm::vec3(0, 0, 25);
+	earth->GetTransform()->localPosition = glm::vec3(2.5f, 0, 0);
+	earth->GetTransform()->localScale = glm::vec3(0.2f, 0.2f, 0.2f);
+
+	earthPivot->GetTransform()->AddChild(earth->GetTransform());
+
+	auto moon = GameObject::CreateObject();
+	moon->AddComponent<Model>("../../res/models/jupiter/jupiter.obj");
+	moon->AddComponent<Planet>(50);
+	moon->GetTransform()->localPosition = glm::vec3(2.5f, 0, 0);
+	moon->GetTransform()->localScale = glm::vec3(0.2f, 0.2f, 0.2f);
+
+	earth->GetTransform()->AddChild(moon->GetTransform());
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

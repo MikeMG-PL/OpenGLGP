@@ -4,9 +4,8 @@
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include "assimp/postprocess.h"
 
-#include "Transform.h"
 #include "Engine/Component.h"
 #include "Engine/Texture.h"
 #include "Engine/Mesh.h"
