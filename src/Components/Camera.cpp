@@ -19,10 +19,10 @@ glm::vec3 Camera::GetWorldFront() const
 
 void Camera::cameraLogic()
 {
-	target = parent->GetTransform()->position + worldFront;
-	direction = glm::normalize(parent->GetTransform()->position - target);
+	target = parent->GetTransform()->localPosition + worldFront;
+	direction = glm::normalize(parent->GetTransform()->localPosition - target);
 	right = glm::normalize(glm::cross(worldUp, direction));
 	up = glm::cross(direction, right);
 
-	view = glm::lookAt(parent->GetTransform()->position, target, up);
+	view = glm::lookAt(parent->GetTransform()->localPosition, target, up);
 }

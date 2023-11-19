@@ -23,11 +23,11 @@ void CameraMovement::Update()
 void CameraMovement::processInput()
 {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraTransform->position += cameraSpeed * camera->GetWorldFront() * GameInstance::Get().GetDeltaTime();
+        cameraTransform->localPosition += cameraSpeed * camera->GetWorldFront() * GameInstance::Get().GetDeltaTime();
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraTransform->position -= cameraSpeed * camera->GetWorldFront() * GameInstance::Get().GetDeltaTime();
+        cameraTransform->localPosition -= cameraSpeed * camera->GetWorldFront() * GameInstance::Get().GetDeltaTime();
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraTransform->position -= glm::normalize(glm::cross(camera->GetWorldFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
+        cameraTransform->localPosition -= glm::normalize(glm::cross(camera->GetWorldFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraTransform->position += glm::normalize(glm::cross(camera->GetWorldFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
+        cameraTransform->localPosition += glm::normalize(glm::cross(camera->GetWorldFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
 }

@@ -15,36 +15,10 @@ Model::Model(const std::string& path)
 	loadModel(path);
 }
 
-void Model::Start()
-{
-	Component::Start();
-	transform = parent->GetTransform();
-}
-
 void Model::Draw(Shader shader)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(shader);
-}
-
-glm::mat4 Model::GetModelMatrix() const
-{
-	return modelMatrix;
-}
-
-void Model::UpdateModelMatrix()
-{
-	if (transform != nullptr)
-	{
-		modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::translate(modelMatrix, transform->position);
-
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(transform->eulerAngles.x), glm::vec3(1,0,0));
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(transform->eulerAngles.y), glm::vec3(0,1,0));
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(transform->eulerAngles.z), glm::vec3(0,0,1));
-
-		modelMatrix = glm::scale(modelMatrix, transform->scale);
-	}
 }
 
 void Model::loadModel(const std::string& path)

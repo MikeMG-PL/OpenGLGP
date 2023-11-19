@@ -24,11 +24,19 @@ int main(int, char**)
 	auto camera = GameObject::CreateObject();
 	camera->AddComponent<Camera>();
 	camera->AddComponent<CameraMovement>();
-	camera->GetTransform()->position = glm::vec3(0, 0, 3);
+	camera->GetTransform()->localPosition = glm::vec3(0, 0, 3);
 
 	auto nanosuit = GameObject::CreateObject();
 	nanosuit->AddComponent<Model>("../../res/models/nanosuit/nanosuit.obj");
-	nanosuit->GetTransform()->scale = glm::vec3(0.1f, 0.1f, 0.1f);
+	nanosuit->GetTransform()->localScale = glm::vec3(0.1f, 0.1f, 0.1f);
+
+	auto nanosuit2 = GameObject::CreateObject();
+	nanosuit2->AddComponent<Model>("../../res/models/nanosuit/nanosuit.obj");
+	nanosuit2->GetTransform()->localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	nanosuit->GetTransform()->AddChild(nanosuit2->GetTransform());
+	nanosuit->GetTransform()->localPosition = glm::vec3(0, 0, -10);
+	nanosuit2->GetTransform()->localPosition = glm::vec3(10, 0, 0);
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

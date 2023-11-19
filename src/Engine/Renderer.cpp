@@ -104,13 +104,12 @@ void Renderer::Render(const Camera& camera)
 
 	for (const auto& gameObjectPtr : allGameObjects)
 	{
-		if(const auto modelComponent = gameObjectPtr->GetComponent<Model>())
-		{
-			modelComponent->UpdateModelMatrix();
-			model = modelComponent->GetModelMatrix();
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		gameObjectPtr->GetTransform()->UpdateSelfAndChild();
+		model = gameObjectPtr->GetTransform()->modelMatrix;
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+		if (const auto modelComponent = gameObjectPtr->GetComponent<Model>())
 			modelComponent->Draw(shader);
-		}
 	}
 
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
