@@ -9,6 +9,7 @@
 #include "Engine/Renderer.h"
 #include "Components/Camera.h"
 #include "Components/CameraMovement.h"
+#include "Components/Model.h"
 
 int main(int, char**)
 {
@@ -24,6 +25,9 @@ int main(int, char**)
 	camera->AddComponent<Camera>();
 	camera->AddComponent<CameraMovement>();
 	camera->GetTransform()->position = glm::vec3(0, 0, 3);
+
+	auto nanosuit = GameObject::CreateObject();
+	nanosuit->AddComponent<Model>("../../res/models/nanosuit/nanosuit.obj");
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())
@@ -44,7 +48,7 @@ int main(int, char**)
 		GameInstance::Get().UpdateGameFixed();
 
 		// Unbind everything here
-		Renderer::Get().Unbind();
+		// Renderer::Get().Unbind();
 
 		// Draw ImGui
 		Editor::Get().RenderDrawData();

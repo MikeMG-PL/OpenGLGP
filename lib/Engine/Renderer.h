@@ -17,13 +17,13 @@ public:
 
 	bool Init(int X, int Y);
 	void Render(const Camera& camera);
-	void Unbind();
+	//void Unbind();
 	void Cleanup();
 	glm::vec2 GetWindowSize() const;
 	GLFWwindow* GetWindow() const;
 	const char* GetGLSLVersion() const;
+	Shader GetShader() const;
 	void SetBackgroundColor(ImVec4 color);
-	void DrawRecursiveSierpinski(const Shader& shader, int const depth, int const maxDepth, glm::mat4 model);
 
 	bool ShouldCloseWindow();
 	void CloseWindow();
@@ -31,6 +31,7 @@ public:
 
 private:
 
+	Shader shader;
 	int windowX = 0, windowY = 0;
 	GLFWwindow* window;
 	const char* glsl_version;
@@ -39,17 +40,9 @@ private:
 
 	/// Before decoupling to proper components ///
 
-	GLuint texture;
-	Shader shader;
-	GLuint VAO, VBO, EBO;
-
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
-	float rotationX = 0;
-	float rotationY = 0;
-	int recursionLevels = 1;
-	float zoom = -3.0f;
 
 	GLuint modelLoc;
 	GLuint viewLoc;

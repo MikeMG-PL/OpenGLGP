@@ -7,16 +7,14 @@
 #include <assimp/postprocess.h>
 
 #include "Engine/Component.h"
-
-struct Texture;
-class Mesh;
-class Shader;
+#include "Engine/Texture.h"
+#include "Engine/Mesh.h"
+#include "Engine/Shader.h"
 
 class Model : public Component
 {
 public:
-
-    Model(char* path);
+	explicit Model(const std::string& path);
     void Draw(Shader shader);
 
 private:
@@ -25,7 +23,7 @@ private:
     std::vector<Mesh> meshes;
     std::string directory;
     
-    void loadModel(std::string path);
+    void loadModel(const std::string& path);
     void processNode(aiNode* node, const aiScene* scene);
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
     std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,

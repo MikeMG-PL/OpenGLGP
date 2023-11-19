@@ -1,17 +1,24 @@
 #include "Components/Model.h"
 #include "Engine/Mesh.h"
 #include <iostream>
+#include <Engine/Shader.h>
 
 #include "Engine/Texture.h"
 #include "Engine/Vertex.h"
 #include "Helpers/TextureLoader.h"
 
-Model::Model(char* path)
+Model::Model(const std::string& path)
 {
 	loadModel(path);
 }
 
-void Model::loadModel(std::string path)
+void Model::Draw(Shader shader)
+{
+	for (unsigned int i = 0; i < meshes.size(); i++)
+		meshes[i].Draw(shader);
+}
+
+void Model::loadModel(const std::string& path)
 {
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);

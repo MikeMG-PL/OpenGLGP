@@ -1,9 +1,8 @@
 #pragma once
 #include <vector>
-
-class Shader;
-struct Texture;
-struct Vertex;
+#include "Engine/Shader.h"
+#include "Engine/Texture.h"
+#include "Engine/Vertex.h"
 
 class Mesh
 {

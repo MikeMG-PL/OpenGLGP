@@ -32,8 +32,6 @@ void GameInstance::UpdateGame()
 	{
 		auto allComponents = gameObjectPtr->GetComponents();
 
-		// Camera handling (moved to rendering loop)
-
 		for (const auto& componentPtr : allComponents)
 		{
 			componentPtr.get()->Update();
