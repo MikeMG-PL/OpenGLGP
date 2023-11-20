@@ -28,26 +28,29 @@ int main(int, char**)
 	camera->GetTransform()->localPosition = glm::vec3(0, 0, 3);
 
 	auto sun = GameObject::CreateObject();
-	sun->AddComponent<Model>("../../res/models/sun/sun.obj");
+	sun->AddComponent<Model>("../../res/models/sun/sun.obj"); // bool: draw orbit?
+	sun->AddComponent<Planet>(30);
 
 	auto earthPivot = GameObject::CreateObject();
-	//earthPivot->AddComponent<Planet>(30);
+	earthPivot->AddComponent<Model>(2.5f); // orbit radius
+	earthPivot->AddComponent<Planet>(30);
 
 	auto earth = GameObject::CreateObject();
 	earth->AddComponent<Model>("../../res/models/earth/earth.obj");
-	//earth->AddComponent<Planet>(30);
+	earth->AddComponent<Planet>(30);
 
 	earth->GetTransform()->localEulerAngles = glm::vec3(0, 0, 25);
 	earth->GetTransform()->localPosition = glm::vec3(2.5f, 0, 0);
 	earth->GetTransform()->localScale = glm::vec3(0.2f, 0.2f, 0.2f);
 
 	auto moonPivot = GameObject::CreateObject();
-	//moonPivot->AddComponent<Planet>(60);
+	moonPivot->AddComponent<Model>(2.5f);
+	moonPivot->AddComponent<Planet>(120);
 	moonPivot->GetTransform()->localEulerAngles = glm::vec3(0, 0, 50);
 
 	auto moon = GameObject::CreateObject();
 	moon->AddComponent<Model>("../../res/models/moon/moon.obj");
-	//moon->AddComponent<Planet>(70);
+	moon->AddComponent<Planet>(70);
 
 	moon->GetTransform()->localEulerAngles = glm::vec3(0, 0, 50);
 	moon->GetTransform()->localPosition = glm::vec3(2.5f, 0, 0);

@@ -1,14 +1,18 @@
 #include "Engine/Mesh.h"
+
+#include <iostream>
+
 #include "Engine/Shader.h"
 #include "Engine/Vertex.h"
 #include "Engine/Texture.h"
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices,
-	const std::vector<Texture>& textures)
+	const std::vector<Texture>& textures, GLenum drawType)
 {
 	this->vertices = vertices;
 	this->indices = indices;
 	this->textures = textures;
+    this->drawType = drawType;
 
 	setupMesh();
 }
@@ -37,7 +41,12 @@ void Mesh::Draw(Shader shader)
 
     // Draw mesh
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+    if(indices.empty())
+        glDrawArrays(GL_LINE_LOOP, 0, static_cast<int>(vertices.size()));
+    else
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
     glBindVertexArray(0);
 }
 
@@ -52,9 +61,12 @@ void Mesh::setupMesh()
 
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
-        &indices[0], GL_STATIC_DRAW);
+    if (!indices.empty())
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
+            &indices[0], GL_STATIC_DRAW);
+    }
 
     // Vertex positions
     glEnableVertexAttribArray(0);

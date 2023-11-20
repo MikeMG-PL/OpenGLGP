@@ -10,15 +10,58 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
 
-Model::Model(const std::string& path)
+Model::Model(const std::string& path, bool drawOrbit, float r)
 {
 	loadModel(path);
+
+	if (drawOrbit)
+		addOrbit(r);
+}
+
+Model::Model(float r)
+{
+	addOrbit(r);
 }
 
 void Model::Draw(Shader shader)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(shader);
+}
+
+void Model::addOrbit(float r)
+{
+	int segmentCount = 32;
+	float radiusX = r;
+	float centerX = 0;
+	float radiusZ = r;
+	float centerZ = 0;
+
+	float const theta = 2 * glm::pi<float>() / static_cast<float>(segmentCount);
+	float const c = glm::cos(theta);
+	float const s = glm::sin(theta);
+
+	float x = 1; // Start at angle = 0 
+	float z = 0;
+
+	std::vector<Vertex> vertices;
+
+	glBegin(GL_LINE_LOOP);
+	for (int i = 0; i < segmentCount; ++i)
+	{
+		Vertex vertex = {};
+		// Apply radius and offset
+		vertex.position = glm::vec3(x * radiusX + centerX, 0.0f, z * radiusZ + centerZ);
+
+		// Apply the rotation matrix
+		float const t = x;
+		x = c * x - s * z;
+		z = s * t + c * z;
+
+		vertices.emplace_back(vertex);
+	}
+	glEnd();
+	meshes.push_back(Mesh(vertices, {}, {}));
 }
 
 void Model::loadModel(const std::string& path)
