@@ -81,3 +81,14 @@ void Mesh::setupMesh()
 
     glBindVertexArray(0);
 }
+
+// Mesh::~Mesh()
+// {
+//     glDeleteVertexArrays(1, &VAO);
+//     glDeleteBuffers(1, &VBO);
+//     glDeleteBuffers(1, &EBO);
+//
+//     for (const auto& texture : textures) {
+//         glDeleteTextures(1, &texture.ID);
+//     }
+// }

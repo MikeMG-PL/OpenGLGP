@@ -12,13 +12,16 @@ public:
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 
+	// ~Mesh();
+
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices,
 		const std::vector<Texture>& textures, GLenum drawType = GL_TRIANGLES);
 
 	void Draw(Shader shader);
-
+	unsigned int VAO, VBO, EBO;
 private:
 	GLenum drawType = GL_TRIANGLES;
-	unsigned int VAO, VBO, EBO;
+	
 	void setupMesh();
+	
 };

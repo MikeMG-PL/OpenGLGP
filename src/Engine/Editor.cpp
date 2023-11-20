@@ -52,11 +52,14 @@ void Editor::Update()
 
 		ImGui::Begin("Tool window");                          // Create a window
 		ImGui::ColorEdit3("Background color", (float*)&clearColor); // Edit 3 floats representing a color
-		// ImGui::ColorEdit3("Drawing color", (float*)&drawingColor); // Edit 3 floats representing a color
 		ImGui::SliderInt("Generated details", &details, 2, 16);
 		ImGui::SliderFloat("Scene rotation", &sunRotation, -180, 180);
-		// ImGui::SliderFloat("Zoom", &zoom, -6, 0);
-		// ImGui::SliderInt("Recursion level", &recursionLevels, 1, 10);
+		ImGui::Checkbox("Wireframe", &wireframe);
+
+		if (wireframe)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		ImGui::Text("Frametime: %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();

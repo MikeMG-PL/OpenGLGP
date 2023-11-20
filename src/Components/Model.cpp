@@ -10,6 +10,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
 
+#include "Engine/Editor.h"
+
 Model::Model(const std::string& path, bool drawOrbit, float r)
 {
 	loadModel(path);
@@ -30,7 +32,6 @@ Model::Model(float sphereRadius, int sectors, int stacks, const std::string& tex
 	this->stacks = stacks;
 	this->texturePath = texturePath;
 	this->drawType = drawType;
-	createSphere();
 }
 
 void Model::Draw(Shader shader)
@@ -38,12 +39,25 @@ void Model::Draw(Shader shader)
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(shader);
 
-	// if(drawType == GL_TRIANGLE_STRIP)
-	// {
-	// 	meshes.clear();
-	// 	texturesLoaded.clear();
-	// 	createSphere();
-	// }
+	if(drawType == GL_TRIANGLE_STRIP && Editor::Get().details != Editor::Get().previousDetails)
+	{
+		// Delete existing data
+		for (const auto& m : meshes)
+		{
+			glDeleteVertexArrays(1, &m.VAO);
+			glDeleteBuffers(1, &m.VBO);
+			glDeleteBuffers(1, &m.EBO);
+		}
+
+		for (const auto& t : texturesLoaded)
+		{
+			glDeleteTextures(1, &t.ID);
+		}
+		meshes.clear();
+		texturesLoaded.clear();
+		createSphere();
+		Editor::Get().previousDetails = Editor::Get().details;
+	}
 }
 
 void Model::addOrbit(float r)
@@ -203,6 +217,9 @@ void Model::createSphere()
 {
 	auto constexpr PI = glm::pi<float>();
 	float const length_inverse = 1.0f / sphereRadius;
+
+	stacks = Editor::Get().details;
+	sectors = Editor::Get().details;
 
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;

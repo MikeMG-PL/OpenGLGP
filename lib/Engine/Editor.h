@@ -17,7 +17,9 @@ public:
 	void Cleanup();
 	ImVec4 GetBackgroundColor() const;
 	ImVec4 GetDrawingColor() const;
+	bool wireframe;
 	int details = 16;
+	int previousDetails = -1;
 	float sunRotation = 0;
 
 private:
