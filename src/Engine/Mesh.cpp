@@ -45,7 +45,7 @@ void Mesh::Draw(Shader shader)
     if(indices.empty())
         glDrawArrays(GL_LINE_LOOP, 0, static_cast<int>(vertices.size()));
     else
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(drawType, indices.size(), GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
 }

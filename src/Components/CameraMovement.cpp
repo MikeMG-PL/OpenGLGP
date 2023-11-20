@@ -30,4 +30,8 @@ void CameraMovement::processInput()
         cameraTransform->localPosition -= glm::normalize(glm::cross(camera->GetWorldFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraTransform->localPosition += glm::normalize(glm::cross(camera->GetWorldFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        cameraTransform->localPosition -= cameraSpeed * camera->GetWorldUp() * GameInstance::Get().GetDeltaTime();
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        cameraTransform->localPosition += cameraSpeed * camera->GetWorldUp() * GameInstance::Get().GetDeltaTime();
 }

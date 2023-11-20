@@ -6,8 +6,8 @@ class Planet : public Component
 {
 public:
 
-	Planet(float rotation_speed)
-		: rotationSpeed(rotation_speed)
+	Planet(float rotation_speed, bool root = false)
+		: rotationSpeed(rotation_speed), root(root)
 	{
 	}
 
@@ -17,6 +17,8 @@ public:
 
 private:
 
+	bool randomBool();
+	bool root;
 	std::shared_ptr<Transform> transform;
 
 };

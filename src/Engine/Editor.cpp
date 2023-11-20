@@ -53,8 +53,8 @@ void Editor::Update()
 		ImGui::Begin("Tool window");                          // Create a window
 		ImGui::ColorEdit3("Background color", (float*)&clearColor); // Edit 3 floats representing a color
 		// ImGui::ColorEdit3("Drawing color", (float*)&drawingColor); // Edit 3 floats representing a color
-		// ImGui::SliderFloat("Rotation X", &rotationX, -180, 180);
-		// ImGui::SliderFloat("Rotation Y", &rotationY, -180, 180);
+		ImGui::SliderInt("Generated details", &details, 2, 16);
+		ImGui::SliderFloat("Scene rotation", &sunRotation, -180, 180);
 		// ImGui::SliderFloat("Zoom", &zoom, -6, 0);
 		// ImGui::SliderInt("Recursion level", &recursionLevels, 1, 10);
 

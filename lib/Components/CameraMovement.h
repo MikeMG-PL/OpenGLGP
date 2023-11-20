@@ -11,7 +11,7 @@ public:
 
 	void Start() override;
 	void Update() override;
-	float cameraSpeed = 2.0f;
+	float cameraSpeed = 4.0f;
 
 private:
 

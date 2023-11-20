@@ -23,15 +23,32 @@ Model::Model(float r)
 	addOrbit(r);
 }
 
+Model::Model(float sphereRadius, int sectors, int stacks, const std::string& texturePath, GLenum drawType)
+{
+	this->sphereRadius = sphereRadius;
+	this->sectors = sectors;
+	this->stacks = stacks;
+	this->texturePath = texturePath;
+	this->drawType = drawType;
+	createSphere();
+}
+
 void Model::Draw(Shader shader)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(shader);
+
+	// if(drawType == GL_TRIANGLE_STRIP)
+	// {
+	// 	meshes.clear();
+	// 	texturesLoaded.clear();
+	// 	createSphere();
+	// }
 }
 
 void Model::addOrbit(float r)
 {
-	int segmentCount = 32;
+	int segmentCount = 64;
 	float radiusX = r;
 	float centerX = 0;
 	float radiusZ = r;
@@ -61,7 +78,7 @@ void Model::addOrbit(float r)
 		vertices.emplace_back(vertex);
 	}
 	glEnd();
-	meshes.push_back(Mesh(vertices, {}, {}));
+	meshes.push_back(Mesh(vertices, {}, {}, GL_LINE_LOOP));
 }
 
 void Model::loadModel(const std::string& path)
@@ -180,4 +197,71 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 		}
 	}
 	return textures;
+}
+
+void Model::createSphere()
+{
+	auto constexpr PI = glm::pi<float>();
+	float const length_inverse = 1.0f / sphereRadius;
+
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<Texture> textures;
+
+	for (uint32_t x = 0; x <= stacks; ++x)
+	{
+		for (uint32_t y = 0; y <= sectors; ++y)
+		{
+			float const x_segment = static_cast<float>(x) / static_cast<float>(stacks);
+			float const y_segment = static_cast<float>(y) / static_cast<float>(sectors);
+
+			float const x_position = sphereRadius * glm::cos(x_segment * 2.0f * PI) * glm::sin(y_segment * PI);
+			float const y_position = sphereRadius * glm::cos(y_segment * PI);
+			float const z_position = sphereRadius * glm::sin(x_segment * 2.0f * PI) * glm::sin(y_segment * PI);
+
+			Vertex vertex = {};
+			vertex.position = glm::vec3(x_position, y_position, z_position);
+			vertex.normal = glm::vec3(x_position * length_inverse, y_position * length_inverse, z_position * length_inverse);
+			vertex.texCoords = glm::vec2(x_segment, y_segment);
+			vertices.emplace_back(vertex);
+		}
+	}
+
+	bool odd_row = false;
+	for (uint32_t y = 0; y < sectors; ++y)
+	{
+		if (!odd_row)
+		{
+			for (uint32_t x = 0; x <= stacks; ++x)
+			{
+				indices.push_back(y * (stacks + 1) + x);
+				indices.push_back((y + 1) * (stacks + 1) + x);
+			}
+		}
+		else
+		{
+			for (int32_t x = stacks; x >= 0; --x)
+			{
+				indices.push_back((y + 1) * (stacks + 1) + x);
+				indices.push_back(y * (stacks + 1) + x);
+			}
+		}
+
+		odd_row = !odd_row;
+	}
+
+	std::vector<Texture> diffuse_maps = { loadTextureForSphere() };
+	textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
+
+	meshes.emplace_back(vertices, indices, textures, GL_TRIANGLE_STRIP);
+}
+
+Texture Model::loadTextureForSphere()
+{
+	Texture texture;
+	auto dir = texturePath.substr(0, texturePath.find_last_of('/'));
+	texture.ID = textureFromFile(texturePath.c_str(), dir);
+	texture.type = "texture_diffuse";
+	texture.path = texturePath;
+	return texture;
 }
