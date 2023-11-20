@@ -93,11 +93,11 @@ int main(int, char**)
 
 	auto generatedMoonPivot2 = GameObject::CreateObject();
 	generatedMoonPivot2->AddComponent<Model>(6);
-	generatedMoonPivot2->AddComponent<Planet>(210);
+	generatedMoonPivot2->AddComponent<Planet>(280);
 	generatedMoonPivot2->GetTransform()->localEulerAngles = glm::vec3(0, 13, 0);
 
 	auto generatedMoon2 = GameObject::CreateObject();
-	generatedMoon2->AddComponent<Model>(1.5f, Editor::Get().details, Editor::Get().details, "../../res/textures/generated.png", GL_TRIANGLE_STRIP);
+	generatedMoon2->AddComponent<Model>("../../res/models/jupiter/jupiter.obj");
 	generatedMoon2->AddComponent<Planet>(12);
 
 	generatedMoon2->GetTransform()->localEulerAngles = glm::vec3(0, 61, 0);
