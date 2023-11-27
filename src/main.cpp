@@ -97,7 +97,7 @@ int main(int, char**)
 	generatedMoonPivot2->GetTransform()->localEulerAngles = glm::vec3(0, 13, 0);
 
 	auto generatedMoon2 = GameObject::CreateObject();
-	generatedMoon2->AddComponent<Model>("../../res/models/jupiter/jupiter.obj");
+	generatedMoon2->AddComponent<Model>("../../res/models/mercury2/mercury2.obj");
 	generatedMoon2->AddComponent<Planet>(12);
 
 	generatedMoon2->GetTransform()->localEulerAngles = glm::vec3(0, 61, 0);
@@ -137,7 +137,7 @@ int main(int, char**)
 	mercuryMoonPivot2->GetTransform()->localEulerAngles = glm::vec3(0, 0, 60);
 
 	auto mercuryMoon2 = GameObject::CreateObject();
-	mercuryMoon2->AddComponent<Model>("../../res/models/moon/moon.obj");
+	mercuryMoon2->AddComponent<Model>("../../res/models/sun2/sun2.obj");
 	mercuryMoon2->AddComponent<Planet>(14);
 
 	mercuryMoon2->GetTransform()->localEulerAngles = glm::vec3(0, 0, 60);
