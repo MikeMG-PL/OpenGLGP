@@ -26,7 +26,7 @@ private:
 
 	bool showDemoWindow = false;
 	bool showToolWindow = true;
-	ImVec4 clearColor = ImVec4(0, 0, 0.06f, 1.00f);
+	ImVec4 clearColor = ImVec4(0.5f, 0.5f, 0.5f, 1);
 	ImVec4 drawingColor = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	
 	Editor() = default;
