@@ -25,7 +25,7 @@ int main(int, char**)
 	auto camera = GameObject::CreateObject();
 	camera->AddComponent<Camera>();
 	camera->AddComponent<CameraMovement>();
-	camera->GetTransform()->localPosition = glm::vec3(0, 3, 10);
+	camera->GetTransform()->localPosition = glm::vec3(0, 1.5f, 8);
 	camera->GetTransform()->localEulerAngles = glm::vec3(0, 90, 0);
 
 	// ../../res/models/enemy.fbx
