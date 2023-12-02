@@ -21,6 +21,11 @@ void Mesh::Draw(Shader shader)
 {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
+
+    if (textures.empty())
+        glBindTexture(GL_TEXTURE_2D, 0);
+        
+
     for (unsigned int i = 0; i < textures.size(); i++)
     {
         // Activate texture unit before binding
@@ -45,7 +50,7 @@ void Mesh::Draw(Shader shader)
     if(indices.empty())
         glDrawArrays(GL_LINE_LOOP, 0, static_cast<int>(vertices.size()));
     else
-		glDrawElements(drawType, indices.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(drawType, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
 }

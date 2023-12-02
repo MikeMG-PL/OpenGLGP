@@ -28,7 +28,10 @@ int main(int, char**)
 	camera->GetTransform()->localPosition = glm::vec3(0, 1.5f, 8);
 	camera->GetTransform()->localEulerAngles = glm::vec3(0, 90, 0);
 
-	// ../../res/models/enemy.fbx
+	auto lightSource = GameObject::CreateObject();
+	lightSource->AddComponent<Model>(1, 16, 16, "../../res/textures/generated.png", GL_TRIANGLE_STRIP);
+	lightSource->GetTransform()->localPosition = glm::vec3(0, 4, 0);
+	lightSource->GetTransform()->localScale = glm::vec3(0.5f, 0.5f, 0.5f);
 
 	auto enemy = GameObject::CreateObject();
 	enemy->AddComponent<Model>("../../res/models/enemy.dae");
