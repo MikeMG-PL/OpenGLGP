@@ -24,7 +24,6 @@ void Mesh::Draw(Shader shader)
 
     if (textures.empty())
         glBindTexture(GL_TEXTURE_2D, 0);
-        
 
     for (unsigned int i = 0; i < textures.size(); i++)
     {

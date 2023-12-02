@@ -52,8 +52,8 @@ void Editor::Update()
 
 		ImGui::Begin("Tool window");                          // Create a window
 		ImGui::ColorEdit3("Background color", (float*)&clearColor); // Edit 3 floats representing a color
-		ImGui::SliderInt("Generated details", &details, 2, 16);
-		ImGui::SliderFloat("Scene rotation", &sunRotation, -180, 180);
+		//ImGui::SliderInt("Generated details", &details, 2, 16);
+		//ImGui::SliderFloat("Scene rotation", &sunRotation, -180, 180);
 		ImGui::Checkbox("Wireframe", &wireframe);
 
 		if (wireframe)
