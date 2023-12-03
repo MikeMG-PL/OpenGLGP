@@ -18,10 +18,11 @@ public:
 		const std::vector<Texture>& textures, GLenum drawType = GL_TRIANGLES);
 
 	void Draw(Shader shader);
-	unsigned int VAO, VBO, EBO;
+	unsigned int VAO, VBO, EBO, skinningBuffer;
+
 private:
+
 	GLenum drawType = GL_TRIANGLES;
-	
 	void setupMesh();
 	
 };

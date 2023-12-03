@@ -1,6 +1,7 @@
 #define WINDOW_X 1600
 #define WINDOW_Y 900
 
+#include "Animation system/AnimationSystem.h"
 #include "GLFW/glfw3.h"
 #include "Helpers/GlobalInput.h"
 #include "Engine/Editor.h"
@@ -32,6 +33,8 @@ int main(int, char**)
 	enemy->AddComponent<Model>("../../res/models/enemy/enemy.dae");
 	enemy->GetTransform()->localEulerAngles = glm::vec3(-90, 0, 0);
 
+
+
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())
 	{
@@ -42,13 +45,15 @@ int main(int, char**)
 		glfwPollEvents();
 		Editor::Get().Update();
 
-		// Rendering code inside Render function
-		// You will need to iterate through each Mesh in this function just as GameInstance's UpdateGame does to render it
-		Renderer::Get().Render(*camera->GetComponent<Camera>());
+		AnimationSystem::Get().Update();
 
 		// Update GameObjects
 		GameInstance::Get().UpdateGame();
 		GameInstance::Get().UpdateGameFixed();
+
+		// Rendering code inside Render function
+		// You will need to iterate through each Mesh in this function just as GameInstance's UpdateGame does to render it
+		Renderer::Get().Render(*camera->GetComponent<Camera>());
 
 		// Unbind everything here
 		// Renderer::Get().Unbind();
