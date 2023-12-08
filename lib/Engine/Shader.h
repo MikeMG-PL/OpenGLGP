@@ -3,6 +3,8 @@
 #include "glad/glad.h"
 #include <string>
 #include <sstream>
+#include <vector>
+
 #include "glm/glm.hpp"
 
 class Shader
@@ -29,5 +31,7 @@ public:
     void setVector3(const std::string& name, glm::vec3 value) const;
     void setVector4(const std::string& name, glm::vec4 value) const;
     void setMat4(const std::string& name, glm::mat4 value) const;
+    void setMat4Array(const std::string& name, const std::vector<glm::mat4>& values) const;
+
 };
 
