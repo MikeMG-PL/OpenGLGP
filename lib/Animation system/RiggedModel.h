@@ -9,7 +9,7 @@ enum LoadMode
 	ANIM
 };
 
-class RiggedModel : Component
+class RiggedModel : public Component
 {
 public:
 

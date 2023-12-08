@@ -2,6 +2,7 @@
 #define WINDOW_Y 900
 
 #include "Animation system/AnimationSystem.h"
+#include "Animation system/RiggedModel.h"
 #include "GLFW/glfw3.h"
 #include "Helpers/GlobalInput.h"
 #include "Engine/Editor.h"
@@ -29,11 +30,13 @@ int main(int, char**)
 	camera->GetTransform()->localPosition = glm::vec3(0, 1.5f, 8);
 	camera->GetTransform()->localEulerAngles = glm::vec3(0, 90, 0);
 
+	// auto enemy = GameObject::CreateObject();
+	// enemy->AddComponent<Model>("../../res/models/enemy/enemy.dae");
+	// enemy->GetTransform()->localEulerAngles = glm::vec3(-90, 0, 0);
+
 	auto enemy = GameObject::CreateObject();
-	enemy->AddComponent<Model>("../../res/models/enemy/enemy.dae");
+	enemy->AddComponent<RiggedModel>("../../res/models/enemy/enemy.dae", "../../res/models/enemy/enemy_pose.dae");
 	enemy->GetTransform()->localEulerAngles = glm::vec3(-90, 0, 0);
-
-
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())
