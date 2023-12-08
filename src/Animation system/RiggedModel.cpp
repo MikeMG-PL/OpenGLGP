@@ -1,6 +1,8 @@
 #include "Animation system/RiggedModel.h"
 #include "Animation system/Rig.h"
 #include <iostream>
+#include <map>
+
 #include "Helpers/aiHelpers.h"
 #include "Helpers/TextureLoader.h"
 
@@ -24,11 +26,20 @@ void RiggedModel::loadModel(const std::string& path, LoadMode mode)
 	Assimp::Importer import;
 	scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	if ((!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) && mode == RIG)
 	{
-		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
+		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "::LOADMODE::" << mode << std::endl;
 		return;
 	}
+	if (mode == ANIM)
+	{
+		if (!scene || !scene->HasAnimations())
+		{
+			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << "::LOADMODE::" << mode << std::endl;
+			return;
+		}
+	}
+
 	directory = path.substr(0, path.find_last_of('/'));
 
 	if (mode == RIG)
@@ -44,6 +55,8 @@ void RiggedModel::loadModel(const std::string& path, LoadMode mode)
 		// Just a pose for now
 		// TODO: Cut out to separate function
 		// TODO: Attach sampler of course lol
+
+		std::cout << rig.numBones << std::endl;
 
 		for (int i = 0; i < rig.numBones; i++)
 		{
@@ -86,10 +99,54 @@ Mesh RiggedModel::processMesh(aiMesh* mesh)
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 
+	std::map<int, glm::ivec4> vertexToBoneIndices;
+	std::map<int, glm::vec4> vertexToBoneWeights;
+	Vertex vertex;
+	int vertexID = 0;
+	glm::ivec4 skinIndices = { -1, -1, -1, -1 };
+	glm::vec4 skinWeights = { 0, 0, 0, 0 };
+
+	for (int i = 0; i < mesh->mNumBones; i++)
+	{
+		for (int j = 0; j < mesh->mBones[i]->mNumWeights; j++)
+		{
+			vertexID = mesh->mBones[i]->mWeights[j].mVertexId;
+			int boneID = i; // Bone ID is the index of the bone in the array
+
+			// Initialize the ivec4 with -1s and vec4 with 0s if it doesn't exist in the map
+			vertexToBoneIndices.try_emplace(vertexID, skinIndices);
+			vertexToBoneWeights.try_emplace(vertexID, skinWeights);
+
+			// Get the current skinIndices for the vertex
+			skinIndices = vertexToBoneIndices[vertexID];
+			skinWeights = vertexToBoneWeights[vertexID];
+
+			// Find the first available slot in the ivec4
+			int slot = -1;
+			for (int k = 0; k < 4; k++)
+			{
+				if (skinIndices[k] == -1)
+				{
+					slot = k;
+					break;
+				}
+			}
+
+			// If there is an available slot, assign the bone ID to it
+			if (slot != -1)
+			{
+				skinIndices[slot] = boneID;
+				float boneWeight = mesh->mBones[boneID]->mWeights[vertexID].mWeight;
+				skinWeights[slot] = boneWeight;
+				vertexToBoneIndices[vertexID] = skinIndices;
+			}
+		}
+	}
+
+
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
 		// Process vertex positions, normals, texture coordinates
-		Vertex vertex;
 		glm::vec3 vector;
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
@@ -111,22 +168,8 @@ Mesh RiggedModel::processMesh(aiMesh* mesh)
 		else
 			vertex.texCoords = glm::vec2(0.0f, 0.0f);
 
-		// Initialize bone weights and indices
-		vertex.skinWeights = glm::vec4(0.0f);
-		vertex.skinIndices = glm::ivec4(-1);
-
-		// Assign bone weights and indices
-		for (int j = 0; j < mesh->mBones[i]->mNumWeights; j++)
-		{
-			unsigned int boneID = mesh->mBones[i]->mWeights[j].mVertexId;
-			float weight = mesh->mBones[i]->mWeights[j].mWeight;
-
-			if (j < 4)
-			{
-				vertex.skinIndices[j] = boneID;
-				vertex.skinWeights[j] = weight;
-			}
-		}
+		vertex.skinIndices = vertexToBoneIndices[i];
+		vertex.skinWeights = vertexToBoneWeights[i];
 
 		vertices.push_back(vertex);
 	}
@@ -232,6 +275,7 @@ void RiggedModel::extractBoneDataFromMesh(aiMesh* mesh, LoadMode mode)
 		rig.boneNames.push_back(boneName);
 		rig.parents.push_back(parentIndex);
 		rig.inverseBindPose.push_back(inverseBindPose);
-		rig.numBones += mesh->mNumBones;
 	}
+	rig.numBones += mesh->mNumBones;
+	rig.skinnedPose.resize(rig.numBones);
 }
