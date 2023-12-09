@@ -1,5 +1,8 @@
 #include "Components/HutSpawner.h"
 
+#include "Components/Hut.h"
+#include "Engine/GameObject.h"
+
 HutSpawner::HutSpawner(unsigned int instancesInRow)
 {
 	this->instancesInRow = instancesInRow;
@@ -25,6 +28,9 @@ void HutSpawner::Start()
 
 			const unsigned int n = i * instancesInRow + j;
 			matrices[n] = model;
+
+			auto hut = GameObject::CreateObject();
+			hut->AddComponent<Hut>(pos);
 		}
 	}
 }
