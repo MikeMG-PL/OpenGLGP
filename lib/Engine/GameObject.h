@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "GameInstance.h"
 #include "Components/Transform.h"
 
 class Component;
@@ -34,6 +35,7 @@ public:
 	std::shared_ptr<T> AddComponent(TArgs&&... args)
 	{
 		auto component = std::make_shared<T>(std::forward<TArgs>(args)...);
+		GameInstance::Get().allComponents.emplace_back(component);
 		components.emplace_back(component);
 		component->parent = shared_from_this();
 		component->Start();

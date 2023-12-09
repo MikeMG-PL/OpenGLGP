@@ -34,9 +34,6 @@ void Camera::cameraLogic()
 	right = glm::normalize(glm::cross(worldUp, direction));
 	up = glm::cross(direction, right);
 
-	auto v = eulerToDirectionVector(parent->GetTransform()->localEulerAngles);
-	std::cout << v.x << ", " << v.y << ", " << v.z << std::endl;
-
 	view = glm::lookAt(parent->GetTransform()->localPosition, target, up);
 }
 

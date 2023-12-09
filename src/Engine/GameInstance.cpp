@@ -22,12 +22,6 @@ void GameInstance::StartGame()
 void GameInstance::RegisterObject(std::shared_ptr<GameObject> const& obj)
 {
 	allGameObjects.emplace_back(obj);
-
-	for(std::shared_ptr<GameObject> const& g : allGameObjects)
-	{
-		for (auto& c : g->GetComponents())
-			allComponents.emplace_back(c);
-	}
 }
 
 void GameInstance::UpdateGame()

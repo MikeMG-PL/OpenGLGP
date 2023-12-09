@@ -10,8 +10,6 @@
 #include "Components/Camera.h"
 #include "Components/CameraMovement.h"
 #include "Components/Hut.h"
-#include "Components/Model.h"
-#include "Components/Planet.h"
 
 int main(int, char**)
 {
@@ -32,6 +30,9 @@ int main(int, char**)
 
 	auto hut = GameObject::CreateObject();
 	hut->AddComponent<Hut>(glm::vec3(0,0,-3));
+	
+	auto hut2 = GameObject::CreateObject();
+	hut2->AddComponent<Hut>(glm::vec3(3, 0, -3));
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

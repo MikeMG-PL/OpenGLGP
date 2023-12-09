@@ -16,6 +16,7 @@ void Hut::Start()
 
 	auto roof = GameObject::CreateObject();
 	hut->GetTransform()->AddChild(roof->GetTransform());
+	GetParent()->GetTransform()->AddChild(hut->GetTransform());
 	
 	roof->AddComponent<Model>("../../res/models/hut/roof.dae");
 	roof->GetTransform()->localPosition = glm::vec3(0, 10, 0);

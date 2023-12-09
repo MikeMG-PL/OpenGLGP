@@ -1,8 +1,10 @@
 #include "Engine/Editor.h"
 
+#include <iostream>
 #include <glad/glad.h>
 
 #include "imgui.h"
+#include "Components/Hut.h"
 #include "Engine/GameInstance.h"
 #include "Engine/Renderer.h"
 #include "imgui_impl/imgui_impl_glfw.h"
@@ -46,6 +48,14 @@ void Editor::Update()
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	if (showToolWindow)
 	{
+		std::shared_ptr<Hut> hut;
+		int hutNum = 0;
+		for (auto& c : GameInstance::Get().allComponents)
+		{
+			if ((hut = std::dynamic_pointer_cast<Hut>(c)))
+				hutNum++;
+		}
+
 		static float f = 0.0f;
 		static int counter = 0;
 
@@ -55,14 +65,38 @@ void Editor::Update()
 		ImGui::SliderFloat("Movement speed", &cameraSpeed, 1, 10);
 		ImGui::Checkbox("Wireframe", &wireframe);
 
+		ImGui::Spacing();
+		ImGui::Spacing();
+
 		if (wireframe)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::Spacing();
 		ImGui::Text("Frametime: %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Press [SPACE] to toggle cursor.");
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Text("SCENE GRAPH FOR HUTS");
+		ImGui::Text("Hut instances: %i", hutNum);
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		for(int i=0; i < hutNum; i++)
+			ImGui::Text("found a hut");
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		////////////
 		ImGui::End();
 	}
 
