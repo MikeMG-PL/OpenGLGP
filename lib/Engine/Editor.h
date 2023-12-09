@@ -18,8 +18,8 @@ public:
 	ImVec4 GetBackgroundColor() const;
 	ImVec4 GetDrawingColor() const;
 	bool wireframe;
-	float cameraSpeed = 4.0;
-	float cameraSensitivity = 5.0f;
+	float cameraSpeed = 8.0;
+	float cameraSensitivity = 6.0f;
 
 private:
 

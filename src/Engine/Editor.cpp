@@ -62,7 +62,6 @@ void Editor::Update()
 
 		ImGui::Separator();
 		ImGui::Text("Frametime: %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::Spacing();
 		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Press [SPACE] to toggle cursor.");
 		ImGui::End();
 	}
