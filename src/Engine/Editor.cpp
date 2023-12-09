@@ -49,15 +49,15 @@ void Editor::Update()
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	if (showToolWindow)
 	{
+		huts.clear();
 		std::shared_ptr<Hut> hut;
 		int hutNum = 0;
-		std::vector<std::shared_ptr<Transform>> huts;
 		for (auto& c : GameInstance::Get().allComponents)
 		{
 			if ((hut = std::dynamic_pointer_cast<Hut>(c)))
 			{
 				hutNum++;
-				huts.push_back(hut->GetParent()->GetTransform());
+				huts.push_back(hut->GetParent());
 			}
 		}
 
@@ -86,25 +86,15 @@ void Editor::Update()
 		ImGui::Spacing();
 		ImGui::Spacing();
 		ImGui::Separator();
-		ImGui::Text("SCENE GRAPH FOR HUTS");
 		ImGui::Text("Hut instances: %i", hutNum);
 		ImGui::Separator();
 		ImGui::Spacing();
 		ImGui::Spacing();
 
-		for(int i=0; i < hutNum; i++)
+		if (ImGui::CollapsingHeader("SCENE GRAPH FOR HUTS"))
 		{
-			// TODO: editing second hut modifies the first one lol
-			std::string s = "Hut" + std::to_string(i);
-			if(ImGui::CollapsingHeader(s.c_str()))
-			{
-				glm::vec3& hutPos = huts[i]->localPosition;
-				float position[3] = { hutPos.x, hutPos.y, hutPos.z };
-				ImGui::InputFloat3("Position", position);
-				hutPos.x = position[0];
-				hutPos.y = position[1];
-				hutPos.z = position[2];
-			}
+			ImGui::Indent(20);
+			hutTransform(huts, hutNum);
 		}
 
 		ImGui::Spacing();
@@ -147,4 +137,71 @@ ImVec4 Editor::GetBackgroundColor() const
 ImVec4 Editor::GetDrawingColor() const
 {
 	return drawingColor;
+}
+
+void Editor::hutTransform(std::vector<std::shared_ptr<GameObject>>& hutGameObjects, int hutsNumber)
+{
+	for (int i = 0; i < hutsNumber; i++)
+	{
+		std::string s = "Hut" + std::to_string(i);
+		if (ImGui::CollapsingHeader(s.c_str()))
+		{
+			glm::vec3& hutPos = hutGameObjects[i]->GetTransform()->localPosition;
+			float position[3] = { hutPos.x, hutPos.y, hutPos.z };
+			ImGui::InputFloat3((s + " position").c_str(), position);
+			hutPos.x = position[0];
+			hutPos.y = position[1];
+			hutPos.z = position[2];
+			hutGameObjects[i]->GetTransform()->localPosition = hutPos;
+
+			glm::vec3& hutAngles = hutGameObjects[i]->GetTransform()->localEulerAngles;
+			float angles[3] = { hutAngles.x, hutAngles.y, hutAngles.z };
+			ImGui::InputFloat3((s + " rotation").c_str(), angles);
+			hutAngles.x = angles[0];
+			hutAngles.y = angles[1];
+			hutAngles.z = angles[2];
+			hutGameObjects[i]->GetTransform()->localEulerAngles = hutAngles;
+
+			glm::vec3& hutScale = hutGameObjects[i]->GetTransform()->localScale;
+			float scale[3] = { hutScale.x, hutScale.y, hutScale.z };
+			ImGui::InputFloat3((s + " scale").c_str(), scale);
+			hutScale.x = scale[0];
+			hutScale.y = scale[1];
+			hutScale.z = scale[2];
+			hutGameObjects[i]->GetTransform()->localScale = hutScale;
+
+			ImGui::Indent(20);
+
+			if (ImGui::CollapsingHeader((s + " walls").c_str()))
+			{
+				const std::shared_ptr<GameObject> hut = hutGameObjects[i];
+				if(hut != nullptr)
+				{
+					glm::vec3& wallsPos = hut->GetComponent<Hut>()->hutPtr->GetTransform()->localPosition;
+					float position1[3] = { wallsPos.x, wallsPos.y, wallsPos.z };
+					ImGui::InputFloat3((s + " wall position").c_str(), position1);
+					wallsPos.x = position1[0];
+					wallsPos.y = position1[1];
+					wallsPos.z = position1[2];
+				}
+			}
+			if (ImGui::CollapsingHeader((s + " roof").c_str()))
+			{
+				const std::shared_ptr<GameObject> hut = hutGameObjects[i];
+				if (hut != nullptr)
+				{
+					glm::vec3& roofPos = hut->GetComponent<Hut>()->roofPtr->GetTransform()->localPosition;
+					float position2[3] = { roofPos.x, roofPos.y, roofPos.z };
+					ImGui::InputFloat3((s + " roof position").c_str(), position2);
+					roofPos.x = position2[0];
+					roofPos.y = position2[1];
+					roofPos.z = position2[2];
+				}
+			}
+
+			ImGui::Indent(-20);
+			ImGui::Spacing();
+			ImGui::Spacing();
+		}
+	}
 }

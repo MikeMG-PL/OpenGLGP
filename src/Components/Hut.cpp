@@ -3,7 +3,6 @@
 #include "Components/Model.h"
 #include "Engine/GameInstance.h"
 #include "Engine/GameObject.h"
-#include "GLFW/glfw3.h"
 
 void Hut::Start()
 {
@@ -15,11 +14,12 @@ void Hut::Start()
 	GetParent()->GetTransform()->localPosition = position;
 	
 	auto roof = GameObject::CreateObject();
-	hut->GetTransform()->AddChild(roof->GetTransform());
 	GetParent()->GetTransform()->AddChild(hut->GetTransform());
+	GetParent()->GetTransform()->AddChild(roof->GetTransform());
 	
 	roof->AddComponent<Model>("../../res/models/hut/roof.dae");
-	roof->GetTransform()->localPosition = glm::vec3(0, 10, 0);
+	roof->GetTransform()->localPosition = glm::vec3(0, 1, 0);
+	roof->GetTransform()->localScale = { 0.1f, 0.1f, 0.1f };
 	roof->GetTransform()->localEulerAngles = { -90, 0, 0 };
 	
 	hutPtr = hut;

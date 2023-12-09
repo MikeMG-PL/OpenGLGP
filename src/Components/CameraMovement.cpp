@@ -47,6 +47,7 @@ void CameraMovement::SwitchInput()
 void CameraMovement::processInput()
 {
 	if (!cursorHidden)
+	
 		return;
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
