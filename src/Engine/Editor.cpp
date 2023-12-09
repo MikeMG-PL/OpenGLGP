@@ -175,7 +175,7 @@ void Editor::hutTransform(std::vector<std::shared_ptr<GameObject>>& hutGameObjec
 			if (ImGui::CollapsingHeader((s + " walls").c_str()))
 			{
 				const std::shared_ptr<GameObject> hut = hutGameObjects[i];
-				if(hut != nullptr)
+				if (hut != nullptr)
 				{
 					glm::vec3& wallsPos = hut->GetComponent<Hut>()->hutPtr->GetTransform()->localPosition;
 					float position1[3] = { wallsPos.x, wallsPos.y, wallsPos.z };
@@ -183,6 +183,20 @@ void Editor::hutTransform(std::vector<std::shared_ptr<GameObject>>& hutGameObjec
 					wallsPos.x = position1[0];
 					wallsPos.y = position1[1];
 					wallsPos.z = position1[2];
+
+					glm::vec3& wallsAngles = hut->GetComponent<Hut>()->hutPtr->GetTransform()->localEulerAngles;
+					float angles1[3] = { wallsAngles.x, wallsAngles.y, wallsAngles.z };
+					ImGui::InputFloat3((s + " wall rotation").c_str(), angles1);
+					wallsAngles.x = angles1[0];
+					wallsAngles.y = angles1[1];
+					wallsAngles.z = angles1[2];
+
+					glm::vec3& wallsScale = hut->GetComponent<Hut>()->hutPtr->GetTransform()->localScale;
+					float scale1[3] = { wallsScale.x, wallsScale.y, wallsScale.z };
+					ImGui::InputFloat3((s + " wall scale").c_str(), scale1);
+					wallsScale.x = scale1[0];
+					wallsScale.y = scale1[1];
+					wallsScale.z = scale1[2];
 				}
 			}
 			if (ImGui::CollapsingHeader((s + " roof").c_str()))
@@ -191,11 +205,25 @@ void Editor::hutTransform(std::vector<std::shared_ptr<GameObject>>& hutGameObjec
 				if (hut != nullptr)
 				{
 					glm::vec3& roofPos = hut->GetComponent<Hut>()->roofPtr->GetTransform()->localPosition;
-					float position2[3] = { roofPos.x, roofPos.y, roofPos.z };
-					ImGui::InputFloat3((s + " roof position").c_str(), position2);
-					roofPos.x = position2[0];
-					roofPos.y = position2[1];
-					roofPos.z = position2[2];
+					float position1[3] = { roofPos.x, roofPos.y, roofPos.z };
+					ImGui::InputFloat3((s + " roof position").c_str(), position1);
+					roofPos.x = position1[0];
+					roofPos.y = position1[1];
+					roofPos.z = position1[2];
+
+					glm::vec3& roofAngles = hut->GetComponent<Hut>()->roofPtr->GetTransform()->localEulerAngles;
+					float angles1[3] = { roofAngles.x, roofAngles.y, roofAngles.z };
+					ImGui::InputFloat3((s + " roof rotation").c_str(), angles1);
+					roofAngles.x = angles1[0];
+					roofAngles.y = angles1[1];
+					roofAngles.z = angles1[2];
+
+					glm::vec3& roofScale = hut->GetComponent<Hut>()->roofPtr->GetTransform()->localScale;
+					float scale1[3] = { roofScale.x, roofScale.y, roofScale.z };
+					ImGui::InputFloat3((s + " roof scale").c_str(), scale1);
+					roofScale.x = scale1[0];
+					roofScale.y = scale1[1];
+					roofScale.z = scale1[2];
 				}
 			}
 
