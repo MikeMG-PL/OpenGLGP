@@ -16,13 +16,18 @@ GameInstance& GameInstance::Get()
 
 void GameInstance::StartGame()
 {
-
 	return;
 }
 
 void GameInstance::RegisterObject(std::shared_ptr<GameObject> const& obj)
 {
 	allGameObjects.emplace_back(obj);
+
+	for(std::shared_ptr<GameObject> const& g : allGameObjects)
+	{
+		for (auto& c : g->GetComponents())
+			allComponents.emplace_back(c);
+	}
 }
 
 void GameInstance::UpdateGame()
@@ -30,9 +35,9 @@ void GameInstance::UpdateGame()
 
 	for (const auto& gameObjectPtr : allGameObjects)
 	{
-		auto allComponents = gameObjectPtr->GetComponents();
+		auto components = gameObjectPtr->GetComponents();
 
-		for (const auto& componentPtr : allComponents)
+		for (const auto& componentPtr : components)
 		{
 			componentPtr.get()->Update();
 		}

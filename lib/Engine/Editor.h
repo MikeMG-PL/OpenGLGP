@@ -18,9 +18,8 @@ public:
 	ImVec4 GetBackgroundColor() const;
 	ImVec4 GetDrawingColor() const;
 	bool wireframe;
-	int details = 16;
-	int previousDetails = -1;
-	float sunRotation = 0;
+	float cameraSpeed = 4.0;
+	float cameraSensitivity = 5.0f;
 
 private:
 

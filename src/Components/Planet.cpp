@@ -18,8 +18,8 @@ void Planet::Update()
 	Component::Update();
 	transform->localEulerAngles.y += rotationSpeed * GameInstance::Get().GetDeltaTime();
 
-	if(root)
-		transform->localEulerAngles.y = Editor::Get().sunRotation;
+	// if(root)
+	// 	transform->localEulerAngles.y = Editor::Get().sunRotation;
 }
 
 bool Planet::randomBool()

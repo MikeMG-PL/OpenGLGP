@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <vector>
+
+#include "Component.h"
 #include "glad/glad.h"
 
 class GameObject;
@@ -24,6 +26,7 @@ public:
 
 	// Public for convenience
 	std::vector<std::shared_ptr<GameObject>> allGameObjects;
+	std::vector<std::shared_ptr<Component>> allComponents;
 
 private:
 	

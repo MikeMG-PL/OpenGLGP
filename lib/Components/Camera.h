@@ -12,16 +12,17 @@ public:
 	glm::vec3 right;
 	glm::vec3 up;
 
-	// TODO: Eurler angles and rotating camera
-
 	void Update() override;
 	glm::vec3 GetWorldUp() const;
 	glm::vec3 GetWorldFront() const;
+	glm::vec3 GetUp() const;
+	glm::vec3 GetFront() const;
 
 	glm::mat4 view = glm::mat4(1.0f);
 
 private:
 
+	glm::vec3 eulerToDirectionVector(glm::vec3 euler);
 	void cameraLogic();
 	glm::vec3 worldUp = glm::vec3(0, 1, 0);
 	glm::vec3 worldFront = glm::vec3(0, 0, -1);

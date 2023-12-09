@@ -27,12 +27,11 @@ int main(int, char**)
 	camera->AddComponent<Camera>();
 	camera->AddComponent<CameraMovement>();
 	camera->GetTransform()->localPosition = glm::vec3(0, 3, 10);
-	camera->GetTransform()->localEulerAngles = glm::vec3(0, 90, 0);
 
 	/////////////////////////////////////////////////////////////////////////
 
 	auto hut = GameObject::CreateObject();
-	hut->AddComponent<Hut>();
+	hut->AddComponent<Hut>(glm::vec3(0,0,-3));
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

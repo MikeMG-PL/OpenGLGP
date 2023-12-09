@@ -34,7 +34,6 @@ void Editor::Update()
 	// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
 	// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
 	// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.k
-
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -50,10 +49,10 @@ void Editor::Update()
 		static float f = 0.0f;
 		static int counter = 0;
 
-		ImGui::Begin("Tool window");                          // Create a window
-		ImGui::ColorEdit3("Background color", (float*)&clearColor); // Edit 3 floats representing a color
-		ImGui::SliderInt("Generated details", &details, 2, 16);
-		ImGui::SliderFloat("Scene rotation", &sunRotation, -180, 180);
+		ImGui::Begin("Tool window");	// Create a window
+		ImGui::ColorEdit3("Background color", reinterpret_cast<float*>(&clearColor)); // Edit 3 floats representing a color
+		ImGui::SliderFloat("Camera sensitivity", &cameraSensitivity, 1, 10);
+		ImGui::SliderFloat("Movement speed", &cameraSpeed, 1, 10);
 		ImGui::Checkbox("Wireframe", &wireframe);
 
 		if (wireframe)
@@ -61,7 +60,10 @@ void Editor::Update()
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+		ImGui::Separator();
 		ImGui::Text("Frametime: %.3f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Spacing();
+		ImGui::TextColored(ImVec4(1, 1, 0, 1), "Press [SPACE] to toggle cursor.");
 		ImGui::End();
 	}
 
