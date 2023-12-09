@@ -139,7 +139,7 @@ ImVec4 Editor::GetDrawingColor() const
 	return drawingColor;
 }
 
-void Editor::hutTransform(std::vector<std::shared_ptr<GameObject>>& hutGameObjects, int hutsNumber)
+void Editor::hutTransform(const std::vector<std::shared_ptr<GameObject>>& hutGameObjects, int hutsNumber)
 {
 	for (int i = 0; i < hutsNumber; i++)
 	{
