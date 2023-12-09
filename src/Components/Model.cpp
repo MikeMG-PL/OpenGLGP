@@ -12,53 +12,16 @@
 
 #include "Engine/Editor.h"
 
-Model::Model(const std::string& path, bool drawOrbit, float r)
+Model::Model(const std::string& path, bool instanced)
 {
 	loadModel(path);
-
-	if (drawOrbit)
-		addOrbit(r);
-}
-
-Model::Model(float r)
-{
-	addOrbit(r);
-}
-
-Model::Model(float sphereRadius, int sectors, int stacks, const std::string& texturePath, GLenum drawType)
-{
-	this->sphereRadius = sphereRadius;
-	this->sectors = sectors;
-	this->stacks = stacks;
-	this->texturePath = texturePath;
-	this->drawType = drawType;
+	instanceMeshes = instanced;
 }
 
 void Model::Draw(Shader shader)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(shader);
-
-	// Generated sphere
-	// if(drawType == GL_TRIANGLE_STRIP && Editor::Get().details != Editor::Get().previousDetails)
-	// {
-	// 	// Delete existing data
-	// 	for (const auto& m : meshes)
-	// 	{
-	// 		glDeleteVertexArrays(1, &m.VAO);
-	// 		glDeleteBuffers(1, &m.VBO);
-	// 		glDeleteBuffers(1, &m.EBO);
-	// 	}
-	//
-	// 	for (const auto& t : texturesLoaded)
-	// 	{
-	// 		glDeleteTextures(1, &t.ID);
-	// 	}
-	// 	meshes.clear();
-	// 	texturesLoaded.clear();
-	// 	createSphere();
-	// 	Editor::Get().previousDetails = Editor::Get().details;
-	// }
 }
 
 void Model::addOrbit(float r)
@@ -93,7 +56,7 @@ void Model::addOrbit(float r)
 		vertices.emplace_back(vertex);
 	}
 	glEnd();
-	meshes.push_back(Mesh(vertices, {}, {}, GL_LINE_LOOP));
+	meshes.push_back(Mesh(vertices, {}, {}, instanceMeshes));
 }
 
 void Model::loadModel(const std::string& path)
@@ -181,7 +144,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
 
-	return Mesh(vertices, indices, textures);
+	return Mesh(vertices, indices, textures, instanceMeshes);
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)

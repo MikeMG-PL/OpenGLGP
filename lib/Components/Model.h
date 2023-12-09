@@ -15,9 +15,9 @@ class Model : public Component
 {
 public:
 
-	Model(const std::string& path, bool drawOrbit = false, float r = 0);
-	Model(float r = 1);
-    Model(float sphereRadius, int sectors, int stacks, const std::string& texturePath, GLenum drawType);
+    Model(const std::string& path, bool instanced = false);
+	// Model(float r = 1);
+	// Model(float sphereRadius, int sectors, int stacks, const std::string& texturePath, GLenum drawType);
     void Draw(Shader shader);
 
 private:
@@ -32,6 +32,9 @@ private:
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
     std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
         std::string typeName);
+
+    // Instancing
+    bool instanceMeshes;
 
     // Generating orbit
     void addOrbit(float r);

@@ -15,13 +15,13 @@ public:
 	// ~Mesh();
 
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices,
-		const std::vector<Texture>& textures, GLenum drawType = GL_TRIANGLES);
+		const std::vector<Texture>& textures, bool instanced);
 
 	void Draw(Shader shader);
 	unsigned int VAO, VBO, EBO;
 private:
 	GLenum drawType = GL_TRIANGLES;
-	
+	bool instanceMesh;
 	void setupMesh();
 	
 };
