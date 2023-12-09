@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "Components/Hut.h"
 #include "Engine/GameInstance.h"
+#include "Engine/GameObject.h"
 #include "Engine/Renderer.h"
 #include "imgui_impl/imgui_impl_glfw.h"
 #include "imgui_impl/imgui_impl_opengl3.h"
@@ -50,10 +51,14 @@ void Editor::Update()
 	{
 		std::shared_ptr<Hut> hut;
 		int hutNum = 0;
+		std::vector<std::shared_ptr<Transform>> huts;
 		for (auto& c : GameInstance::Get().allComponents)
 		{
 			if ((hut = std::dynamic_pointer_cast<Hut>(c)))
+			{
 				hutNum++;
+				huts.push_back(hut->GetParent()->GetTransform());
+			}
 		}
 
 		static float f = 0.0f;
@@ -88,7 +93,19 @@ void Editor::Update()
 		ImGui::Spacing();
 
 		for(int i=0; i < hutNum; i++)
-			ImGui::Text("found a hut");
+		{
+			// TODO: editing second hut modifies the first one lol
+			std::string s = "Hut" + std::to_string(i);
+			if(ImGui::CollapsingHeader(s.c_str()))
+			{
+				glm::vec3& hutPos = huts[i]->localPosition;
+				float position[3] = { hutPos.x, hutPos.y, hutPos.z };
+				ImGui::InputFloat3("Position", position);
+				hutPos.x = position[0];
+				hutPos.y = position[1];
+				hutPos.z = position[2];
+			}
+		}
 
 		ImGui::Spacing();
 		ImGui::Spacing();

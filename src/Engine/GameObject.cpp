@@ -1,6 +1,4 @@
 #include "Engine/GameObject.h"
-
-#include "Engine/GameObject.h"
 #include "Engine/Component.h"
 #include <memory>
 #include "Engine/GameInstance.h"

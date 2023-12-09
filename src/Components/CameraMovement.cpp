@@ -34,7 +34,6 @@ void CameraMovement::SwitchInput()
 	if (cursorHidden)
 	{
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		glfwSetCursorPos(window, Renderer::Get().GetWindowSize().x / 2.0f, Renderer::Get().GetWindowSize().y / 2.0f);
 		cursorHidden = false;
 	}
 	else
