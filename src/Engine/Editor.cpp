@@ -5,11 +5,13 @@
 
 #include "imgui.h"
 #include "Components/Hut.h"
+#include "Components/HutSpawner.h"
 #include "Engine/GameInstance.h"
 #include "Engine/GameObject.h"
 #include "Engine/Renderer.h"
 #include "imgui_impl/imgui_impl_glfw.h"
 #include "imgui_impl/imgui_impl_opengl3.h"
+#include "glm/gtx/matrix_decompose.hpp"
 
 Editor& Editor::Get()
 {
@@ -49,15 +51,17 @@ void Editor::Update()
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	if (showToolWindow)
 	{
-		huts.clear();
-		std::shared_ptr<Hut> hut;
-		int hutNum = 0;
 		for (auto& c : GameInstance::Get().allComponents)
 		{
-			if ((hut = std::dynamic_pointer_cast<Hut>(c)))
+			if ((hut = std::dynamic_pointer_cast<HutSpawner>(c)))
 			{
-				hutNum++;
-				huts.push_back(hut->GetParent());
+				hutsNum = hut->numInstances;
+				hutMatrices = hut->matrices;
+				wallMatrices = hut->wallMatrices;
+				roofMatrices = hut->roofMatrices;
+				initialRoofAngle = hut->initialRoofAngle;
+				initialRoofTranslation = hut->initialRoofTranslation;
+				initialRoofAngleAxis = hut->initialRoofAxisAngle;
 			}
 		}
 
@@ -86,7 +90,7 @@ void Editor::Update()
 		ImGui::Spacing();
 		ImGui::Spacing();
 		ImGui::Separator();
-		ImGui::Text("Hut instances: %i", hutNum);
+		ImGui::Text("Hut instances: %i", hutsNum);
 		ImGui::Separator();
 		ImGui::Spacing();
 		ImGui::Spacing();
@@ -94,7 +98,7 @@ void Editor::Update()
 		if (ImGui::CollapsingHeader("SCENE GRAPH FOR HUTS"))
 		{
 			ImGui::Indent(20);
-			hutTransform(huts, hutNum);
+			hutTransform();
 		}
 
 		ImGui::Spacing();
@@ -139,97 +143,106 @@ ImVec4 Editor::GetDrawingColor() const
 	return drawingColor;
 }
 
-void Editor::hutTransform(const std::vector<std::shared_ptr<GameObject>>& hutGameObjects, int hutsNumber)
+void Editor::hutTransform()
 {
-	for (int i = 0; i < hutsNumber; i++)
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::InputInt("Hut ID", &editID);
+	editID = glm::clamp(editID, 0, hutsNum);
+	std::string s = "Hut" + std::to_string(editID);
+	if (ImGui::CollapsingHeader(s.c_str()))
 	{
-		std::string s = "Hut" + std::to_string(i);
-		if (ImGui::CollapsingHeader(s.c_str()))
-		{
-			glm::vec3& hutPos = hutGameObjects[i]->GetTransform()->localPosition;
-			float position[3] = { hutPos.x, hutPos.y, hutPos.z };
-			ImGui::InputFloat3((s + " position").c_str(), position);
-			hutPos.x = position[0];
-			hutPos.y = position[1];
-			hutPos.z = position[2];
-			hutGameObjects[i]->GetTransform()->localPosition = hutPos;
+		glm::vec3 scale;
+		glm::quat rot;
+		glm::vec3 pos;
+		glm::vec3 skew;
+		glm::vec4 persp;
+		glm::decompose(wallMatrices[editID], scale, rot, pos, skew, persp);
 
-			glm::vec3& hutAngles = hutGameObjects[i]->GetTransform()->localEulerAngles;
-			float angles[3] = { hutAngles.x, hutAngles.y, hutAngles.z };
-			ImGui::InputFloat3((s + " rotation").c_str(), angles);
-			hutAngles.x = angles[0];
-			hutAngles.y = angles[1];
-			hutAngles.z = angles[2];
-			hutGameObjects[i]->GetTransform()->localEulerAngles = hutAngles;
+		glm::vec3& hutPos = pos;
+		float position[3] = { hutPos.x, hutPos.y, hutPos.z };
+		ImGui::InputFloat3((s + " position").c_str(), position);
+		hutPos.x = position[0];
+		hutPos.y = position[1];
+		hutPos.z = position[2];
 
-			glm::vec3& hutScale = hutGameObjects[i]->GetTransform()->localScale;
-			float scale[3] = { hutScale.x, hutScale.y, hutScale.z };
-			ImGui::InputFloat3((s + " scale").c_str(), scale);
-			hutScale.x = scale[0];
-			hutScale.y = scale[1];
-			hutScale.z = scale[2];
-			hutGameObjects[i]->GetTransform()->localScale = hutScale;
+		// Convert quaternion to Euler angles
+		glm::vec3 euler = glm::eulerAngles(rot);
+		float rotation[3] = { euler.x, euler.y, euler.z };
+		ImGui::InputFloat3((s + " rotation").c_str(), rotation);
+		euler.x = rotation[0];
+		euler.y = rotation[1];
+		euler.z = rotation[2];
+		rot = glm::quat(euler); // Convert back to quaternion
 
-			ImGui::Indent(20);
+		// Input for scale
+		float scaling[3] = { scale.x, scale.y, scale.z };
+		ImGui::InputFloat3((s + " scale").c_str(), scaling);
+		scale.x = scaling[0];
+		scale.y = scaling[1];
+		scale.z = scaling[2];
 
-			if (ImGui::CollapsingHeader((s + " walls").c_str()))
-			{
-				const std::shared_ptr<GameObject> hut = hutGameObjects[i];
-				if (hut != nullptr)
-				{
-					glm::vec3& wallsPos = hut->GetComponent<Hut>()->hutPtr->GetTransform()->localPosition;
-					float position1[3] = { wallsPos.x, wallsPos.y, wallsPos.z };
-					ImGui::InputFloat3((s + " wall position").c_str(), position1);
-					wallsPos.x = position1[0];
-					wallsPos.y = position1[1];
-					wallsPos.z = position1[2];
+		// Apply transformations
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(glm::mat4(1.0f), hutPos);
+		model = glm::rotate(model, glm::angle(rot), glm::axis(rot));
+		model = glm::scale(model, scale);
 
-					glm::vec3& wallsAngles = hut->GetComponent<Hut>()->hutPtr->GetTransform()->localEulerAngles;
-					float angles1[3] = { wallsAngles.x, wallsAngles.y, wallsAngles.z };
-					ImGui::InputFloat3((s + " wall rotation").c_str(), angles1);
-					wallsAngles.x = angles1[0];
-					wallsAngles.y = angles1[1];
-					wallsAngles.z = angles1[2];
+		wallMatrices[editID] = model;
 
-					glm::vec3& wallsScale = hut->GetComponent<Hut>()->hutPtr->GetTransform()->localScale;
-					float scale1[3] = { wallsScale.x, wallsScale.y, wallsScale.z };
-					ImGui::InputFloat3((s + " wall scale").c_str(), scale1);
-					wallsScale.x = scale1[0];
-					wallsScale.y = scale1[1];
-					wallsScale.z = scale1[2];
-				}
-			}
-			if (ImGui::CollapsingHeader((s + " roof").c_str()))
-			{
-				const std::shared_ptr<GameObject> hut = hutGameObjects[i];
-				if (hut != nullptr)
-				{
-					glm::vec3& roofPos = hut->GetComponent<Hut>()->roofPtr->GetTransform()->localPosition;
-					float position1[3] = { roofPos.x, roofPos.y, roofPos.z };
-					ImGui::InputFloat3((s + " roof position").c_str(), position1);
-					roofPos.x = position1[0];
-					roofPos.y = position1[1];
-					roofPos.z = position1[2];
+		model = glm::translate(model, initialRoofTranslation);
+		model = glm::rotate(model, glm::radians(initialRoofAngle), initialRoofAngleAxis);
 
-					glm::vec3& roofAngles = hut->GetComponent<Hut>()->roofPtr->GetTransform()->localEulerAngles;
-					float angles1[3] = { roofAngles.x, roofAngles.y, roofAngles.z };
-					ImGui::InputFloat3((s + " roof rotation").c_str(), angles1);
-					roofAngles.x = angles1[0];
-					roofAngles.y = angles1[1];
-					roofAngles.z = angles1[2];
+		roofMatrices[editID] = model;
 
-					glm::vec3& roofScale = hut->GetComponent<Hut>()->roofPtr->GetTransform()->localScale;
-					float scale1[3] = { roofScale.x, roofScale.y, roofScale.z };
-					ImGui::InputFloat3((s + " roof scale").c_str(), scale1);
-					roofScale.x = scale1[0];
-					roofScale.y = scale1[1];
-					roofScale.z = scale1[2];
-				}
-			}
 
-			ImGui::Indent(-20);
-			ImGui::Spacing();
-			ImGui::Spacing();
-		}
+		ImGui::Indent(20);
+
+		// if (ImGui::CollapsingHeader((s + " walls").c_str()))
+		// {
+		// 	glm::vec3 scale;
+		// 	glm::quat rot;
+		// 	glm::vec3 pos;
+		// 	glm::vec3 skew;
+		// 	glm::vec4 persp;
+		// 	glm::decompose(wallMatrices[editID], scale, rot, pos, skew, persp);
+		//
+		// 	glm::vec3& wallPos = pos; // Use a separate variable for wall position
+		// 	float wallPosition[3] = { wallPos.x, wallPos.y, wallPos.z };
+		// 	ImGui::InputFloat3((s + " wall position").c_str(), wallPosition);
+		// 	wallPos.x = wallPosition[0];
+		// 	wallPos.y = wallPosition[1];
+		// 	wallPos.z = wallPosition[2];
+		//
+		// 	// Convert quaternion to Euler angles
+		// 	glm::vec3 euler = glm::eulerAngles(rot);
+		// 	float rotation[3] = { euler.x, euler.y, euler.z };
+		// 	ImGui::InputFloat3((s + " wall rotation").c_str(), rotation);
+		// 	euler.x = rotation[0];
+		// 	euler.y = rotation[1];
+		// 	euler.z = rotation[2];
+		// 	rot = glm::quat(euler); // Convert back to quaternion
+		//
+		// 	// Input for scale
+		// 	float scaling[3] = { scale.x, scale.y, scale.z };
+		// 	ImGui::InputFloat3((s + " wall scale").c_str(), scaling);
+		// 	scale.x = scaling[0];
+		// 	scale.y = scaling[1];
+		// 	scale.z = scaling[2];
+		//
+		// 	// Apply transformations for walls only
+		// 	glm::mat4 wallModel = glm::mat4(1.0f);
+		// 	wallModel = glm::translate(glm::mat4(1.0f), wallPos);
+		// 	wallModel = glm::rotate(wallModel, glm::angle(rot), glm::axis(rot));
+		// 	wallModel = glm::scale(wallModel, scale);
+		//
+		// 	wallMatrices[editID] = wallModel;
+		// }
+
+
+		ImGui::Indent(-20);
+		ImGui::Spacing();
+		ImGui::Spacing();
 	}
+	// }
 }

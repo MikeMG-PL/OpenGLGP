@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <glm/glm.hpp>
+
 #include "Components/Hut.h"
 #include "Model.h"
 #include "Engine/Component.h"
@@ -13,6 +14,11 @@ public:
 	~HutSpawner() override;
 	void Start() override;
 	void Draw(Shader shader, int instanceID);
+
+	glm::vec3 initialRoofTranslation = {0, 10, 0};
+	glm::vec3 initialRoofAxisAngle = {1, 0, 0};
+	float initialRoofAngle = -90.0f;
+	glm::vec3 initialRoofScale = {};
 
 	int hutOffset = 3;
 	glm::mat4* matrices;

@@ -43,8 +43,8 @@ void HutSpawner::Start()
 			const int n = i * instancesInRow + j;
 
 			wallMatrices[n] = model;
-			model = glm::translate(model, {0, 10, 0});
-			model = glm::rotate(model, glm::radians(-90.0f), {1, 0, 0});
+			model = glm::translate(model, initialRoofTranslation);
+			model = glm::rotate(model, glm::radians(initialRoofAngle), initialRoofAxisAngle);
 			roofMatrices[n] = model;
 		}
 	}
@@ -76,11 +76,6 @@ void HutSpawner::Draw(Shader shader, int instanceID)
 		roofMeshes[i].SetupInstancing();
 		roofMeshes[i].Draw(shader, instanceID);
 	}
-
-	// for (int i = 0; i < numInstances; i++)
-	// {
-	// 	matrices[i] = glm::translate(matrices[i], { 0, 10, 0 });
-	// 	matrices[i] = glm::rotate(matrices[i], 90.0f, { 1, 0, 0 });
-	// }
+	// matrices = wallMatrices;
 }
 

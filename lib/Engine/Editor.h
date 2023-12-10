@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "Components/HutSpawner.h"
 #include "Components/Transform.h"
 
 class Editor
@@ -24,15 +25,23 @@ public:
 	bool wireframe;
 	float cameraSpeed = 8.0;
 	float cameraSensitivity = 6.0f;
+	int editID = 0;
 
 private:
 
-	std::vector<std::shared_ptr<GameObject>> huts;
 	bool showDemoWindow = false;
 	bool showToolWindow = true;
 	ImVec4 clearColor = ImVec4(0, 0, 0.06f, 1.00f);
 	ImVec4 drawingColor = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	void hutTransform(const std::vector<std::shared_ptr<GameObject>>& hutGameObjects, int hutsNumber);
+	glm::mat4* hutMatrices;
+	glm::mat4* wallMatrices;
+	glm::mat4* roofMatrices;
+	glm::vec3 initialRoofTranslation;
+	glm::vec3 initialRoofAngleAxis;
+	float initialRoofAngle;
+	std::shared_ptr<HutSpawner> hut;
+	int hutsNum;
+	void hutTransform();
 	
 	Editor() = default;
 
