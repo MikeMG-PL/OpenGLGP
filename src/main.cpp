@@ -1,6 +1,8 @@
 #define WINDOW_X 1600
 #define WINDOW_Y 900
 
+#include <memory>
+
 #include "GLFW/glfw3.h"
 #include "Helpers/GlobalInput.h"
 #include "Engine/Editor.h"
@@ -24,7 +26,7 @@ int main(int, char**)
 	auto camera = GameObject::CreateObject();
 	camera->AddComponent<Camera>();
 	camera->AddComponent<CameraMovement>();
-	camera->GetTransform()->localPosition = glm::vec3(0, 3, 10);
+	camera->GetTransform()->setLocalPosition({ 0, 3, 10 });
 
 	/////////////////////////////////////////////////////////////////////////
 

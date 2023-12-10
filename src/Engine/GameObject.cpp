@@ -3,8 +3,9 @@
 #include <memory>
 #include "Engine/GameInstance.h"
 
-GameObject::GameObject()
+GameObject::GameObject(bool allowUpdate)
 {
+	this->allowUpdate = allowUpdate;
 	transform = std::make_shared<Transform>();
 }
 
@@ -18,9 +19,9 @@ std::shared_ptr<Transform> GameObject::GetTransform()
 	return transform;
 }
 
-std::shared_ptr<GameObject> GameObject::CreateObject()
+std::shared_ptr<GameObject> GameObject::CreateObject(bool allowUpdate)
 {
-	auto gameObject = std::make_shared<GameObject>();
+	auto gameObject = std::make_shared<GameObject>(allowUpdate);
 	GameInstance::Get().RegisterObject(gameObject);
 	return gameObject;
 }

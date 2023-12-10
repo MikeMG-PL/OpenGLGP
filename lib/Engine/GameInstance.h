@@ -25,8 +25,9 @@ public:
 	float GetDeltaTime() const; // In seconds
 
 	// Public for convenience
-	std::vector<std::shared_ptr<GameObject>> allGameObjects;
-	std::vector<std::shared_ptr<Component>> allComponents;
+	std::vector<std::shared_ptr<GameObject>> allGameObjects = {};
+	std::vector<std::shared_ptr<Component>> allComponents = {};
+	std::vector<std::shared_ptr<GameObject>> test = {};
 
 private:
 	

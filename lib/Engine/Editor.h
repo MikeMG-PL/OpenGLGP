@@ -36,6 +36,7 @@ private:
 	glm::mat4* hutMatrices;
 	glm::mat4* wallMatrices;
 	glm::mat4* roofMatrices;
+	glm::mat4* rootMatrices;
 	glm::vec3 initialRoofTranslation;
 	glm::vec3 initialRoofAngleAxis;
 	float initialRoofAngle;

@@ -1,4 +1,7 @@
 #include "Engine/GameInstance.h"
+
+#include <memory>
+
 #include "Engine/Component.h"
 #include "Engine/GameObject.h"
 #include "GLFW/glfw3.h"
@@ -21,16 +24,18 @@ void GameInstance::StartGame()
 
 void GameInstance::RegisterObject(std::shared_ptr<GameObject> const& obj)
 {
-	allGameObjects.emplace_back(obj);
+	allGameObjects.push_back(obj);
 }
 
 void GameInstance::UpdateGame()
 {
-
 	for (const auto& gameObjectPtr : allGameObjects)
 	{
-		auto components = gameObjectPtr->GetComponents();
+		if(!gameObjectPtr->allowUpdate)
+			return;
 
+		auto components = gameObjectPtr->GetComponents();
+		
 		for (const auto& componentPtr : components)
 		{
 			componentPtr.get()->Update();
@@ -42,6 +47,9 @@ void GameInstance::UpdateGameFixed()
 {
 	for (const auto& gameObjectPtr : allGameObjects)
 	{
+		if (!gameObjectPtr->allowUpdate)
+			return;
+
 		for (const auto& componentPtr : gameObjectPtr->GetComponents())
 		{
 			componentPtr.get()->FixedUpdate();

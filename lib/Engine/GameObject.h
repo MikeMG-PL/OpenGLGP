@@ -12,8 +12,9 @@ class GameObject : public std::enable_shared_from_this<GameObject>
 {
 public:
 
-	GameObject();
-	static std::shared_ptr<GameObject> CreateObject();
+	bool allowUpdate;
+	GameObject(bool allowUpdate = true);
+	static std::shared_ptr<GameObject> CreateObject(bool allowUpdate = true);
 	std::vector<std::shared_ptr<Component>> GetComponents();
 
 	// Returns first occurence of a component of a <T> type (no safety for adding only one component yet)

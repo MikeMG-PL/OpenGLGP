@@ -58,6 +58,7 @@ void Editor::Update()
 				hutsNum = hut->numInstances;
 				hutMatrices = hut->matrices;
 				wallMatrices = hut->wallMatrices;
+				rootMatrices = hut->rootMatrices;
 				roofMatrices = hut->roofMatrices;
 				initialRoofAngle = hut->initialRoofAngle;
 				initialRoofTranslation = hut->initialRoofTranslation;
@@ -157,7 +158,7 @@ void Editor::hutTransform()
 		glm::vec3 pos;
 		glm::vec3 skew;
 		glm::vec4 persp;
-		glm::decompose(wallMatrices[editID], scale, rot, pos, skew, persp);
+		glm::decompose(rootMatrices[editID], scale, rot, pos, skew, persp);
 
 		glm::vec3& hutPos = pos;
 		float position[3] = { hutPos.x, hutPos.y, hutPos.z };
@@ -189,6 +190,7 @@ void Editor::hutTransform()
 		model = glm::scale(model, scale);
 
 		wallMatrices[editID] = model;
+		rootMatrices[editID] = model;
 
 		model = glm::translate(model, initialRoofTranslation);
 		model = glm::rotate(model, glm::radians(initialRoofAngle), initialRoofAngleAxis);

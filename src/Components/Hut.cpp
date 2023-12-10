@@ -16,18 +16,21 @@ void Hut::Start()
 	Component::Start();
 
 	auto hut = GameObject::CreateObject();
+	auto hutTransform = hut->GetTransform();
 	hut->AddComponent<Model>("../../res/models/hut/hut.dae", true, numHuts, matrices);
-	hut->GetTransform()->localScale = { 0.1f, 0.1f, 0.1f };
-	GetParent()->GetTransform()->localPosition = position;
-	
+	hutTransform->setLocalScale({ 0.1f, 0.1f, 0.1f });
+	GetParent()->GetTransform()->setLocalPosition(position);
+
 	auto roof = GameObject::CreateObject();
-	GetParent()->GetTransform()->AddChild(hut->GetTransform());
-	GetParent()->GetTransform()->AddChild(roof->GetTransform());
-	
+	auto roofTransform = roof->GetTransform();
+	GetParent()->GetTransform()->AddChild(hutTransform);
+	GetParent()->GetTransform()->AddChild(roofTransform);
+
 	roof->AddComponent<Model>("../../res/models/hut/roof.dae", true, numHuts, matrices);
-	roof->GetTransform()->localPosition = glm::vec3(0, 1, 0);
-	roof->GetTransform()->localScale = { 0.1f, 0.1f, 0.1f };
-	roof->GetTransform()->localEulerAngles = { -90, 0, 0 };
+	roofTransform->setLocalPosition(glm::vec3(0, 1, 0));
+	roofTransform->setLocalScale({ 0.1f, 0.1f, 0.1f });
+	roofTransform->setLocalEulerAngles({ -90, 0, 0 });
+
 	
 	hutPtr = hut;
 	roofPtr = roof;

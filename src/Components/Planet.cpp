@@ -16,7 +16,7 @@ void Planet::Start()
 void Planet::Update()
 {
 	Component::Update();
-	transform->localEulerAngles.y += rotationSpeed * GameInstance::Get().GetDeltaTime();
+	// transform->localEulerAngles.y += rotationSpeed * GameInstance::Get().GetDeltaTime();
 
 	// if(root)
 	// 	transform->localEulerAngles.y = Editor::Get().sunRotation;

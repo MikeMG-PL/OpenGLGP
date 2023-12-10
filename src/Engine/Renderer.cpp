@@ -104,7 +104,8 @@ void Renderer::Render(const Camera& camera)
 
 	for (const auto& gameObjectPtr : allGameObjects)
 	{
-		gameObjectPtr->GetTransform()->UpdateSelfAndChild();
+		if(gameObjectPtr->allowUpdate)
+			gameObjectPtr->GetTransform()->UpdateSelfAndChild();
 
 		if (const auto hutComp = gameObjectPtr->GetComponent<HutSpawner>())
 		{
@@ -118,7 +119,7 @@ void Renderer::Render(const Camera& camera)
 		{
 			if (!modelComponent->IsInstanced())
 			{
-				model = gameObjectPtr->GetTransform()->modelMatrix;
+				model = gameObjectPtr->GetTransform()->getModelMatrix();
 				shader.use();
 				shader.setMat4("projection", projection);
 				shader.setMat4("view", projection);

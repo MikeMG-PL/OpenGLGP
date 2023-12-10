@@ -4,6 +4,61 @@
 #include <glm/ext/matrix_transform.hpp>
 #include "glm/glm.hpp"
 
+const glm::mat4& Transform::getModelMatrix() const
+{
+	return modelMatrix;
+}
+
+void Transform::computeModelMatrix()
+{
+	modelMatrix = GetLocalModelMatrix();
+	isDirty = false;
+}
+
+void Transform::computeModelMatrix(const glm::mat4& parentGlobalModelMatrix)
+{
+	modelMatrix = parentGlobalModelMatrix * GetLocalModelMatrix();
+	isDirty = false;
+}
+
+void Transform::setLocalPosition(const glm::vec3& newPosition)
+{
+	localPosition = newPosition;
+	isDirty = true;
+}
+
+void Transform::setLocalEulerAngles(const glm::vec3& newEuler)
+{
+	localEulerAngles = newEuler;
+	isDirty = true;
+}
+
+void Transform::setLocalScale(const glm::vec3& newScale)
+{
+	localScale = newScale;
+	isDirty = true;
+}
+
+const glm::vec3& Transform::getLocalPosition() const
+{
+	return localPosition;
+}
+
+const glm::vec3& Transform::getLocalEulerAngles() const
+{
+	return localEulerAngles;
+}
+
+const glm::vec3& Transform::getLocalScale() const
+{
+	return localScale;
+}
+
+bool Transform::IsDirty() const
+{
+	return isDirty;
+}
+
 const std::vector<std::shared_ptr<Transform>>& Transform::GetChildren() const
 {
 	return children;
@@ -32,14 +87,28 @@ glm::mat4 Transform::GetLocalModelMatrix() const
 
 void Transform::UpdateSelfAndChild()
 {
-	if (parentNode)
-		modelMatrix = parentNode->modelMatrix * GetLocalModelMatrix();
-	else
-		modelMatrix = GetLocalModelMatrix();
+	if (IsDirty())
+	{
+		ForceUpdateSelfAndChild();
+		return;
+	}
 
-	for (auto& child : children)
+	for (auto&& child : children)
 	{
 		child->UpdateSelfAndChild();
+	}
+}
+
+void Transform::ForceUpdateSelfAndChild()
+{
+	if (parentNode)
+		computeModelMatrix(parentNode->getModelMatrix());
+	else
+		computeModelMatrix();
+
+	for (auto&& child : children)
+	{
+		child->ForceUpdateSelfAndChild();
 	}
 }
 
