@@ -29,7 +29,7 @@ int main(int, char**)
 	/////////////////////////////////////////////////////////////////////////
 
 	auto hutSpawner = GameObject::CreateObject();
-	hutSpawner->AddComponent<HutSpawner>(10);
+	hutSpawner->AddComponent<HutSpawner>(20);
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

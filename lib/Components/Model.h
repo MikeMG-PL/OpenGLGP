@@ -15,10 +15,12 @@ class Model : public Component
 {
 public:
 
-    Model(const std::string& path, bool instanced = false);
+    Model(const std::string& path, bool instanced = false, int numInstances = -1, glm::mat4* matrices = nullptr);
 	// Model(float r = 1);
 	// Model(float sphereRadius, int sectors, int stacks, const std::string& texturePath, GLenum drawType);
     void Draw(Shader shader);
+    bool IsInstanced() const;
+    std::vector<Mesh>& GetMeshes();
 
 private:
 
@@ -34,7 +36,8 @@ private:
         std::string typeName);
 
     // Instancing
-    bool instanceMeshes;
+    bool instanced;
+    glm::mat4* matrices;
 
     // Generating orbit
     void addOrbit(float r);
@@ -42,6 +45,9 @@ private:
     // Generating sphere
     void createSphere();
     Texture loadTextureForSphere();
+
+    // Used only with instancing
+    int numInstances;
 
     GLenum drawType = GL_TRIANGLES;
     int sectors;

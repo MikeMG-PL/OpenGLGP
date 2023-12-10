@@ -4,12 +4,19 @@
 #include "Engine/GameInstance.h"
 #include "Engine/GameObject.h"
 
+Hut::Hut(const glm::vec3& position, int numHuts, glm::mat4* matrices)
+{
+	this->position = position;
+	this->numHuts = numHuts;
+	this->matrices = matrices;
+}
+
 void Hut::Start()
 {
 	Component::Start();
 
 	auto hut = GameObject::CreateObject();
-	hut->AddComponent<Model>("../../res/models/hut/hut.dae");
+	hut->AddComponent<Model>("../../res/models/hut/hut.dae", true, numHuts, matrices);
 	hut->GetTransform()->localScale = { 0.1f, 0.1f, 0.1f };
 	GetParent()->GetTransform()->localPosition = position;
 	
@@ -17,7 +24,7 @@ void Hut::Start()
 	GetParent()->GetTransform()->AddChild(hut->GetTransform());
 	GetParent()->GetTransform()->AddChild(roof->GetTransform());
 	
-	roof->AddComponent<Model>("../../res/models/hut/roof.dae");
+	roof->AddComponent<Model>("../../res/models/hut/roof.dae", true, numHuts, matrices);
 	roof->GetTransform()->localPosition = glm::vec3(0, 1, 0);
 	roof->GetTransform()->localScale = { 0.1f, 0.1f, 0.1f };
 	roof->GetTransform()->localEulerAngles = { -90, 0, 0 };

@@ -12,6 +12,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "Components/Camera.h"
+#include "Components/HutSpawner.h"
 #include "Components/Model.h"
 #include "Helpers/stb_image.h"
 #include "Engine/Editor.h"
@@ -59,6 +60,7 @@ bool Renderer::Init(int X, int Y)
 	Editor::Get().Init();
 	glEnable(GL_DEPTH_TEST);
 	shader = Shader(0, vertexShaderPath, fragmentShaderPath);
+	instancedShader = Shader(1, instancedVertexShaderPath, fragmentShaderPath);
 	InitUniformLocs();
 	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowX) / static_cast<float>(windowY), 0.1f, 100.0f);
 
@@ -96,8 +98,6 @@ void Renderer::Render(const Camera& camera)
 	const ImVec4 drawingColor = Editor::Get().GetDrawingColor();
 	glUniform4f(customColorLoc, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
 
-	shader.use();
-
 	view = camera.view;
 
 	auto allGameObjects = GameInstance::Get().allGameObjects;
@@ -105,15 +105,31 @@ void Renderer::Render(const Camera& camera)
 	for (const auto& gameObjectPtr : allGameObjects)
 	{
 		gameObjectPtr->GetTransform()->UpdateSelfAndChild();
-		model = gameObjectPtr->GetTransform()->modelMatrix;
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
+		if (const auto hutComp = gameObjectPtr->GetComponent<HutSpawner>())
+		{
+			instancedShader.use();
+			instancedShader.setMat4("projection", projection);
+			instancedShader.setMat4("view", view);
+
+			hutComp->Draw(instancedShader, 0);
+		}
 		if (const auto modelComponent = gameObjectPtr->GetComponent<Model>())
-			modelComponent->Draw(shader);
-	}
+		{
+			if (!modelComponent->IsInstanced())
+			{
+				model = gameObjectPtr->GetTransform()->modelMatrix;
+				shader.use();
+				shader.setMat4("projection", projection);
+				shader.setMat4("view", projection);
+				modelComponent->Draw(shader);
+			}
+		}
 
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	}
+	//
+	// glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	// glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 }
 
 void Renderer::Cleanup()

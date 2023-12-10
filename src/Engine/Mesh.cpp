@@ -7,18 +7,20 @@
 #include "Engine/Texture.h"
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices,
-	const std::vector<Texture>& textures, bool instanced)
+	const std::vector<Texture>& textures, bool instanced, int numInstances, glm::mat4* matrices)
 {
 	this->vertices = vertices;
 	this->indices = indices;
 	this->textures = textures;
 	this->drawType = GL_TRIANGLES;
-	this->instanceMesh = instanced;
+	this->instanced = instanced;
+	this->numInstances = numInstances;
+	this->matrices = matrices;
 
 	setupMesh();
 }
 
-void Mesh::Draw(Shader shader)
+void Mesh::Draw(Shader shader, int instanceID)
 {
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
@@ -41,13 +43,43 @@ void Mesh::Draw(Shader shader)
 	glActiveTexture(GL_TEXTURE0);
 
 	// Draw mesh
-	glBindVertexArray(VAO);
+	if (!instanced)
+	{
+		glBindVertexArray(VAO);
 
-	if (indices.empty())
-		glDrawArrays(GL_LINE_LOOP, 0, static_cast<int>(vertices.size()));
+		if (indices.empty())
+			glDrawArrays(GL_LINE_LOOP, 0, static_cast<int>(vertices.size()));
+		else
+			glDrawElements(drawType, indices.size(), GL_UNSIGNED_INT, 0);
+	}
 	else
-		glDrawElements(drawType, indices.size(), GL_UNSIGNED_INT, 0);
+	{
+		// shader.setMat4("instanceMatrix", matrices[instanceID]);
+		glBindVertexArray(VAO);
+		glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
+	}
 
+	glBindVertexArray(0);
+}
+
+void Mesh::SetupInstancing()
+{
+	const GLsizei vec4Size = sizeof(glm::vec4);
+	glBindVertexArray(VAO);
+	// Vertex attributes
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(vec4Size));
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
 	glBindVertexArray(0);
 }
 

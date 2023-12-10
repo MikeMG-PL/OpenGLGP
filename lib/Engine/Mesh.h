@@ -15,13 +15,21 @@ public:
 	// ~Mesh();
 
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices,
-		const std::vector<Texture>& textures, bool instanced);
+		const std::vector<Texture>& textures, bool instanced = false, int numInstances = -1, glm::mat4* matrices = nullptr);
 
-	void Draw(Shader shader);
+	void Draw(Shader shader, int instanceID = -1);
+	void SetupInstancing();
 	unsigned int VAO, VBO, EBO;
+
+
 private:
 	GLenum drawType = GL_TRIANGLES;
-	bool instanceMesh;
+
+	// numInstances is only used with instancing enabled
+	int numInstances;
+	bool instanced;
+	glm::mat4* matrices;
+
 	void setupMesh();
 	
 };

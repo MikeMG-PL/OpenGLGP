@@ -32,10 +32,12 @@ public:
 private:
 
 	Shader shader;
+	Shader instancedShader;
 	int windowX = 0, windowY = 0;
 	GLFWwindow* window;
 	const char* glsl_version;
 	const GLchar* vertexShaderPath = "../../lib/Shaders/vertexShader.vert";
+	const GLchar* instancedVertexShaderPath = "../../lib/Shaders/instancedVertexShader.vert";
 	const GLchar* fragmentShaderPath = "../../lib/Shaders/fragmentShader.frag";
 
 	/// Before decoupling to proper components ///

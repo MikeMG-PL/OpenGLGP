@@ -12,16 +12,28 @@
 
 #include "Engine/Editor.h"
 
-Model::Model(const std::string& path, bool instanced)
+Model::Model(const std::string& path, bool instanced, int numInstances, glm::mat4* matrices)
 {
+	this->instanced = instanced;
+	this->numInstances = numInstances;
+	this->matrices = matrices;
 	loadModel(path);
-	instanceMeshes = instanced;
 }
 
 void Model::Draw(Shader shader)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(shader);
+}
+
+bool Model::IsInstanced() const
+{
+	return instanced;
+}
+
+std::vector<Mesh>& Model::GetMeshes()
+{
+	return meshes;
 }
 
 void Model::addOrbit(float r)
@@ -56,7 +68,7 @@ void Model::addOrbit(float r)
 		vertices.emplace_back(vertex);
 	}
 	glEnd();
-	meshes.push_back(Mesh(vertices, {}, {}, instanceMeshes));
+	meshes.push_back(Mesh(vertices, {}, {}, instanced));
 }
 
 void Model::loadModel(const std::string& path)
@@ -144,7 +156,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
 
-	return Mesh(vertices, indices, textures, instanceMeshes);
+	return Mesh(vertices, indices, textures, instanced, numInstances, matrices);
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
