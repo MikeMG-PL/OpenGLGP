@@ -54,7 +54,7 @@ void Mesh::Draw(Shader shader, int instanceID)
 	}
 	else
 	{
-		// shader.setMat4("instanceMatrix", matrices[instanceID]);
+		shader.setMat4("instanceMatrix", matrices[instanceID]);
 		glBindVertexArray(VAO);
 		glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, numInstances);
 	}

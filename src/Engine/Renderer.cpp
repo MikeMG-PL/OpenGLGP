@@ -62,7 +62,7 @@ bool Renderer::Init(int X, int Y)
 	shader = Shader(0, vertexShaderPath, fragmentShaderPath);
 	instancedShader = Shader(1, instancedVertexShaderPath, fragmentShaderPath);
 	InitUniformLocs();
-	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowX) / static_cast<float>(windowY), 0.1f, 100.0f);
+	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowX) / static_cast<float>(windowY), 0.1f, 1000.0f);
 
 	return true;
 }
@@ -112,7 +112,7 @@ void Renderer::Render(const Camera& camera)
 			instancedShader.setMat4("projection", projection);
 			instancedShader.setMat4("view", view);
 
-			hutComp->Draw(instancedShader, 0);
+			hutComp->Draw(instancedShader, 0); // this 0 is for historical reasons
 		}
 		if (const auto modelComponent = gameObjectPtr->GetComponent<Model>())
 		{
@@ -122,14 +122,12 @@ void Renderer::Render(const Camera& camera)
 				shader.use();
 				shader.setMat4("projection", projection);
 				shader.setMat4("view", projection);
+				shader.setMat4("model", model);
 				modelComponent->Draw(shader);
 			}
 		}
 
 	}
-	//
-	// glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	// glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 }
 
 void Renderer::Cleanup()

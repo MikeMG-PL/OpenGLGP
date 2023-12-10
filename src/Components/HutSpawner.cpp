@@ -13,11 +13,15 @@ HutSpawner::HutSpawner(int instancesInRow)
 	this->instancesInRow = instancesInRow;
 	this->numInstances = instancesInRow * instancesInRow;
 	matrices = new glm::mat4[numInstances];
+	roofMatrices = new glm::mat4[numInstances];
+	wallMatrices = new glm::mat4[numInstances];
 }
 
 HutSpawner::~HutSpawner()
 {
 	delete[] matrices;
+	delete[] wallMatrices;
+	delete[] roofMatrices;
 }
 
 void HutSpawner::Start()
@@ -37,33 +41,46 @@ void HutSpawner::Start()
 			model = glm::rotate(model, 0.0f, rot);
 
 			const int n = i * instancesInRow + j;
-			matrices[n] = model;
+
+			wallMatrices[n] = model;
+			model = glm::translate(model, {0, 10, 0});
+			model = glm::rotate(model, glm::radians(-90.0f), {1, 0, 0});
+			roofMatrices[n] = model;
 		}
 	}
 
-	GLuint buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), &matrices[0], GL_STATIC_DRAW);
+	matrices = wallMatrices;
 
 	auto hut = GameObject::CreateObject();
 	hutTemplate = hut->AddComponent<Hut>(pos, numInstances, matrices);
 
 	hutMeshes = hutTemplate->hutPtr->GetComponent<Model>()->GetMeshes();
-	roofMeshes = hutTemplate->hutPtr->GetComponent<Model>()->GetMeshes();
+	roofMeshes = hutTemplate->roofPtr->GetComponent<Model>()->GetMeshes();
 
-	for (int i = 0; i < hutMeshes.size(); i++)
-	{
-		hutMeshes[i].SetupInstancing();
-		roofMeshes[i].SetupInstancing();
-	}
+	GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), &matrices[0], GL_STATIC_DRAW);
 }
 
 void HutSpawner::Draw(Shader shader, int instanceID)
 {
 	for (int i = 0; i < hutMeshes.size(); i++)
 	{
+		matrices = wallMatrices;
+		glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), &matrices[0], GL_STATIC_DRAW);
+		hutMeshes[i].SetupInstancing();
 		hutMeshes[i].Draw(shader, instanceID);
+		matrices = roofMatrices;
+		glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), &matrices[0], GL_STATIC_DRAW);
+		roofMeshes[i].SetupInstancing();
 		roofMeshes[i].Draw(shader, instanceID);
 	}
+
+	// for (int i = 0; i < numInstances; i++)
+	// {
+	// 	matrices[i] = glm::translate(matrices[i], { 0, 10, 0 });
+	// 	matrices[i] = glm::rotate(matrices[i], 90.0f, { 1, 0, 0 });
+	// }
 }
+
