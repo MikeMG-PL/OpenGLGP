@@ -122,7 +122,7 @@ void Renderer::Render(const Camera& camera)
 				model = gameObjectPtr->GetTransform()->modelMatrix;
 				shader.use();
 				shader.setMat4("projection", projection);
-				shader.setMat4("view", projection);
+				shader.setMat4("view", view);
 				shader.setMat4("model", model);
 				modelComponent->Draw(shader);
 			}

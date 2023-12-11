@@ -28,10 +28,14 @@ int main(int, char**)
 	camera->AddComponent<CameraMovement>();
 	camera->GetTransform()->localPosition = { 0, 3, 10 };
 
+	auto ground = GameObject::CreateObject();
+	ground->AddComponent<Model>("../../res/models/hut/hut.dae");
+	ground->GetTransform()->localScale = { 10, 10, 10 };
+
 	/////////////////////////////////////////////////////////////////////////
 
 	auto hutSpawner = GameObject::CreateObject();
-	hutSpawner->AddComponent<HutSpawner>(200);
+	hutSpawner->AddComponent<HutSpawner>(20);
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())
