@@ -48,6 +48,8 @@ void Editor::Update()
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
 
+	std::shared_ptr<HutSpawner> hcopy;
+
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 	if (showToolWindow)
 	{
@@ -63,8 +65,11 @@ void Editor::Update()
 				initialRoofAngle = hut->initialRoofAngle;
 				initialRoofTranslation = hut->initialRoofTranslation;
 				initialRoofAngleAxis = hut->initialRoofAxisAngle;
+				hcopy = std::dynamic_pointer_cast<HutSpawner>(c);
 			}
 		}
+
+		hut = hcopy;
 
 		static float f = 0.0f;
 		static int counter = 0;
@@ -153,14 +158,9 @@ void Editor::hutTransform()
 	std::string s = "Hut" + std::to_string(editID);
 	if (ImGui::CollapsingHeader(s.c_str()))
 	{
-		glm::vec3 scale;
-		glm::quat rot;
-		glm::vec3 pos;
-		glm::vec3 skew;
-		glm::vec4 persp;
-		glm::decompose(rootMatrices[editID], scale, rot, pos, skew, persp);
+		auto transform = hut->rootGameObjects[editID]->GetTransform();
 
-		glm::vec3& hutPos = pos;
+		glm::vec3& hutPos = transform->localPosition;
 		float position[3] = { hutPos.x, hutPos.y, hutPos.z };
 		ImGui::InputFloat3((s + " position").c_str(), position);
 		hutPos.x = position[0];
@@ -168,78 +168,84 @@ void Editor::hutTransform()
 		hutPos.z = position[2];
 
 		// Convert quaternion to Euler angles
-		glm::vec3 euler = glm::eulerAngles(rot);
+		glm::vec3& euler = transform->localEulerAngles;
 		float rotation[3] = { euler.x, euler.y, euler.z };
 		ImGui::InputFloat3((s + " rotation").c_str(), rotation);
 		euler.x = rotation[0];
 		euler.y = rotation[1];
 		euler.z = rotation[2];
-		rot = glm::quat(euler); // Convert back to quaternion
 
 		// Input for scale
+		glm::vec3& scale = transform->localScale;
 		float scaling[3] = { scale.x, scale.y, scale.z };
 		ImGui::InputFloat3((s + " scale").c_str(), scaling);
 		scale.x = scaling[0];
 		scale.y = scaling[1];
 		scale.z = scaling[2];
 
-		// Apply transformations
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(glm::mat4(1.0f), hutPos);
-		model = glm::rotate(model, glm::angle(rot), glm::axis(rot));
-		model = glm::scale(model, scale);
-
-		wallMatrices[editID] = model;
-		rootMatrices[editID] = model;
-
-		model = glm::translate(model, initialRoofTranslation);
-		model = glm::rotate(model, glm::radians(initialRoofAngle), initialRoofAngleAxis);
-
-		roofMatrices[editID] = model;
-
+		hut->UpdateTransforms(editID);
 
 		ImGui::Indent(20);
 
-		// if (ImGui::CollapsingHeader((s + " walls").c_str()))
-		// {
-		// 	glm::vec3 scale;
-		// 	glm::quat rot;
-		// 	glm::vec3 pos;
-		// 	glm::vec3 skew;
-		// 	glm::vec4 persp;
-		// 	glm::decompose(wallMatrices[editID], scale, rot, pos, skew, persp);
-		//
-		// 	glm::vec3& wallPos = pos; // Use a separate variable for wall position
-		// 	float wallPosition[3] = { wallPos.x, wallPos.y, wallPos.z };
-		// 	ImGui::InputFloat3((s + " wall position").c_str(), wallPosition);
-		// 	wallPos.x = wallPosition[0];
-		// 	wallPos.y = wallPosition[1];
-		// 	wallPos.z = wallPosition[2];
-		//
-		// 	// Convert quaternion to Euler angles
-		// 	glm::vec3 euler = glm::eulerAngles(rot);
-		// 	float rotation[3] = { euler.x, euler.y, euler.z };
-		// 	ImGui::InputFloat3((s + " wall rotation").c_str(), rotation);
-		// 	euler.x = rotation[0];
-		// 	euler.y = rotation[1];
-		// 	euler.z = rotation[2];
-		// 	rot = glm::quat(euler); // Convert back to quaternion
-		//
-		// 	// Input for scale
-		// 	float scaling[3] = { scale.x, scale.y, scale.z };
-		// 	ImGui::InputFloat3((s + " wall scale").c_str(), scaling);
-		// 	scale.x = scaling[0];
-		// 	scale.y = scaling[1];
-		// 	scale.z = scaling[2];
-		//
-		// 	// Apply transformations for walls only
-		// 	glm::mat4 wallModel = glm::mat4(1.0f);
-		// 	wallModel = glm::translate(glm::mat4(1.0f), wallPos);
-		// 	wallModel = glm::rotate(wallModel, glm::angle(rot), glm::axis(rot));
-		// 	wallModel = glm::scale(wallModel, scale);
-		//
-		// 	wallMatrices[editID] = wallModel;
-		// }
+		if (ImGui::CollapsingHeader((s + " walls").c_str()))
+		{
+			auto transform = hut->rootGameObjects[editID]->GetTransform()->GetChildren()[0];
+
+			glm::vec3& hutPos = transform->localPosition;
+			float position[3] = { hutPos.x, hutPos.y, hutPos.z };
+			ImGui::InputFloat3((s + "walls position").c_str(), position);
+			hutPos.x = position[0];
+			hutPos.y = position[1];
+			hutPos.z = position[2];
+
+			// Convert quaternion to Euler angles
+			glm::vec3& euler = transform->localEulerAngles;
+			float rotation[3] = { euler.x, euler.y, euler.z };
+			ImGui::InputFloat3((s + "walls rotation").c_str(), rotation);
+			euler.x = rotation[0];
+			euler.y = rotation[1];
+			euler.z = rotation[2];
+
+			// Input for scale
+			glm::vec3& scale = transform->localScale;
+			float scaling[3] = { scale.x, scale.y, scale.z };
+			ImGui::InputFloat3((s + "walls scale").c_str(), scaling);
+			scale.x = scaling[0];
+			scale.y = scaling[1];
+			scale.z = scaling[2];
+
+			hut->UpdateTransforms(editID);
+		}
+
+		if (ImGui::CollapsingHeader((s + " roofs").c_str()))
+		{
+			auto transform = hut->rootGameObjects[editID]->GetTransform()->GetChildren()[1];
+
+			glm::vec3& hutPos = transform->localPosition;
+			float position[3] = { hutPos.x, hutPos.y, hutPos.z };
+			ImGui::InputFloat3((s + "roofs position").c_str(), position);
+			hutPos.x = position[0];
+			hutPos.y = position[1];
+			hutPos.z = position[2];
+
+			// Convert quaternion to Euler angles
+			glm::vec3& euler = transform->localEulerAngles;
+			float rotation[3] = { euler.x, euler.y, euler.z };
+			ImGui::InputFloat3((s + "roofs rotation").c_str(), rotation);
+			euler.x = rotation[0];
+			euler.y = rotation[1];
+			euler.z = rotation[2];
+
+			// Input for scale
+			glm::vec3& scale = transform->localScale;
+			float scaling[3] = { scale.x, scale.y, scale.z };
+			ImGui::InputFloat3((s + "roofs scale").c_str(), scaling);
+			scale.x = scaling[0];
+			scale.y = scaling[1];
+			scale.z = scaling[2];
+
+			hut->UpdateTransforms(editID);
+		}
 
 
 		ImGui::Indent(-20);

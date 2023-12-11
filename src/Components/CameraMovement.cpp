@@ -56,18 +56,17 @@ void CameraMovement::processInput()
 		cameraSpeed = baseCameraSpeed;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cameraTransform->setLocalPosition(cameraTransform->getLocalPosition() + cameraSpeed * camera->GetFront() * GameInstance::Get().GetDeltaTime());
+		cameraTransform->localPosition += cameraSpeed * camera->GetFront() * GameInstance::Get().GetDeltaTime();
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cameraTransform->setLocalPosition(cameraTransform->getLocalPosition() - cameraSpeed * camera->GetFront() * GameInstance::Get().GetDeltaTime());
+		cameraTransform->localPosition -= cameraSpeed * camera->GetFront() * GameInstance::Get().GetDeltaTime();
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraTransform->setLocalPosition(cameraTransform->getLocalPosition() - glm::normalize(glm::cross(camera->GetFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime());
+		cameraTransform->localPosition -= glm::normalize(glm::cross(camera->GetFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraTransform->setLocalPosition(cameraTransform->getLocalPosition() + glm::normalize(glm::cross(camera->GetFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime());
+		cameraTransform->localPosition += glm::normalize(glm::cross(camera->GetFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		cameraTransform->setLocalPosition(cameraTransform->getLocalPosition() - cameraSpeed * camera->GetWorldUp() * GameInstance::Get().GetDeltaTime());
+		cameraTransform->localPosition -= cameraSpeed * camera->GetWorldUp() * GameInstance::Get().GetDeltaTime();
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		cameraTransform->setLocalPosition(cameraTransform->getLocalPosition() + cameraSpeed * camera->GetWorldUp() * GameInstance::Get().GetDeltaTime());
-
+		cameraTransform->localPosition += cameraSpeed * camera->GetWorldUp() * GameInstance::Get().GetDeltaTime();
 
 	// Get the current cursor position
 	double currentMouseX, currentMouseY;
@@ -86,17 +85,10 @@ void CameraMovement::processInput()
 	deltaY *= mouseSensitivity;
 
 	// Update camera rotation
-	cameraTransform->setLocalEulerAngles(glm::vec3(
-		cameraTransform->getLocalEulerAngles().x - static_cast<float>(deltaY) * GameInstance::Get().GetDeltaTime(),
-		cameraTransform->getLocalEulerAngles().y + static_cast<float>(deltaX) * GameInstance::Get().GetDeltaTime(),
-		cameraTransform->getLocalEulerAngles().z
-	));
+	cameraTransform->localEulerAngles.y += static_cast<float>(deltaX) * GameInstance::Get().GetDeltaTime();
+	cameraTransform->localEulerAngles.x -= static_cast<float>(deltaY) * GameInstance::Get().GetDeltaTime();
 
 	// Clamp camera pitch to prevent flip over
-	cameraTransform->setLocalEulerAngles(glm::vec3(
-		glm::clamp(cameraTransform->getLocalEulerAngles().x, -89.0f, 89.0f),
-		cameraTransform->getLocalEulerAngles().y,
-		cameraTransform->getLocalEulerAngles().z
-	));
+	cameraTransform->localEulerAngles.x = glm::clamp(cameraTransform->localEulerAngles.x, -89.0f, 89.0f);
 
 }

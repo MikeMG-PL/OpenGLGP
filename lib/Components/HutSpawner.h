@@ -15,7 +15,7 @@ public:
 	~HutSpawner() override;
 	void Start() override;
 	void Draw(Shader shader, int instanceID);
-	void UpdateTransforms();
+	void UpdateTransforms(int n);
 
 	glm::vec3 initialRoofTranslation = {0, 10, 0};
 	glm::vec3 initialRoofAxisAngle = {1, 0, 0};

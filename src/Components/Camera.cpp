@@ -29,12 +29,12 @@ glm::vec3 Camera::GetFront() const
 
 void Camera::cameraLogic()
 {
-	direction = eulerToDirectionVector(parent->GetTransform()->getLocalEulerAngles());
-	target = parent->GetTransform()->getLocalPosition() + direction;
+	direction = eulerToDirectionVector(parent->GetTransform()->localEulerAngles);
+	target = parent->GetTransform()->localPosition + direction;
 	right = glm::normalize(glm::cross(worldUp, direction));
 	up = glm::cross(direction, right);
 
-	view = glm::lookAt(parent->GetTransform()->getLocalPosition(), target, up);
+	view = glm::lookAt(parent->GetTransform()->localPosition, target, up);
 }
 
 glm::vec3 Camera::eulerToDirectionVector(glm::vec3 euler)

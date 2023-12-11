@@ -26,7 +26,7 @@ int main(int, char**)
 	auto camera = GameObject::CreateObject();
 	camera->AddComponent<Camera>();
 	camera->AddComponent<CameraMovement>();
-	camera->GetTransform()->setLocalPosition({ 0, 3, 10 });
+	camera->GetTransform()->localPosition = { 0, 3, 10 };
 
 	/////////////////////////////////////////////////////////////////////////
 

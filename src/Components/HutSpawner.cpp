@@ -62,52 +62,28 @@ void HutSpawner::Start()
 
 			rootMatrices[n] = model;
 			glm::decompose(rootMatrices[n], scl, quat, trans, skew, persp);
-			root->GetTransform()->setLocalPosition(trans);
-			root->GetTransform()->setLocalEulerAngles(glm::eulerAngles(quat));
-			root->GetTransform()->setLocalScale(scl);
 
 			root->GetTransform()->AddChild(walls->GetTransform());
 			root->GetTransform()->AddChild(roof->GetTransform());
 
-			root->GetTransform()->ForceUpdateSelfAndChild();
+			root->GetTransform()->localPosition = trans;
+			root->GetTransform()->localEulerAngles = glm::eulerAngles(quat);
+			root->GetTransform()->localScale = scl;
 
-			roof->GetTransform()->setLocalPosition(initialRoofTranslation);
-			roof->GetTransform()->setLocalEulerAngles({-90.0f, 0, 0});
+			roof->GetTransform()->localPosition = initialRoofTranslation;
+			roof->GetTransform()->localEulerAngles = { -90.0f, 0, 0 };
 
-			root->GetTransform()->ForceUpdateSelfAndChild();
 
-			std::cout << root->GetTransform()->getLocalPosition().x << std::endl;
 
-			wallMatrices[n] = model;
-
-			// model = glm::mat4(1.0f);
-			// model = glm::translate(model, roof->GetTransform()->getLocalPosition());
-			// model = glm::scale(model, roof->GetTransform()->getLocalScale());
-			
-			roofMatrices[n] = model;
-
-			// glm::decompose(rootMatrices[n], scl, quat, trans, skew, persp);
-
-			// auto root = GameObject::CreateObject(false);
-			// auto walls = GameObject::CreateObject(false);
-			// auto roof = GameObject::CreateObject(false);
-			// root->GetTransform()->AddChild(walls->GetTransform());
-			// root->GetTransform()->AddChild(roof->GetTransform());
-			// root->GetTransform()->setLocalPosition(pos);
-			// root->GetTransform()->setLocalScale({ 0.1f, 0.1f, 0.1f });
-			//
-			// roof->GetTransform()->setLocalPosition(initialRoofTranslation);
-			// roof->GetTransform()->setLocalEulerAngles({ -90.0f, 0, 0 });
-			//
 			rootGameObjects.emplace_back(root);
-			//
-			// rootMatrices[n] = root->GetTransform()->getModelMatrix();
-			// wallMatrices[n] = root->GetTransform()->GetChildren()[0]->getModelMatrix();
-			// roofMatrices[n] = root->GetTransform()->GetChildren()[1]->getModelMatrix();
 		}
 	}
 
-	//UpdateTransforms();
+	for (int n = 0; n < rootGameObjects.size(); n++)
+	{
+		UpdateTransforms(n);
+	}
+
 	matrices = wallMatrices;
 
 	auto hut = GameObject::CreateObject();
@@ -137,12 +113,24 @@ void HutSpawner::Draw(Shader shader, int instanceID)
 	}
 }
 
-void HutSpawner::UpdateTransforms()
+void HutSpawner::UpdateTransforms(int n)
 {
-	for (int i = 0; i < rootGameObjects.size(); i++)
-	{
-		rootMatrices[i] = rootGameObjects[i]->GetTransform()->getModelMatrix();
-		wallMatrices[i] = rootGameObjects[i]->GetTransform()->GetChildren()[0]->getModelMatrix();
-		roofMatrices[i] = rootGameObjects[i]->GetTransform()->GetChildren()[1]->getModelMatrix();
-	}
+	glm::mat4 model = glm::mat4(1.0f);
+
+	auto root = rootGameObjects[n];
+	auto walls = rootGameObjects[n]->GetTransform()->GetChildren()[0];
+	auto roof = rootGameObjects[n]->GetTransform()->GetChildren()[1];
+
+	model = rootGameObjects[n]->GetTransform()->modelMatrix;
+	rootMatrices[n] = model;
+	root->GetTransform()->UpdateSelfAndChild();
+
+	model = root->GetTransform()->modelMatrix * walls->GetLocalModelMatrix(); // modelMatrix
+	wallMatrices[n] = model;
+	root->GetTransform()->UpdateSelfAndChild();
+
+	model = root->GetTransform()->modelMatrix * roof->GetLocalModelMatrix(); // modelMatrix
+	roofMatrices[n] = model;
+	root->GetTransform()->UpdateSelfAndChild();
+
 }

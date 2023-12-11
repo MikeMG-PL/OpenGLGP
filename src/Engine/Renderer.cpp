@@ -119,7 +119,7 @@ void Renderer::Render(const Camera& camera)
 		{
 			if (!modelComponent->IsInstanced())
 			{
-				model = gameObjectPtr->GetTransform()->getModelMatrix();
+				model = gameObjectPtr->GetTransform()->modelMatrix;
 				shader.use();
 				shader.setMat4("projection", projection);
 				shader.setMat4("view", projection);
