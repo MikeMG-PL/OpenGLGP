@@ -20,6 +20,15 @@ Model::Model(const std::string& path, bool instanced, int numInstances, glm::mat
 	loadModel(path);
 }
 
+Model::Model(const std::string& path, glm::vec2 tiling)
+{
+	this->tiling = tiling;
+	this->instanced = false;
+	this->numInstances = -1;
+	this->matrices = nullptr;
+	loadModel(path);
+}
+
 void Model::Draw(Shader shader)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
@@ -126,8 +135,8 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		if (mesh->mTextureCoords[0]) // Check if the mesh contains any texture coordinates
 		{
 			glm::vec2 vec;
-			vec.x = mesh->mTextureCoords[0][i].x;
-			vec.y = mesh->mTextureCoords[0][i].y;
+			vec.x = mesh->mTextureCoords[0][i].x * tiling.x;
+			vec.y = mesh->mTextureCoords[0][i].y * tiling.y;
 			vertex.texCoords = vec;
 		}
 		else

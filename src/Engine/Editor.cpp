@@ -77,7 +77,7 @@ void Editor::Update()
 		ImGui::Begin("Tool window");	// Create a window
 		ImGui::ColorEdit3("Background color", reinterpret_cast<float*>(&clearColor)); // Edit 3 floats representing a color
 		ImGui::SliderFloat("Camera sensitivity", &cameraSensitivity, 1, 10);
-		ImGui::SliderFloat("Movement speed", &cameraSpeed, 1, 10);
+		ImGui::SliderFloat("Movement speed", &cameraSpeed, 5, 25);
 		ImGui::Checkbox("Wireframe", &wireframe);
 
 		ImGui::Spacing();

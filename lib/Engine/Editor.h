@@ -23,7 +23,7 @@ public:
 	ImVec4 GetBackgroundColor() const;
 	ImVec4 GetDrawingColor() const;
 	bool wireframe;
-	float cameraSpeed = 8.0;
+	float cameraSpeed = 16.0;
 	float cameraSensitivity = 6.0f;
 	int editID = 0;
 
@@ -31,7 +31,7 @@ private:
 
 	bool showDemoWindow = false;
 	bool showToolWindow = true;
-	ImVec4 clearColor = ImVec4(0, 0, 0.06f, 1.00f);
+	ImVec4 clearColor = ImVec4(0.17f, 0.17f, 0.34f, 1.00f);
 	ImVec4 drawingColor = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	glm::mat4* hutMatrices;
 	glm::mat4* wallMatrices;

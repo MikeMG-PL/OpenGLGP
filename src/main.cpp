@@ -28,14 +28,19 @@ int main(int, char**)
 	camera->AddComponent<CameraMovement>();
 	camera->GetTransform()->localPosition = { 0, 3, 10 };
 
-	auto ground = GameObject::CreateObject();
-	ground->AddComponent<Model>("../../res/models/hut/hut.dae");
-	ground->GetTransform()->localScale = { 10, 10, 10 };
-
 	/////////////////////////////////////////////////////////////////////////
+
+	auto ground = GameObject::CreateObject();
+	ground->AddComponent<Model>("../../res/models/ground/hut.dae", glm::vec2(128, 128));
+	ground->GetTransform()->localScale = { 70, 0.1f, 70 };
+	ground->GetTransform()->localPosition = { 500, -2.01f, 500};
+
+	/// Declare last – instanced ///
 
 	auto hutSpawner = GameObject::CreateObject();
 	hutSpawner->AddComponent<HutSpawner>(20);
+
+	
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

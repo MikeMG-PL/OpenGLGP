@@ -92,7 +92,6 @@ void HutSpawner::Start()
 	hutMeshes = hutTemplate->hutPtr->GetComponent<Model>()->GetMeshes();
 	roofMeshes = hutTemplate->roofPtr->GetComponent<Model>()->GetMeshes();
 
-	GLuint buffer;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), &matrices[0], GL_STATIC_DRAW);
@@ -103,10 +102,12 @@ void HutSpawner::Draw(Shader shader, int instanceID)
 	for (int i = 0; i < hutMeshes.size(); i++)
 	{
 		matrices = wallMatrices;
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
 		glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), &matrices[0], GL_STATIC_DRAW);
 		hutMeshes[i].SetupInstancing();
 		hutMeshes[i].Draw(shader, instanceID);
 		matrices = roofMatrices;
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
 		glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), &matrices[0], GL_STATIC_DRAW);
 		roofMeshes[i].SetupInstancing();
 		roofMeshes[i].Draw(shader, instanceID);

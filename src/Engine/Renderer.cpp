@@ -63,7 +63,7 @@ bool Renderer::Init(int X, int Y)
 	instancedShader = Shader(1, instancedVertexShaderPath, fragmentShaderPath);
 	InitUniformLocs();
 	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowX) / static_cast<float>(windowY), 0.1f, 1000.0f);
-
+	shader.use();
 	return true;
 }
 
@@ -126,14 +126,16 @@ void Renderer::Render(const Camera& camera)
 				shader.setMat4("model", model);
 				modelComponent->Draw(shader);
 			}
+			else
+				instancedShader.use();
 		}
-
 	}
 }
 
 void Renderer::Cleanup()
 {
 	shader.cleanup();
+	instancedShader.cleanup();
 }
 
 void Renderer::SetBackgroundColor(ImVec4 color)

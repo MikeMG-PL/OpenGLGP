@@ -16,6 +16,7 @@ class Model : public Component
 public:
 
     Model(const std::string& path, bool instanced = false, int numInstances = -1, glm::mat4* matrices = nullptr);
+    Model(const std::string& path, glm::vec2 tiling = {1, 1});
 	// Model(float r = 1);
 	// Model(float sphereRadius, int sectors, int stacks, const std::string& texturePath, GLenum drawType);
     void Draw(Shader shader);
@@ -34,6 +35,8 @@ private:
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
     std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
         std::string typeName);
+
+    glm::vec2 tiling = {1, 1};
 
     // Instancing
     bool instanced;

@@ -22,7 +22,7 @@ public:
 	float initialRoofAngle = -90.0f;
 	glm::vec3 initialRoofScale = {};
 
-	int hutOffset = 3;
+	int hutOffset = 5;
 	glm::mat4* matrices;
 	glm::mat4* roofMatrices;
 	glm::mat4* wallMatrices;
@@ -32,6 +32,7 @@ public:
 	int numInstances;
 
 private:
+	GLuint buffer;
 	std::vector<Mesh> hutMeshes;
 	std::vector<Mesh> roofMeshes;
 	glm::vec3 pos = {0, 0, 0,}, rot = {1, 0, 0}, scale = { 0.1f, 0.1f, 0.1f };
