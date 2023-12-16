@@ -12,6 +12,7 @@ uniform sampler2D texture_specular1;
 uniform sampler2D texture_specular2;
 uniform sampler2D texture_specular3;
 
+uniform int wireframe;
 uniform vec4 customColor;
 uniform vec3 viewPos;
 
@@ -54,7 +55,10 @@ void main()
         //result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);  
     //result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
 
-    color = vec4(result, 1.0);
+    if(wireframe == 0)
+        color = vec4(result, 1.0);
+    else
+        color = customColor;
 
     //color = texture(texture_diffuse1, textureCoord) * customColor;
 }

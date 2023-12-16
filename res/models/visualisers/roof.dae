@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author/>
+      <authoring_tool>FBX COLLADA exporter</authoring_tool>
+      <comments/>
+    </contributor>
+    <created>2023-12-08T23:31:09Z</created>
+    <keywords/>
+    <modified>2023-12-08T23:31:09Z</modified>
+    <revision/>
+    <subject/>
+    <title/>
+    <unit meter="0.010000" name="centimeter"/>
+    <up_axis>Y_UP</up_axis>
+  </asset>
+  <library_images>
+    <image id="roof-image" name="roof">
+      <init_from>roof.png</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="RoofMaterial" name="RoofMaterial">
+      <instance_effect url="#RoofEffect"/>
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="RoofEffect" name="RoofEffect">
+      <profile_COMMON>
+        <newparam sid="roof-surface">
+          <surface type="2D">
+            <init_from>roof-image</init_from>
+          </surface>
+        </newparam>
+        <technique sid="standard">
+          <phong>
+            <emission>
+              <color sid="emission">0.000000  0.000000 0.000000 1.000000</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0.500000  0.500000 0.500000 1.000000</color>
+            </ambient>
+            <diffuse>
+              <texture texture="roof-surface" texcoord="CHANNEL0">
+                <extra>
+                  <technique profile="MAYA">
+                    <wrapU sid="wrapU0">TRUE</wrapU>
+                    <wrapV sid="wrapV0">TRUE</wrapV>
+                    <blend_mode>ADD</blend_mode>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color sid="specular">2.000000  2.000000 2.000000 1.000000</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">1024.000000</float>
+            </shininess>
+            <transparency>
+              <float sid="transparency">0.000000</float>
+            </transparency>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="roof-lib" name="roofMesh">
+      <mesh>
+        <source id="roof-POSITION">
+          <float_array id="roof-POSITION-array" count="30">
+0.000000 0.000000 9.843916
+-10.000000 -10.000000 0.000000
+10.000000 -10.000000 0.000000
+-10.000000 10.000000 0.000000
+10.000000 10.000000 0.000000
+-10.000000 0.000000 0.000000
+0.000000 10.000000 0.000000
+10.000000 0.000000 0.000000
+0.000000 -10.000000 0.000000
+0.000000 0.000000 0.000000
+</float_array>
+          <technique_common>
+            <accessor source="#roof-POSITION-array" count="10" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="roof-Normal0">
+          <float_array id="roof-Normal0-array" count="144">
+-0.701523 0.000000 0.712647
+-0.403967 -0.403967 0.820744
+-0.000000 0.000000 1.000000
+-0.000000 0.000000 1.000000
+-0.403967 0.403967 0.820744
+-0.701523 0.000000 0.712647
+-0.403967 0.403967 0.820744
+-0.000000 0.000000 1.000000
+0.000000 0.701523 0.712647
+-0.000000 0.000000 1.000000
+0.403967 0.403967 0.820744
+0.000000 0.701523 0.712647
+0.000000 -0.701523 0.712647
+0.403967 -0.403967 0.820744
+-0.000000 0.000000 1.000000
+0.000000 -0.701523 0.712647
+-0.000000 0.000000 1.000000
+-0.403967 -0.403967 0.820744
+0.701523 0.000000 0.712647
+-0.000000 0.000000 1.000000
+0.403967 -0.403967 0.820744
+0.403967 0.403967 0.820744
+-0.000000 0.000000 1.000000
+0.701523 0.000000 0.712647
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+0.000000 0.000000 -1.000000
+</float_array>
+          <technique_common>
+            <accessor source="#roof-Normal0-array" count="48" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="roof-UV0">
+          <float_array id="roof-UV0-array" count="20">
+0.500000 0.500000
+0.000000 0.000000
+1.000000 0.000000
+0.000000 1.000000
+1.000000 1.000000
+0.000000 0.500000
+0.500000 1.000000
+1.000000 0.500000
+0.500000 0.000000
+0.500000 0.500000
+</float_array>
+          <technique_common>
+            <accessor source="#roof-UV0-array" count="10" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="roof-VERTEX">
+          <input semantic="POSITION" source="#roof-POSITION"/>
+        </vertices>
+        <triangles count="16" material="FBXASC0481FBXASC032-FBXASC032Default">
+          <input semantic="VERTEX" offset="0" source="#roof-VERTEX"/>
+          <input semantic="NORMAL" offset="1" source="#roof-Normal0"/>
+          <input semantic="TEXCOORD" offset="2" set="0" source="#roof-UV0"/>
+          <p> 5 0 5 1 1 1 0 2 0 0 3 0 3 4 3 5 5 5 3 6 3 0 7 0 6 8 6 0 9 0 4 10 4 6 11 6 8 12 8 2 13 2 0 14 0 8 15 8 0 16 0 1 17 1 7 18 7 0 19 0 2 20 2 4 21 4 0 22 0 7 23 7 9 24 9 5 25 5 6 26 6 5 27 5 3 28 3 6 29 6 7 30 7 9 31 9 6 32 6 7 33 7 6 34 6 4 35 4 8 36 8 7 37 7 2 38 2 7 39 7 8 40 8 9 41 9 1 42 1 5 43 5 8 44 8 8 45 8 5 46 5 9 47 9</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="roof" name="roof">
+      <node name="roof" id="roof" sid="roof">
+        <matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix>
+        <instance_geometry url="#roof-lib">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="FBXASC0481FBXASC032-FBXASC032Default" target="#FBXASC0481FBXASC032-FBXASC032Default"/>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+        <extra>
+          <technique profile="FCOLLADA">
+            <visibility>1.000000</visibility>
+          </technique>
+        </extra>
+      </node>
+      <extra>
+        <technique profile="MAX3D">
+          <frame_rate>30.000000</frame_rate>
+        </technique>
+        <technique profile="FCOLLADA">
+          <start_time>0.000000</start_time>
+          <end_time>3.333333</end_time>
+        </technique>
+      </extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#roof"/>
+  </scene>
+</COLLADA>

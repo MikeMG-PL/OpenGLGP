@@ -20,9 +20,10 @@ Model::Model(const std::string& path, bool instanced, int numInstances, glm::mat
 	loadModel(path);
 }
 
-Model::Model(const std::string& path, glm::vec2 tiling)
+Model::Model(const std::string& path, glm::vec2 tiling, bool wireFrame)
 {
 	this->tiling = tiling;
+	this->wireFrame = wireFrame;
 	this->instanced = false;
 	this->numInstances = -1;
 	this->matrices = nullptr;
@@ -31,6 +32,18 @@ Model::Model(const std::string& path, glm::vec2 tiling)
 
 void Model::Draw(Shader shader)
 {
+	if (wireFrame)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		shader.setBool("wireframe", true);
+		shader.setVector4("customColor", glm::vec4(1, 1, 1, 1));
+	}
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		shader.setBool("wireframe", false);
+	}
+
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(shader);
 }
@@ -83,7 +96,7 @@ void Model::addOrbit(float r)
 void Model::loadModel(const std::string& path)
 {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene * scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{

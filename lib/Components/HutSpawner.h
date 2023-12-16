@@ -2,18 +2,20 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+#include "Camera.h"
 #include "Components/Hut.h"
 #include "Model.h"
-#include "Engine/Component.h"
 #include "Engine/GameObject.h"
+#include "Engine/RenderInjector.h"
 
-class HutSpawner : public Component
+class HutSpawner : public RenderInjector
 {
 public:
 
 	HutSpawner(int instancesInRow);
 	~HutSpawner() override;
 	void Start() override;
+	void RenderUpdate() override;
 	void Draw(Shader shader, int instanceID);
 	void UpdateTransforms(int n);
 
@@ -36,7 +38,8 @@ private:
 	std::vector<Mesh> hutMeshes;
 	std::vector<Mesh> roofMeshes;
 	glm::vec3 pos = {0, 0, 0,}, rot = {1, 0, 0}, scale = { 0.1f, 0.1f, 0.1f };
-	
+	Shader instancedShader;
+	std::shared_ptr<Camera> camera;
 	int instancesInRow;
 	
 };

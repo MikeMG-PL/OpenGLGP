@@ -16,7 +16,7 @@ class Model : public Component
 public:
 
     Model(const std::string& path, bool instanced = false, int numInstances = -1, glm::mat4* matrices = nullptr);
-    Model(const std::string& path, glm::vec2 tiling = {1, 1});
+    Model(const std::string& path, glm::vec2 tiling = {1, 1}, bool wireFrame = false);
 	// Model(float r = 1);
 	// Model(float sphereRadius, int sectors, int stacks, const std::string& texturePath, GLenum drawType);
     void Draw(Shader shader);
@@ -53,6 +53,7 @@ private:
     int numInstances;
 
     GLenum drawType = GL_TRIANGLES;
+    bool wireFrame;
     int sectors;
     int stacks;
     std::string texturePath;

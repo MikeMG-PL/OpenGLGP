@@ -23,6 +23,10 @@ public:
 	GLFWwindow* GetWindow() const;
 	const char* GetGLSLVersion() const;
 	Shader GetShader() const;
+	Shader GetInstancedShader() const;
+	glm::mat4 GetModelMatrix() const;
+	glm::mat4 GetViewMatrix() const;
+	glm::mat4 GetProjectionMatrix() const;
 	void SetBackgroundColor(ImVec4 color);
 
 	bool ShouldCloseWindow();

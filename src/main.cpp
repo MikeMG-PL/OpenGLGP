@@ -11,6 +11,7 @@
 #include "Engine/Renderer.h"
 #include "Components/Camera.h"
 #include "Components/CameraMovement.h"
+#include "Components/DirectionalLight.h"
 #include "Components/HutSpawner.h"
 
 int main(int, char**)
@@ -30,17 +31,20 @@ int main(int, char**)
 
 	/////////////////////////////////////////////////////////////////////////
 
+	auto dirlight = GameObject::CreateObject();
+	dirlight->AddComponent<DirectionalLight>();
+	dirlight->GetTransform()->localEulerAngles = {-70, 0, 0};
+	dirlight->GetTransform()->localPosition = {25, 25, 25};
+
 	auto ground = GameObject::CreateObject();
 	ground->AddComponent<Model>("../../res/models/ground/hut.dae", glm::vec2(128, 128));
 	ground->GetTransform()->localScale = { 70, 0.1f, 70 };
 	ground->GetTransform()->localPosition = { 500, -2.01f, 500 };
 
-	/// Declare last – instanced ///
+	/// Declare last - instanced ///
 
 	auto hutSpawner = GameObject::CreateObject();
 	hutSpawner->AddComponent<HutSpawner>(20);
-
-
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

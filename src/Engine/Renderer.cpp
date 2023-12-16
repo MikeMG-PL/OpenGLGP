@@ -18,6 +18,7 @@
 #include "Engine/Editor.h"
 #include "Engine/GameInstance.h"
 #include "Engine/GameObject.h"
+#include "Engine/RenderInjector.h"
 #include "Engine/Shader.h"
 
 Renderer& Renderer::Get()
@@ -87,6 +88,26 @@ Shader Renderer::GetShader() const
 	return shader;
 }
 
+Shader Renderer::GetInstancedShader() const
+{
+	return instancedShader;
+}
+
+glm::mat4 Renderer::GetModelMatrix() const
+{
+	return model;
+}
+
+glm::mat4 Renderer::GetViewMatrix() const
+{
+	return view;
+}
+
+glm::mat4 Renderer::GetProjectionMatrix() const
+{
+	return projection;
+}
+
 void Renderer::Render(const Camera& camera)
 {
 	int display_w, display_h;
@@ -105,23 +126,12 @@ void Renderer::Render(const Camera& camera)
 
 	for (const auto& gameObjectPtr : allGameObjects)
 	{
-		if(gameObjectPtr->allowUpdate)
+		if (gameObjectPtr->allowUpdate)
 			gameObjectPtr->GetTransform()->UpdateSelfAndChild();
 
-		shader.setVector3("dirLight.direction", { -0.2f, -1.0f, -0.3f });
-		shader.setVector3("dirLight.ambient", { 0.05f, 0.05f, 0.05f });
-		shader.setVector3("dirLight.diffuse", { 0.4f, 0.4f, 0.4f });
-		shader.setVector3("dirLight.specular", { 0.5f, 0.5f, 0.5f });
+		if (const auto injector = gameObjectPtr->GetComponent<RenderInjector>())
+			injector->RenderUpdate();
 
-		if (const auto hutComp = gameObjectPtr->GetComponent<HutSpawner>())
-		{
-			instancedShader.use();
-			instancedShader.setMat4("projection", projection);
-			instancedShader.setMat4("view", view);
-			instancedShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
-
-			hutComp->Draw(instancedShader, 0); // this 0 is for historical reasons
-		}
 		if (const auto modelComponent = gameObjectPtr->GetComponent<Model>())
 		{
 			if (!modelComponent->IsInstanced())

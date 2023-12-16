@@ -33,6 +33,15 @@ HutSpawner::~HutSpawner()
 void HutSpawner::Start()
 {
 	Component::Start();
+	instancedShader = Renderer::Get().GetInstancedShader();
+
+	auto comps = GameInstance::Get().allComponents;
+	for (auto comp : comps)
+	{
+		if ((camera = std::dynamic_pointer_cast<Camera>(comp)))
+			break;
+	}
+
 	glm::vec3 scl;
 	glm::quat quat;
 	glm::vec3 trans;
@@ -73,8 +82,6 @@ void HutSpawner::Start()
 			roof->GetTransform()->localPosition = initialRoofTranslation;
 			roof->GetTransform()->localEulerAngles = { -90.0f, 0, 0 };
 
-
-
 			rootGameObjects.emplace_back(root);
 		}
 	}
@@ -95,6 +102,18 @@ void HutSpawner::Start()
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), &matrices[0], GL_STATIC_DRAW);
+}
+
+void HutSpawner::RenderUpdate()
+{
+	RenderInjector::RenderUpdate();
+
+	instancedShader.use();
+	instancedShader.setMat4("projection", Renderer::Get().GetProjectionMatrix());
+	instancedShader.setMat4("view", Renderer::Get().GetViewMatrix());
+	instancedShader.setVector3("viewPos", camera->GetParent()->GetTransform()->localPosition);
+	
+	Draw(instancedShader, 0); // this 0 is for historical reasons
 }
 
 void HutSpawner::Draw(Shader shader, int instanceID)
