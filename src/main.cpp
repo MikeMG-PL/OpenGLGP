@@ -35,6 +35,10 @@ int main(int, char**)
 	dirlight->GetTransform()->localEulerAngles = {-70, 0, 0};
 	dirlight->GetTransform()->localPosition = {25, 25, 25};
 
+	auto pointLight = GameObject::CreateObject();
+	pointLight->AddComponent<PointLight>();
+	pointLight->GetTransform()->localPosition = { 0, 5, 0 };
+
 	auto ground = GameObject::CreateObject();
 	ground->AddComponent<Model>("../../res/models/ground/hut.dae", glm::vec2(128, 128));
 	ground->GetTransform()->localScale = { 70, 0.1f, 70 };

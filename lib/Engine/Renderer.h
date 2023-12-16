@@ -1,7 +1,10 @@
 #pragma once
+#include <vector>
+
 #include "glm/glm.hpp"
 #include <glad/glad.h>
 #include "Shader.h"
+#include "Components/PointLight.h"
 
 class Camera;
 class ImVec4;
@@ -28,6 +31,8 @@ public:
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
 	void SetBackgroundColor(ImVec4 color);
+	void RegisterPointLight(const std::shared_ptr<PointLight>& pointLight);
+	const std::vector<std::shared_ptr<PointLight>>* GetPointLights() const;
 
 	bool ShouldCloseWindow();
 	void CloseWindow();
@@ -44,7 +49,7 @@ private:
 	const GLchar* instancedVertexShaderPath = "../../lib/Shaders/instancedVertexShader.vert";
 	const GLchar* fragmentShaderPath = "../../lib/Shaders/fragmentShader.frag";
 
-	/// Before decoupling to proper components ///
+	std::vector<std::shared_ptr<PointLight>> pointLights;
 
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);

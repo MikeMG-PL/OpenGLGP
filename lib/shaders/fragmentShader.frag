@@ -38,8 +38,8 @@ struct DirLight {
 
 uniform DirLight dirLight;
 
-#define NR_POINT_LIGHTS 1 // This should be uniform, not hardcoded
-uniform PointLight pointLights[NR_POINT_LIGHTS];
+uniform int numPointLights;
+uniform PointLight pointLights[512]; // Allow max 512 lights
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -51,8 +51,12 @@ void main()
 
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
 
-    //for(int i = 0; i < NR_POINT_LIGHTS; i++)
-        //result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);  
+    if(numPointLights > 0)
+    {
+        for(int i = 0; i < numPointLights; i++)
+            result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+    }
+
     //result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
 
     if(wireframe == 0)

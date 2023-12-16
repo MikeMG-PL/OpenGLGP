@@ -10,6 +10,8 @@ void DirectionalLight::Start()
 {
 	RenderInjector::Start();
 
+	shader = std::make_shared<Shader>(Renderer::Get().GetShader());
+
 	visualizer1 = GameObject::CreateObject();
 	visualizer2 = GameObject::CreateObject();
 
@@ -32,10 +34,10 @@ void DirectionalLight::RenderUpdate()
 
 	direction = GetParent()->GetTransform()->localEulerAngles;
 
-	Renderer::Get().GetShader().setVector3("dirLight.direction", eulerToVector(direction));
-	Renderer::Get().GetShader().setVector3("dirLight.ambient", ambient);
-	Renderer::Get().GetShader().setVector3("dirLight.diffuse", diffuse);
-	Renderer::Get().GetShader().setVector3("dirLight.specular", specular);
+	shader->setVector3("dirLight.direction", eulerToVector(direction));
+	shader->setVector3("dirLight.ambient", ambient);
+	shader->setVector3("dirLight.diffuse", diffuse);
+	shader->setVector3("dirLight.specular", specular);
 }
 
 glm::vec3 DirectionalLight::eulerToVector(const glm::vec3& euler)

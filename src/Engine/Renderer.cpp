@@ -120,6 +120,7 @@ void Renderer::Render(const Camera& camera)
 
 	view = camera.view;
 	shader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
+	shader.setInt("numPointLights", GetPointLights()->size());
 
 	auto allGameObjects = GameInstance::Get().allGameObjects;
 
@@ -158,6 +159,16 @@ void Renderer::SetBackgroundColor(ImVec4 color)
 {
 	glClearColor(color.x, color.y, color.z, color.w);
 	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Renderer::RegisterPointLight(const std::shared_ptr<PointLight>& pointLight)
+{
+	pointLights.emplace_back(pointLight);
+}
+
+const std::vector<std::shared_ptr<PointLight>>* Renderer::GetPointLights() const
+{
+	return &pointLights;
 }
 
 bool Renderer::ShouldCloseWindow()
