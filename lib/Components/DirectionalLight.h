@@ -16,7 +16,7 @@ public:
 
 private:
 
-	glm::vec3 eulerToVector(const glm::vec3 euler);
+	glm::vec3 eulerToVector(const glm::vec3& euler);
 	glm::vec3 direction = {};
 	std::shared_ptr<GameObject> visualizer1;
 	std::shared_ptr<GameObject> visualizer2;

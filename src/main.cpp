@@ -2,7 +2,6 @@
 #define WINDOW_Y 900
 
 #include <memory>
-
 #include "GLFW/glfw3.h"
 #include "Helpers/GlobalInput.h"
 #include "Engine/Editor.h"

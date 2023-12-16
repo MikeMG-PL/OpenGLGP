@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <stdio.h>
 #include <filesystem>
-
 #include <GLFW/glfw3.h> // Include glfw3.h after our OpenGL definitions
 #include <spdlog/spdlog.h>
 

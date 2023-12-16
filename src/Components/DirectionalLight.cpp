@@ -38,7 +38,7 @@ void DirectionalLight::RenderUpdate()
 	Renderer::Get().GetShader().setVector3("dirLight.specular", specular);
 }
 
-glm::vec3 DirectionalLight::eulerToVector(const glm::vec3 euler)
+glm::vec3 DirectionalLight::eulerToVector(const glm::vec3& euler)
 {
 	// Convert degrees to radians
 	glm::vec3 eulerRad = glm::radians(euler);
