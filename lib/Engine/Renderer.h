@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include "Shader.h"
 #include "Components/PointLight.h"
+#include "Components/SpotLight.h"
 
 class Camera;
 class ImVec4;
@@ -31,8 +32,12 @@ public:
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
 	void SetBackgroundColor(ImVec4 color);
+
 	void RegisterPointLight(const std::shared_ptr<PointLight>& pointLight);
 	const std::vector<std::shared_ptr<PointLight>>* GetPointLights() const;
+
+	void RegisterSpotLight(const std::shared_ptr<SpotLight>& spotLight);
+	const std::vector<std::shared_ptr<SpotLight>>* GetSpotLights() const;
 
 	bool ShouldCloseWindow();
 	void CloseWindow();
@@ -50,6 +55,7 @@ private:
 	const GLchar* fragmentShaderPath = "../../lib/Shaders/fragmentShader.frag";
 
 	std::vector<std::shared_ptr<PointLight>> pointLights;
+	std::vector<std::shared_ptr<SpotLight>> spotLights;
 
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);

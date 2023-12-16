@@ -121,6 +121,7 @@ void Renderer::Render(const Camera& camera)
 	view = camera.view;
 	shader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
 	shader.setInt("numPointLights", GetPointLights()->size());
+	shader.setInt("numSpotLights", GetSpotLights()->size());
 
 	auto allGameObjects = GameInstance::Get().allGameObjects;
 
@@ -169,6 +170,16 @@ void Renderer::RegisterPointLight(const std::shared_ptr<PointLight>& pointLight)
 const std::vector<std::shared_ptr<PointLight>>* Renderer::GetPointLights() const
 {
 	return &pointLights;
+}
+
+void Renderer::RegisterSpotLight(const std::shared_ptr<SpotLight>& spotLight)
+{
+	spotLights.emplace_back(spotLight);
+}
+
+const std::vector<std::shared_ptr<SpotLight>>* Renderer::GetSpotLights() const
+{
+	return &spotLights;
 }
 
 bool Renderer::ShouldCloseWindow()

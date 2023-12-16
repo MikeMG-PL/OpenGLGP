@@ -39,6 +39,11 @@ int main(int, char**)
 	pointLight->AddComponent<PointLight>();
 	pointLight->GetTransform()->localPosition = { 0, 5, 0 };
 
+	auto spotLight = GameObject::CreateObject();
+	spotLight->AddComponent<SpotLight>();
+	spotLight->GetTransform()->localPosition = { 20, 15, 30 };
+	spotLight->GetTransform()->localEulerAngles = { -90, 0, 45 };
+
 	auto ground = GameObject::CreateObject();
 	ground->AddComponent<Model>("../../res/models/ground/hut.dae", glm::vec2(128, 128));
 	ground->GetTransform()->localScale = { 70, 0.1f, 70 };

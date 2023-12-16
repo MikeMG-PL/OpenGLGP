@@ -2,6 +2,7 @@
 #include "glm/glm.hpp"
 #include "Engine/Shader.h"
 #include "Engine/RenderInjector.h"
+#include "Helpers/MathHelpers.h"
 
 class DirectionalLight : public RenderInjector
 {
@@ -17,7 +18,6 @@ public:
 
 private:
 
-	glm::vec3 eulerToVector(const glm::vec3& euler);
 	glm::vec3 direction = {};
 	std::shared_ptr<GameObject> visualizer1;
 	std::shared_ptr<GameObject> visualizer2;

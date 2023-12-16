@@ -112,7 +112,6 @@ void HutSpawner::RenderUpdate()
 	instancedShader.setMat4("projection", Renderer::Get().GetProjectionMatrix());
 	instancedShader.setMat4("view", Renderer::Get().GetViewMatrix());
 	instancedShader.setVector3("viewPos", camera->GetParent()->GetTransform()->localPosition);
-	
 	Draw(instancedShader, 0); // this 0 is for historical reasons
 }
 
