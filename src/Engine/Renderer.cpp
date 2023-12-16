@@ -99,6 +99,7 @@ void Renderer::Render(const Camera& camera)
 	glUniform4f(customColorLoc, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
 
 	view = camera.view;
+	shader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
 
 	auto allGameObjects = GameInstance::Get().allGameObjects;
 
@@ -107,11 +108,17 @@ void Renderer::Render(const Camera& camera)
 		if(gameObjectPtr->allowUpdate)
 			gameObjectPtr->GetTransform()->UpdateSelfAndChild();
 
+		shader.setVector3("dirLight.direction", { -0.2f, -1.0f, -0.3f });
+		shader.setVector3("dirLight.ambient", { 0.05f, 0.05f, 0.05f });
+		shader.setVector3("dirLight.diffuse", { 0.4f, 0.4f, 0.4f });
+		shader.setVector3("dirLight.specular", { 0.5f, 0.5f, 0.5f });
+
 		if (const auto hutComp = gameObjectPtr->GetComponent<HutSpawner>())
 		{
 			instancedShader.use();
 			instancedShader.setMat4("projection", projection);
 			instancedShader.setMat4("view", view);
+			instancedShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
 
 			hutComp->Draw(instancedShader, 0); // this 0 is for historical reasons
 		}
