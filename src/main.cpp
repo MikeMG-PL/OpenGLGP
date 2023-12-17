@@ -12,6 +12,7 @@
 #include "Components/CameraMovement.h"
 #include "Components/DirectionalLight.h"
 #include "Components/HutSpawner.h"
+#include "Components/Planet.h"
 
 int main(int, char**)
 {
@@ -35,14 +36,25 @@ int main(int, char**)
 	dirlight->GetTransform()->localEulerAngles = {-70, 0, 0};
 	dirlight->GetTransform()->localPosition = {25, 25, 25};
 
+	auto pointLightRoot = GameObject::CreateObject();
+	pointLightRoot->GetTransform()->localPosition = { 50, 3, 50 };
+	pointLightRoot->AddComponent<Planet>(10);
+
 	auto pointLight = GameObject::CreateObject();
 	pointLight->AddComponent<PointLight>();
-	pointLight->GetTransform()->localPosition = { 0, 5, 0 };
+	pointLight->GetTransform()->localPosition = { 30, 0, 0 };
 
-	auto spotLight = GameObject::CreateObject();
-	spotLight->AddComponent<SpotLight>();
-	spotLight->GetTransform()->localPosition = { 20, 15, 30 };
-	spotLight->GetTransform()->localEulerAngles = { -90, 0, 45 };
+	pointLightRoot->GetTransform()->AddChild(pointLight->GetTransform());
+
+	auto spotLight1 = GameObject::CreateObject();
+	spotLight1->AddComponent<SpotLight>();
+	spotLight1->GetTransform()->localPosition = { 20, 15, 60 };
+	spotLight1->GetTransform()->localEulerAngles = { -30, 0, 0 };
+
+	auto spotLight2 = GameObject::CreateObject();
+	spotLight2->AddComponent<SpotLight>();
+	spotLight2->GetTransform()->localPosition = { 50, 15, 30 };
+	spotLight2->GetTransform()->localEulerAngles = { -150, 0, 0 };
 
 	auto ground = GameObject::CreateObject();
 	ground->AddComponent<Model>("../../res/models/ground/hut.dae", glm::vec2(128, 128));

@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+
 #include "glm/glm.hpp"
 
 const std::vector<std::shared_ptr<Transform>>& Transform::GetChildren() const
@@ -47,5 +49,47 @@ void Transform::AddChild(const std::shared_ptr<Transform>& child)
 {
 	child->parentNode = shared_from_this();
 	children.emplace_back(child);
+}
+
+glm::vec3 Transform::GetPosParentSpace() const
+{
+	if (!parentNode)
+		return localPosition;
+
+	glm::vec3 scl;
+	glm::quat quat;
+	glm::vec3 trans;
+	glm::vec3 skew;
+	glm::vec4 persp;
+	glm::decompose(modelMatrix, scl, quat, trans, skew, persp);
+	return trans;
+}
+
+glm::vec3 Transform::GetRotParentSpace() const
+{
+	if (!parentNode)
+		return localEulerAngles;
+
+	glm::vec3 scl;
+	glm::quat quat;
+	glm::vec3 trans;
+	glm::vec3 skew;
+	glm::vec4 persp;
+	glm::decompose(modelMatrix, scl, quat, trans, skew, persp);
+	return glm::eulerAngles(quat);
+}
+
+glm::vec3 Transform::GetScaleParentSpace() const
+{
+	if (!parentNode)
+		return localScale;
+
+	glm::vec3 scl;
+	glm::quat quat;
+	glm::vec3 trans;
+	glm::vec3 skew;
+	glm::vec4 persp;
+	glm::decompose(modelMatrix, scl, quat, trans, skew, persp);
+	return scl;
 }
 

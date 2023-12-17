@@ -33,7 +33,7 @@ void DirectionalLight::RenderUpdate()
 {
 	RenderInjector::RenderUpdate();
 
-	direction = GetParent()->GetTransform()->localEulerAngles;
+	direction = GetParent()->GetTransform()->GetRotParentSpace();
 
 	shader->use();
 	shader->setVector3("dirLight.direction", eulerToVector(direction));

@@ -32,20 +32,20 @@ void PointLight::RenderUpdate()
 	RenderInjector::RenderUpdate();
 
 	shader->use();
-	shader->setVector3(positionName.str() , GetParent()->GetTransform()->localPosition);
-	shader->setVector3(ambientName.str(), { 0.05f, 0.05f, 0.05f });
-	shader->setVector3(diffuseName.str(), { 0.8f, 0.8f, 0.8f });
-	shader->setVector3(specularName.str(), { 1.0f, 1.0f, 1.0f });
-	shader->setFloat(constantName.str(), 1.0f);
-	shader->setFloat(linearName.str(), 0.09f);
-	shader->setFloat(quadraticName.str(), 0.032f);
+	shader->setVector3(positionName.str(), GetParent()->GetTransform()->GetPosParentSpace());
+	shader->setVector3(ambientName.str(), ambient);
+	shader->setVector3(diffuseName.str(), diffuse);
+	shader->setVector3(specularName.str(), specular);
+	shader->setFloat(constantName.str(), constant);
+	shader->setFloat(linearName.str(), linear);
+	shader->setFloat(quadraticName.str(), quadratic);
 
 	instancedShader->use();
-	instancedShader->setVector3(positionName.str(), GetParent()->GetTransform()->localPosition);
-	instancedShader->setVector3(ambientName.str(), { 0.05f, 0.05f, 0.05f });
-	instancedShader->setVector3(diffuseName.str(), { 0.8f, 0.8f, 0.8f });
-	instancedShader->setVector3(specularName.str(), { 1.0f, 1.0f, 1.0f });
-	instancedShader->setFloat(constantName.str(), 1.0f);
-	instancedShader->setFloat(linearName.str(), 0.09f);
-	instancedShader->setFloat(quadraticName.str(), 0.032f);
+	instancedShader->setVector3(positionName.str(), GetParent()->GetTransform()->GetPosParentSpace());
+	instancedShader->setVector3(ambientName.str(), ambient);
+	instancedShader->setVector3(diffuseName.str(), diffuse);
+	instancedShader->setVector3(specularName.str(), specular);
+	instancedShader->setFloat(constantName.str(), constant);
+	instancedShader->setFloat(linearName.str(), linear);
+	instancedShader->setFloat(quadraticName.str(), quadratic);
 }

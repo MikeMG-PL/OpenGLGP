@@ -1,4 +1,6 @@
 #include "Components/SpotLight.h"
+
+#include "Components/Model.h"
 #include "Engine/GameObject.h"
 #include "Engine/Renderer.h"
 #include "Helpers/MathHelpers.h"
@@ -11,6 +13,13 @@ void SpotLight::Start()
 	instancedShader = std::make_shared<Shader>(Renderer::Get().GetInstancedShader());
 	Renderer::Get().RegisterSpotLight(shared_from_this());
 	ID = Renderer::Get().GetSpotLights()->size() - 1;
+
+	visualizer1 = GameObject::CreateObject();
+
+	visualizer1->AddComponent<Model>("../../res/models/visualisers/roof.dae", glm::vec2(1, 1), true);
+
+	GetParent()->GetTransform()->AddChild(visualizer1->GetTransform());
+	visualizer1->GetTransform()->localScale = { 0.1f, 0.1f, 0.5f };
 
 	uniform << "spotLights[" << ID << "].";
 	positionName << uniform.str() << "position";
@@ -29,30 +38,30 @@ void SpotLight::RenderUpdate()
 {
 	RenderInjector::RenderUpdate();
 
-	position = GetParent()->GetTransform()->localPosition;
-	direction = GetParent()->GetTransform()->localEulerAngles;
+	position = GetParent()->GetTransform()->GetPosParentSpace();
+	direction = GetParent()->GetTransform()->GetRotParentSpace();
 
 	shader->use();
 	shader->setVector3(positionName.str(), position);
 	shader->setVector3(directionName.str(), eulerToVector(direction));
-	shader->setVector3(ambientName.str(), { 0.0f, 0.0f, 0.0f } );
-	shader->setVector3(diffuseName.str(), { 1.0f, 1.0f, 1.0f });
-	shader->setVector3(specularName.str(), { 1.0f, 1.0f, 1.0f } );
-	shader->setFloat(constantName.str(), 1.0f);
-	shader->setFloat(linearName.str(), 0.09f);
-	shader->setFloat(quadraticName.str(), 0.032f);
-	shader->setFloat(cutOffName.str(), glm::cos(glm::radians(12.5f)));
-	shader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(15.0f)));
+	shader->setVector3(ambientName.str(), ambient);
+	shader->setVector3(diffuseName.str(), diffuse);
+	shader->setVector3(specularName.str(), specular);
+	shader->setFloat(constantName.str(), constant);
+	shader->setFloat(linearName.str(), linear);
+	shader->setFloat(quadraticName.str(), quadratic);
+	shader->setFloat(cutOffName.str(), glm::cos(glm::radians(cutOff)));
+	shader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(outerCutOff)));
 
 	instancedShader->use();
 	instancedShader->setVector3(positionName.str(), position);
 	instancedShader->setVector3(directionName.str(), eulerToVector(direction));
-	instancedShader->setVector3(ambientName.str(), { 0.0f, 0.0f, 0.0f });
-	instancedShader->setVector3(diffuseName.str(), { 1.0f, 1.0f, 1.0f });
-	instancedShader->setVector3(specularName.str(), { 1.0f, 1.0f, 1.0f });
-	instancedShader->setFloat(constantName.str(), 1.0f);
-	instancedShader->setFloat(linearName.str(), 0.09f);
-	instancedShader->setFloat(quadraticName.str(), 0.032f);
-	instancedShader->setFloat(cutOffName.str(), glm::cos(glm::radians(12.5f)));
-	instancedShader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(15.0f)));
+	instancedShader->setVector3(ambientName.str(), ambient);
+	instancedShader->setVector3(diffuseName.str(), diffuse);
+	instancedShader->setVector3(specularName.str(), specular);
+	instancedShader->setFloat(constantName.str(), constant);
+	instancedShader->setFloat(linearName.str(), linear);
+	instancedShader->setFloat(quadraticName.str(), quadratic);
+	instancedShader->setFloat(cutOffName.str(), glm::cos(glm::radians(cutOff)));
+	instancedShader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(outerCutOff)));
 }
