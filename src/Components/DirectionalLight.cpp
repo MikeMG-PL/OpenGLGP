@@ -3,6 +3,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include "Components/Model.h"
+#include "Engine/Editor.h"
 #include "Engine/GameObject.h"
 #include "Engine/Renderer.h"
 
@@ -37,13 +38,14 @@ void DirectionalLight::RenderUpdate()
 
 	shader->use();
 	shader->setVector3("dirLight.direction", eulerToVector(direction));
-	shader->setVector3("dirLight.ambient", ambient);
-	shader->setVector3("dirLight.diffuse", diffuse);
-	shader->setVector3("dirLight.specular", specular);
+	shader->setVector3("dirLight.ambient", ImVec4ToVec3(d.ambient));
+	shader->setVector3("dirLight.diffuse", ImVec4ToVec3(d.diffuse));
+	shader->setVector3("dirLight.specular", ImVec4ToVec3(d.specular));
 
 	instancedShader->use();
 	instancedShader->setVector3("dirLight.direction", eulerToVector(direction));
-	instancedShader->setVector3("dirLight.ambient", ambient);
-	instancedShader->setVector3("dirLight.diffuse", diffuse);
-	instancedShader->setVector3("dirLight.specular", specular);
+	instancedShader->setVector3("dirLight.ambient", ImVec4ToVec3(d.ambient));
+	instancedShader->setVector3("dirLight.diffuse", ImVec4ToVec3(d.diffuse));
+	instancedShader->setVector3("dirLight.specular", ImVec4ToVec3(d.specular));
+
 }

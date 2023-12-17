@@ -9,9 +9,11 @@
 #include "Engine/GameInstance.h"
 #include "Engine/GameObject.h"
 #include "Engine/Renderer.h"
+#include "GLFW/glfw3.h"
 #include "imgui_impl/imgui_impl_glfw.h"
 #include "imgui_impl/imgui_impl_opengl3.h"
 #include "glm/gtx/matrix_decompose.hpp"
+#include "Helpers/GlobalInput.h"
 
 Editor& Editor::Get()
 {
@@ -25,13 +27,13 @@ void Editor::Init()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
+	setKeyCallbacks();
+
 	ImGui_ImplGlfw_InitForOpenGL(Renderer::Get().GetWindow(), true);
 	ImGui_ImplOpenGL3_Init(Renderer::Get().GetGLSLVersion());
 
 	// Setup style
 	ImGui::StyleColorsDark();
-
-	registerLights();
 }
 
 void Editor::Update()
@@ -73,13 +75,17 @@ void Editor::Update()
 			if (!lightsRegistered)
 			{
 				if (std::dynamic_pointer_cast<DirectionalLight>(c))
+				{
 					dirLight = std::dynamic_pointer_cast<DirectionalLight>(c);
+					d = &dirLight->d;
+				}
 
 				if (std::dynamic_pointer_cast<PointLight>(c))
 				{
 					std::shared_ptr<PointLight> pointLight;
 					pointLight = std::dynamic_pointer_cast<PointLight>(c);
 					pointLights.emplace_back(pointLight);
+					ps.emplace_back(&pointLight->p);
 				}
 
 				if (std::dynamic_pointer_cast<SpotLight>(c))
@@ -87,6 +93,7 @@ void Editor::Update()
 					std::shared_ptr<SpotLight> spotLight;
 					spotLight = std::dynamic_pointer_cast<SpotLight>(c);
 					spotLights.emplace_back(spotLight);
+					ss.emplace_back(&spotLight->s);
 				}
 			}
 		}
@@ -173,11 +180,6 @@ ImVec4 Editor::GetBackgroundColor() const
 ImVec4 Editor::GetDrawingColor() const
 {
 	return drawingColor;
-}
-
-void Editor::registerLights()
-{
-
 }
 
 void Editor::hutTransform()
@@ -302,6 +304,10 @@ void Editor::dirLightParams()
 	euler.y = rotation[1];
 	euler.z = rotation[2];
 
+	ImGui::ColorEdit3("Directional light ambient", reinterpret_cast<float*>(&d->ambient));
+	ImGui::ColorEdit3("Directional light diffuse", reinterpret_cast<float*>(&d->diffuse));
+	ImGui::ColorEdit3("Directional light specular", reinterpret_cast<float*>(&d->specular));
+
 	ImGui::Indent(-20);
 	ImGui::Spacing();
 	ImGui::Spacing();
@@ -332,6 +338,13 @@ void Editor::pointLightParams()
 		euler.x = rotation[0];
 		euler.y = rotation[1];
 		euler.z = rotation[2];
+
+		ImGui::ColorEdit3((std::to_string(i) + " point light ambient").c_str(), reinterpret_cast<float*>(&ps[i]->ambient));
+		ImGui::ColorEdit3((std::to_string(i) + " point light diffuse").c_str(), reinterpret_cast<float*>(&ps[i]->diffuse));
+		ImGui::ColorEdit3((std::to_string(i) + " point light specular").c_str(), reinterpret_cast<float*>(&ps[i]->specular));
+		ImGui::InputFloat((std::to_string(i) + " point light constant").c_str(), &ps[i]->constant);
+		ImGui::InputFloat((std::to_string(i) + " point light linear").c_str(), &ps[i]->linear);
+		ImGui::InputFloat((std::to_string(i) + " point light quadratic").c_str(), &ps[i]->quadratic);
 	}
 
 	ImGui::Indent(-20);
@@ -364,6 +377,15 @@ void Editor::spotLightParams()
 		euler.x = rotation[0];
 		euler.y = rotation[1];
 		euler.z = rotation[2];
+
+		ImGui::ColorEdit3((std::to_string(i) + " spotlight ambient").c_str(), reinterpret_cast<float*>(&ss[i]->ambient));
+		ImGui::ColorEdit3((std::to_string(i) + " spotlight diffuse").c_str(), reinterpret_cast<float*>(&ss[i]->diffuse));
+		ImGui::ColorEdit3((std::to_string(i) + " spotlight specular").c_str(), reinterpret_cast<float*>(&ss[i]->specular));
+		ImGui::InputFloat((std::to_string(i) + " spotlight constant").c_str(), &ss[i]->constant);
+		ImGui::InputFloat((std::to_string(i) + " spotlight linear").c_str(), &ss[i]->linear);
+		ImGui::InputFloat((std::to_string(i) + " spotlight quadratic").c_str(), &ss[i]->quadratic);
+		ImGui::InputFloat((std::to_string(i) + " spotlight cutOff").c_str(), &ss[i]->cutOff);
+		ImGui::InputFloat((std::to_string(i) + " spotlight outerCutOff").c_str(), &ss[i]->outerCutOff);
 	}
 
 	ImGui::Indent(-20);

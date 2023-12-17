@@ -13,6 +13,7 @@
 #include "Components/DirectionalLight.h"
 #include "Components/HutSpawner.h"
 #include "Components/Planet.h"
+#include "imgui_impl/imgui_impl_glfw.h"
 
 int main(int, char**)
 {

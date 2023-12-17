@@ -6,7 +6,6 @@
 #include "GLFW/glfw3.h"
 
 #include "Engine/Renderer.h"
-#include "Helpers/GlobalInput.h"
 
 void CameraMovement::Start()
 {
@@ -18,7 +17,6 @@ void CameraMovement::Start()
 	lastMouseX = mouseX;
 	lastMouseY = mouseY;
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetKeyCallback(window, &keyCallback);
 }
 
 void CameraMovement::Update()

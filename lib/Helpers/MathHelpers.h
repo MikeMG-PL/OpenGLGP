@@ -1,4 +1,5 @@
 #pragma once
+#include <imgui.h>
 #include <glm/ext/matrix_transform.hpp>
 #include "glm/glm.hpp"
 
@@ -20,4 +21,8 @@ inline glm::vec3 eulerToVector(const glm::vec3& euler)
 
 	// Extract the resulting vector from the rotated directional vector
 	return glm::vec3(directionalVector);
+}
+
+inline glm::vec3 ImVec4ToVec3(const ImVec4& imvec4) {
+	return glm::vec3(imvec4.x, imvec4.y, imvec4.z);
 }

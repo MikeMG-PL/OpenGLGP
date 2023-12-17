@@ -1,6 +1,20 @@
 #pragma once
+#include <imgui.h>
+
 #include "Engine/RenderInjector.h"
 #include "Engine/Shader.h"
+
+struct SpotLightParams
+{
+	ImVec4 ambient = { 0.0f, 0.0f, 0.0f, 1};
+	ImVec4 diffuse = { 1.0f, 1.0f, 1.0f, 1 };
+	ImVec4 specular = { 1.0f, 1.0f, 1.0f, 1 };
+	float constant = 1.0f;
+	float linear = 0.09f;
+	float quadratic = 0.032f;
+	float cutOff = 12.5f;			// in degrees
+	float outerCutOff = 15.0f;		// in degrees
+};
 
 class SpotLight : public RenderInjector, public std::enable_shared_from_this<SpotLight>
 {
@@ -9,14 +23,7 @@ public:
 	void Start() override;
 	void RenderUpdate() override;
 
-	glm::vec3 ambient = { 0.0f, 0.0f, 0.0f };
-	glm::vec3 diffuse = { 1.0f, 1.0f, 1.0f };
-	glm::vec3 specular = { 1.0f, 1.0f, 1.0f };
-	float constant = 1.0f;
-	float linear = 0.09f;
-	float quadratic = 0.032f;
-	float cutOff = 12.5f;			// in degrees
-	float outerCutOff = 15.0f;		// in degrees
+	SpotLightParams s;
 
 private:
 

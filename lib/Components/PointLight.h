@@ -1,6 +1,19 @@
 #pragma once
+#include <imgui.h>
+
 #include "Engine/Shader.h"
 #include "Engine/RenderInjector.h"
+
+struct PointLightParams
+{
+	ImVec4 ambient = { 0.05f, 0.05f, 0.05f, 1 };
+	ImVec4 diffuse = { 0.8f, 0.8f, 0.8f, 1 };
+	ImVec4 specular = { 1.0f, 1.0f, 1.0f, 1 };
+	float constant = 1.0f;
+	float linear = 0.09f;
+	float quadratic = 0.032f;
+};
+
 class PointLight : public RenderInjector, public std::enable_shared_from_this<PointLight>
 {
 public:
@@ -8,12 +21,7 @@ public:
 	void Start() override;
 	void RenderUpdate() override;
 
-	glm::vec3 ambient = { 0.05f, 0.05f, 0.05f };
-	glm::vec3 diffuse = { 0.8f, 0.8f, 0.8f };
-	glm::vec3 specular = { 1.0f, 1.0f, 1.0f };
-	float constant = 1.0f;
-	float linear = 0.09f;
-	float quadratic = 0.032f;
+	PointLightParams p;
 
 private:
 

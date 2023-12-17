@@ -34,8 +34,16 @@ private:
 
 	bool showDemoWindow = false;
 	bool showToolWindow = true;
+
 	ImVec4 clearColor = ImVec4(0.17f, 0.17f, 0.34f, 1.00f);
 	ImVec4 drawingColor = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+
+	// Directional Light
+	DirectionalLightParams* d;
+
+	std::vector<PointLightParams*> ps;
+	std::vector<SpotLightParams*> ss;
+
 	glm::mat4* hutMatrices;
 	glm::mat4* wallMatrices;
 	glm::mat4* roofMatrices;
@@ -48,7 +56,6 @@ private:
 	std::vector<std::shared_ptr<PointLight>> pointLights;
 	std::vector<std::shared_ptr<SpotLight>> spotLights;
 	int hutsNum;
-	void registerLights();
 	void hutTransform();
 	void dirLightParams();
 	void spotLightParams();
