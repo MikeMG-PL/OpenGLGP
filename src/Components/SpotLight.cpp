@@ -8,6 +8,7 @@ void SpotLight::Start()
 	RenderInjector::Start();
 
 	shader = std::make_shared<Shader>(Renderer::Get().GetShader());
+	instancedShader = std::make_shared<Shader>(Renderer::Get().GetInstancedShader());
 	Renderer::Get().RegisterSpotLight(shared_from_this());
 	ID = Renderer::Get().GetSpotLights()->size() - 1;
 
@@ -31,6 +32,7 @@ void SpotLight::RenderUpdate()
 	position = GetParent()->GetTransform()->localPosition;
 	direction = GetParent()->GetTransform()->localEulerAngles;
 
+	shader->use();
 	shader->setVector3(positionName.str(), position);
 	shader->setVector3(directionName.str(), eulerToVector(direction));
 	shader->setVector3(ambientName.str(), { 0.0f, 0.0f, 0.0f } );
@@ -41,4 +43,16 @@ void SpotLight::RenderUpdate()
 	shader->setFloat(quadraticName.str(), 0.032f);
 	shader->setFloat(cutOffName.str(), glm::cos(glm::radians(12.5f)));
 	shader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(15.0f)));
+
+	instancedShader->use();
+	instancedShader->setVector3(positionName.str(), position);
+	instancedShader->setVector3(directionName.str(), eulerToVector(direction));
+	instancedShader->setVector3(ambientName.str(), { 0.0f, 0.0f, 0.0f });
+	instancedShader->setVector3(diffuseName.str(), { 1.0f, 1.0f, 1.0f });
+	instancedShader->setVector3(specularName.str(), { 1.0f, 1.0f, 1.0f });
+	instancedShader->setFloat(constantName.str(), 1.0f);
+	instancedShader->setFloat(linearName.str(), 0.09f);
+	instancedShader->setFloat(quadraticName.str(), 0.032f);
+	instancedShader->setFloat(cutOffName.str(), glm::cos(glm::radians(12.5f)));
+	instancedShader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(15.0f)));
 }

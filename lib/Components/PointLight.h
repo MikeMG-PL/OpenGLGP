@@ -11,6 +11,7 @@ public:
 private:
 
 	std::shared_ptr<Shader> shader;
+	std::shared_ptr<Shader> instancedShader;
 	int ID = -1;
 
 	std::stringstream uniform;

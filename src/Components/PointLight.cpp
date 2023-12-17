@@ -9,6 +9,7 @@ void PointLight::Start()
 	RenderInjector::Start();
 
 	shader = std::make_shared<Shader>(Renderer::Get().GetShader());
+	instancedShader = std::make_shared<Shader>(Renderer::Get().GetInstancedShader());
 	Renderer::Get().RegisterPointLight(shared_from_this());
 	ID = Renderer::Get().GetPointLights()->size() - 1;
 
@@ -30,6 +31,7 @@ void PointLight::RenderUpdate()
 {
 	RenderInjector::RenderUpdate();
 
+	shader->use();
 	shader->setVector3(positionName.str() , GetParent()->GetTransform()->localPosition);
 	shader->setVector3(ambientName.str(), { 0.05f, 0.05f, 0.05f });
 	shader->setVector3(diffuseName.str(), { 0.8f, 0.8f, 0.8f });
@@ -37,4 +39,13 @@ void PointLight::RenderUpdate()
 	shader->setFloat(constantName.str(), 1.0f);
 	shader->setFloat(linearName.str(), 0.09f);
 	shader->setFloat(quadraticName.str(), 0.032f);
+
+	instancedShader->use();
+	instancedShader->setVector3(positionName.str(), GetParent()->GetTransform()->localPosition);
+	instancedShader->setVector3(ambientName.str(), { 0.05f, 0.05f, 0.05f });
+	instancedShader->setVector3(diffuseName.str(), { 0.8f, 0.8f, 0.8f });
+	instancedShader->setVector3(specularName.str(), { 1.0f, 1.0f, 1.0f });
+	instancedShader->setFloat(constantName.str(), 1.0f);
+	instancedShader->setFloat(linearName.str(), 0.09f);
+	instancedShader->setFloat(quadraticName.str(), 0.032f);
 }

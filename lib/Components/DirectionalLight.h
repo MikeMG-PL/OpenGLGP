@@ -22,4 +22,5 @@ private:
 	std::shared_ptr<GameObject> visualizer1;
 	std::shared_ptr<GameObject> visualizer2;
 	std::shared_ptr<Shader> shader;
+	std::shared_ptr<Shader> instancedShader;
 };

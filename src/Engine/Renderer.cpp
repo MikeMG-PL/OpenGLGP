@@ -119,9 +119,16 @@ void Renderer::Render(const Camera& camera)
 	glUniform4f(customColorLoc, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
 
 	view = camera.view;
+
+	shader.use();
 	shader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
 	shader.setInt("numPointLights", GetPointLights()->size());
 	shader.setInt("numSpotLights", GetSpotLights()->size());
+
+	instancedShader.use();
+	instancedShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
+	instancedShader.setInt("numPointLights", GetPointLights()->size());
+	instancedShader.setInt("numSpotLights", GetSpotLights()->size());
 
 	auto allGameObjects = GameInstance::Get().allGameObjects;
 
@@ -144,8 +151,6 @@ void Renderer::Render(const Camera& camera)
 				shader.setMat4("model", model);
 				modelComponent->Draw(shader);
 			}
-			else
-				instancedShader.use();
 		}
 	}
 }
