@@ -30,6 +30,8 @@ void Editor::Init()
 
 	// Setup style
 	ImGui::StyleColorsDark();
+
+	registerLights();
 }
 
 void Editor::Update()
@@ -67,8 +69,28 @@ void Editor::Update()
 				initialRoofAngleAxis = hut->initialRoofAxisAngle;
 				hcopy = std::dynamic_pointer_cast<HutSpawner>(c);
 			}
-		}
 
+			if (!lightsRegistered)
+			{
+				if (std::dynamic_pointer_cast<DirectionalLight>(c))
+					dirLight = std::dynamic_pointer_cast<DirectionalLight>(c);
+
+				if (std::dynamic_pointer_cast<PointLight>(c))
+				{
+					std::shared_ptr<PointLight> pointLight;
+					pointLight = std::dynamic_pointer_cast<PointLight>(c);
+					pointLights.emplace_back(pointLight);
+				}
+
+				if (std::dynamic_pointer_cast<SpotLight>(c))
+				{
+					std::shared_ptr<SpotLight> spotLight;
+					spotLight = std::dynamic_pointer_cast<SpotLight>(c);
+					spotLights.emplace_back(spotLight);
+				}
+			}
+		}
+		lightsRegistered = true;
 		hut = hcopy;
 
 		static float f = 0.0f;
@@ -100,6 +122,16 @@ void Editor::Update()
 			ImGui::Indent(20);
 			hutTransform();
 		}
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		dirLightParams();
+		spotLightParams();
+		pointLightParams();
 
 		ImGui::Spacing();
 		ImGui::Spacing();
@@ -141,6 +173,11 @@ ImVec4 Editor::GetBackgroundColor() const
 ImVec4 Editor::GetDrawingColor() const
 {
 	return drawingColor;
+}
+
+void Editor::registerLights()
+{
+
 }
 
 void Editor::hutTransform()
@@ -246,5 +283,90 @@ void Editor::hutTransform()
 		ImGui::Spacing();
 		ImGui::Spacing();
 	}
-	// }
+}
+
+void Editor::dirLightParams()
+{
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Indent(20);
+	ImGui::Text("Directional light");
+
+	const auto transform = dirLight->GetParent()->GetTransform();
+
+	// Convert quaternion to Euler angles
+	glm::vec3& euler = transform->localEulerAngles;
+	float rotation[3] = { euler.x, euler.y, euler.z };
+	ImGui::InputFloat3("Directional light rotation", rotation);
+	euler.x = rotation[0];
+	euler.y = rotation[1];
+	euler.z = rotation[2];
+
+	ImGui::Indent(-20);
+	ImGui::Spacing();
+	ImGui::Spacing();
+}
+
+void Editor::pointLightParams()
+{
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Indent(20);
+
+	for (int i = 0; i < pointLights.size(); i++)
+	{
+		ImGui::Text((std::to_string(i) + " point light").c_str());
+		const auto transform = pointLights[i]->GetParent()->GetTransform();
+
+		glm::vec3& pos = transform->localPosition;
+		float position[3] = { pos.x, pos.y, pos.z };
+		ImGui::InputFloat3((std::to_string(i) + " point light position").c_str(), position);
+		pos.x = position[0];
+		pos.y = position[1];
+		pos.z = position[2];
+
+		// Convert quaternion to Euler angles
+		glm::vec3& euler = transform->localEulerAngles;
+		float rotation[3] = { euler.x, euler.y, euler.z };
+		ImGui::InputFloat3((std::to_string(i) + " point light rotation").c_str(), rotation);
+		euler.x = rotation[0];
+		euler.y = rotation[1];
+		euler.z = rotation[2];
+	}
+
+	ImGui::Indent(-20);
+	ImGui::Spacing();
+	ImGui::Spacing();
+}
+
+void Editor::spotLightParams()
+{
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Indent(20);
+
+	for (int i = 0; i < spotLights.size(); i++)
+	{
+		ImGui::Text((std::to_string(i) + " spot light").c_str());
+		const auto transform = spotLights[i]->GetParent()->GetTransform();
+
+		glm::vec3& pos = transform->localPosition;
+		float position[3] = { pos.x, pos.y, pos.z };
+		ImGui::InputFloat3((std::to_string(i) + " spot light position").c_str(), position);
+		pos.x = position[0];
+		pos.y = position[1];
+		pos.z = position[2];
+
+		// Convert quaternion to Euler angles
+		glm::vec3& euler = transform->localEulerAngles;
+		float rotation[3] = { euler.x, euler.y, euler.z };
+		ImGui::InputFloat3((std::to_string(i) + " spot light rotation").c_str(), rotation);
+		euler.x = rotation[0];
+		euler.y = rotation[1];
+		euler.z = rotation[2];
+	}
+
+	ImGui::Indent(-20);
+	ImGui::Spacing();
+	ImGui::Spacing();
 }

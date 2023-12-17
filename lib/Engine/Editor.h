@@ -3,7 +3,10 @@
 #include <memory>
 #include <vector>
 
+#include "Components/DirectionalLight.h"
 #include "Components/HutSpawner.h"
+#include "Components/PointLight.h"
+#include "Components/SpotLight.h"
 #include "Components/Transform.h"
 
 class Editor
@@ -41,8 +44,16 @@ private:
 	glm::vec3 initialRoofAngleAxis;
 	float initialRoofAngle;
 	std::shared_ptr<HutSpawner> hut;
+	std::shared_ptr<DirectionalLight> dirLight;
+	std::vector<std::shared_ptr<PointLight>> pointLights;
+	std::vector<std::shared_ptr<SpotLight>> spotLights;
 	int hutsNum;
+	void registerLights();
 	void hutTransform();
+	void dirLightParams();
+	void spotLightParams();
+	void pointLightParams();
+	bool lightsRegistered;
 	
 	Editor() = default;
 
