@@ -307,6 +307,7 @@ void Editor::dirLightParams()
 	ImGui::ColorEdit3("Directional light ambient", reinterpret_cast<float*>(&d->ambient));
 	ImGui::ColorEdit3("Directional light diffuse", reinterpret_cast<float*>(&d->diffuse));
 	ImGui::ColorEdit3("Directional light specular", reinterpret_cast<float*>(&d->specular));
+	ImGui::Checkbox("Directional light enabled", &d->enabled);
 
 	ImGui::Indent(-20);
 	ImGui::Spacing();
@@ -345,6 +346,7 @@ void Editor::pointLightParams()
 		ImGui::InputFloat((std::to_string(i) + " point light constant").c_str(), &ps[i]->constant);
 		ImGui::InputFloat((std::to_string(i) + " point light linear").c_str(), &ps[i]->linear);
 		ImGui::InputFloat((std::to_string(i) + " point light quadratic").c_str(), &ps[i]->quadratic);
+		ImGui::Checkbox((std::to_string(i) + " point light enabled").c_str(), &ps[i]->enabled);
 	}
 
 	ImGui::Indent(-20);
@@ -386,6 +388,7 @@ void Editor::spotLightParams()
 		ImGui::InputFloat((std::to_string(i) + " spotlight quadratic").c_str(), &ss[i]->quadratic);
 		ImGui::InputFloat((std::to_string(i) + " spotlight cutOff").c_str(), &ss[i]->cutOff);
 		ImGui::InputFloat((std::to_string(i) + " spotlight outerCutOff").c_str(), &ss[i]->outerCutOff);
+		ImGui::Checkbox((std::to_string(i) + " spotlight enabled").c_str(), &ss[i]->enabled);
 	}
 
 	ImGui::Indent(-20);

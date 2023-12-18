@@ -14,6 +14,7 @@ struct SpotLightParams
 	float quadratic = 0.032f;
 	float cutOff = 12.5f;			// in degrees
 	float outerCutOff = 15.0f;		// in degrees
+	bool enabled = true;
 };
 
 class SpotLight : public RenderInjector, public std::enable_shared_from_this<SpotLight>

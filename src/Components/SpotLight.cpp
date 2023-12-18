@@ -50,8 +50,16 @@ void SpotLight::RenderUpdate()
 	shader->setFloat(constantName.str(), s.constant);
 	shader->setFloat(linearName.str(), s.linear);
 	shader->setFloat(quadraticName.str(), s.quadratic);
-	shader->setFloat(cutOffName.str(), glm::cos(glm::radians(s.cutOff)));
-	shader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(s.outerCutOff)));
+	if (s.enabled)
+	{
+		shader->setFloat(cutOffName.str(), glm::cos(glm::radians(s.cutOff)));
+		shader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(s.outerCutOff)));
+	}
+	else
+	{
+		shader->setFloat(cutOffName.str(), 1);
+		shader->setFloat(outerCutOffName.str(), 1);
+	}
 
 	instancedShader->use();
 	instancedShader->setVector3(positionName.str(), position);
@@ -62,6 +70,14 @@ void SpotLight::RenderUpdate()
 	instancedShader->setFloat(constantName.str(), s.constant);
 	instancedShader->setFloat(linearName.str(), s.linear);
 	instancedShader->setFloat(quadraticName.str(), s.quadratic);
-	instancedShader->setFloat(cutOffName.str(), glm::cos(glm::radians(s.cutOff)));
-	instancedShader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(s.outerCutOff)));
+	if (s.enabled)
+	{
+		instancedShader->setFloat(cutOffName.str(), glm::cos(glm::radians(s.cutOff)));
+		instancedShader->setFloat(outerCutOffName.str(), glm::cos(glm::radians(s.outerCutOff)));
+	}
+	else
+	{
+		instancedShader->setFloat(cutOffName.str(), 1);
+		instancedShader->setFloat(outerCutOffName.str(), 1);
+	}
 }

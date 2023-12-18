@@ -38,14 +38,33 @@ void DirectionalLight::RenderUpdate()
 
 	shader->use();
 	shader->setVector3("dirLight.direction", eulerToVector(direction));
-	shader->setVector3("dirLight.ambient", ImVec4ToVec3(d.ambient));
-	shader->setVector3("dirLight.diffuse", ImVec4ToVec3(d.diffuse));
-	shader->setVector3("dirLight.specular", ImVec4ToVec3(d.specular));
+
+	if (d.enabled)
+	{
+		shader->setVector3("dirLight.ambient", ImVec4ToVec3(d.ambient));
+		shader->setVector3("dirLight.diffuse", ImVec4ToVec3(d.diffuse));
+		shader->setVector3("dirLight.specular", ImVec4ToVec3(d.specular));
+	}
+	else
+	{
+		shader->setVector3("dirLight.ambient", glm::vec3(0));
+		shader->setVector3("dirLight.diffuse", glm::vec3(0));
+		shader->setVector3("dirLight.specular", glm::vec3(0));
+	}
 
 	instancedShader->use();
 	instancedShader->setVector3("dirLight.direction", eulerToVector(direction));
-	instancedShader->setVector3("dirLight.ambient", ImVec4ToVec3(d.ambient));
-	instancedShader->setVector3("dirLight.diffuse", ImVec4ToVec3(d.diffuse));
-	instancedShader->setVector3("dirLight.specular", ImVec4ToVec3(d.specular));
 
+	if (d.enabled)
+	{
+		instancedShader->setVector3("dirLight.ambient", ImVec4ToVec3(d.ambient));
+		instancedShader->setVector3("dirLight.diffuse", ImVec4ToVec3(d.diffuse));
+		instancedShader->setVector3("dirLight.specular", ImVec4ToVec3(d.specular));
+	}
+	else
+	{
+		instancedShader->setVector3("dirLight.ambient", glm::vec3(0));
+		instancedShader->setVector3("dirLight.diffuse", glm::vec3(0));
+		instancedShader->setVector3("dirLight.specular", glm::vec3(0));
+	}
 }

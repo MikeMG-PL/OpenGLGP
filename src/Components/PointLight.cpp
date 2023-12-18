@@ -39,7 +39,10 @@ void PointLight::RenderUpdate()
 	shader->setVector3(specularName.str(), ImVec4ToVec3(p.specular));
 	shader->setFloat(constantName.str(), p.constant);
 	shader->setFloat(linearName.str(), p.linear);
-	shader->setFloat(quadraticName.str(), p.quadratic);
+	if(p.enabled)
+		shader->setFloat(quadraticName.str(), p.quadratic);
+	else
+		shader->setFloat(quadraticName.str(), 1);
 
 	instancedShader->use();
 	instancedShader->setVector3(positionName.str(), GetParent()->GetTransform()->GetPosParentSpace());
@@ -48,5 +51,8 @@ void PointLight::RenderUpdate()
 	instancedShader->setVector3(specularName.str(), ImVec4ToVec3(p.specular));
 	instancedShader->setFloat(constantName.str(), p.constant);
 	instancedShader->setFloat(linearName.str(), p.linear);
-	instancedShader->setFloat(quadraticName.str(), p.quadratic);
+	if (p.enabled)
+		instancedShader->setFloat(quadraticName.str(), p.quadratic);
+	else
+		instancedShader->setFloat(quadraticName.str(), 1);
 }
