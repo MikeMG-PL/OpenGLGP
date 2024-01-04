@@ -20,6 +20,12 @@
 #include "Engine/RenderInjector.h"
 #include "Engine/Shader.h"
 
+#include <windows.h>
+extern "C" {
+	_declspec(dllexport) DWORD NvOptimusEnablement = 1;
+	_declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+
 Renderer& Renderer::Get()
 {
 	static Renderer instance;
@@ -48,7 +54,7 @@ bool Renderer::Init(int X, int Y)
 	if (window == NULL)
 		return false;
 	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1); // Enable vsync
+	glfwSwapInterval(0); // Enable vsync
 
 	if (bool err = !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -124,7 +130,6 @@ void Renderer::Render(const Camera& camera)
 	shader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
 	shader.setInt("numPointLights", GetPointLights()->size());
 	shader.setInt("numSpotLights", GetSpotLights()->size());
-
 	instancedShader.use();
 	instancedShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
 	instancedShader.setInt("numPointLights", GetPointLights()->size());

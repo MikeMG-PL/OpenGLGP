@@ -65,7 +65,7 @@ int main(int, char**)
 	/// Declare last - instanced ///
 
 	auto hutSpawner = GameObject::CreateObject();
-	hutSpawner->AddComponent<HutSpawner>(20);
+	hutSpawner->AddComponent<HutSpawner>(200);
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())
