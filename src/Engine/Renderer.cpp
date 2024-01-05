@@ -21,6 +21,9 @@
 #include "Engine/Shader.h"
 
 #include <windows.h>
+
+#include "Animation system/RiggedModel.h"
+
 extern "C" {
 	_declspec(dllexport) DWORD NvOptimusEnablement = 1;
 	_declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
@@ -144,6 +147,23 @@ void Renderer::Render(const Camera& camera)
 
 		if (const auto injector = gameObjectPtr->GetComponent<RenderInjector>())
 			injector->RenderUpdate();
+
+
+		if (const auto riggedModelComponent = gameObjectPtr->GetComponent<RiggedModel>())
+		{
+			model = gameObjectPtr->GetTransform()->modelMatrix;
+			shader.use();
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", view);
+			shader.setMat4("model", model);
+
+			Rig rig = riggedModelComponent->rig;
+			rig.LocalToModel(riggedModelComponent->modelPose, riggedModelComponent->localPose);
+			rig.MultiplyInverseBindPoseByModelPose(riggedModelComponent->modelPose);
+
+			riggedModelComponent->Draw(shader);
+		}
+
 
 		if (const auto modelComponent = gameObjectPtr->GetComponent<Model>())
 		{

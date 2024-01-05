@@ -2,6 +2,8 @@
 #define WINDOW_Y 900
 
 #include <memory>
+
+#include "Animation system/RiggedModel.h"
 #include "GLFW/glfw3.h"
 #include "Helpers/GlobalInput.h"
 #include "Engine/Editor.h"
@@ -32,9 +34,15 @@ int main(int, char**)
 
 	/////////////////////////////////////////////////////////////////////////
 
-	// WARNING: A separate vertex shader for rigged model is needed, I guess. Double-check.
-	// Declare a rigged model here and continue.
+	auto enemy = GameObject::CreateObject();
+	enemy->AddComponent<RiggedModel>("../../res/models/enemy/enemy.dae", "../../res/models/enemy/enemy_pose.dae");
+	enemy->GetTransform()->localPosition = glm::vec3(-5, -1, 0);
+	enemy->GetTransform()->localEulerAngles = glm::vec3(-90, 0, 0);
 
+	// auto enemyDummy = GameObject::CreateObject();
+	// enemyDummy->AddComponent<Model>("../../res/models/enemy/enemy.dae", glm::vec2(1, 1));
+	// enemyDummy->GetTransform()->localPosition = glm::vec3(-8, -1, 0);
+	// enemyDummy->GetTransform()->localEulerAngles = glm::vec3(-90, 0, 0);
 
 	auto dirlight = GameObject::CreateObject();
 	dirlight->AddComponent<DirectionalLight>();
