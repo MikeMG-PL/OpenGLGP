@@ -104,7 +104,6 @@ void Model::loadModel(const std::string& path)
 		return;
 	}
 	directory = path.substr(0, path.find_last_of('/'));
-
 	processNode(scene->mRootNode, scene);
 }
 
@@ -129,6 +128,8 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
+
+	std::cout << mesh->mName.C_Str() << std::endl;
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{

@@ -19,10 +19,10 @@ public:
 
 	void Draw(Shader shader, int instanceID = -1);
 	void SetupInstancing();
-	unsigned int VAO, VBO, EBO;
-
+	unsigned int VAO, VBO, EBO, skinningBuffer;
 
 private:
+
 	GLenum drawType = GL_TRIANGLES;
 
 	// numInstances is only used with instancing enabled
