@@ -32,6 +32,10 @@ int main(int, char**)
 
 	/////////////////////////////////////////////////////////////////////////
 
+	// WARNING: A separate vertex shader for rigged model is needed, I guess. Double-check.
+	// Declare a rigged model here and continue.
+
+
 	auto dirlight = GameObject::CreateObject();
 	dirlight->AddComponent<DirectionalLight>();
 	dirlight->GetTransform()->localEulerAngles = {-70, 0, 0};
@@ -65,7 +69,7 @@ int main(int, char**)
 	/// Declare last - instanced ///
 
 	auto hutSpawner = GameObject::CreateObject();
-	hutSpawner->AddComponent<HutSpawner>(200);
+	hutSpawner->AddComponent<HutSpawner>(20);
 
 	// Main loop
 	while (!Renderer::Get().ShouldCloseWindow())

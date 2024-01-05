@@ -54,7 +54,7 @@ bool Renderer::Init(int X, int Y)
 	if (window == NULL)
 		return false;
 	glfwMakeContextCurrent(window);
-	glfwSwapInterval(0); // Enable vsync
+	glfwSwapInterval(1); // Enable vsync
 
 	if (bool err = !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
