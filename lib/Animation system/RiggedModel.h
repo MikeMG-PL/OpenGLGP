@@ -17,7 +17,6 @@ public:
 	void Draw(Shader shader);
 	Rig rig;
 
-	// Not a T-pose, it's desired pose you want to load from an additional file
 	std::vector<xform> modelPose;
 	std::vector<xform> localPose;
 

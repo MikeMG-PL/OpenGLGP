@@ -32,6 +32,7 @@ public:
     void setVector4(const std::string& name, glm::vec4 value) const;
     void setMat4(const std::string& name, glm::mat4 value) const;
     void setMat4Array(const std::string& name, const std::vector<glm::mat4>& values) const;
+    void setSkinningMatrices(const glm::mat4* bones) const;
 
 };
 

@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
+#include "Animation system/AnimXForm.h"
 #include <stdio.h>
 #include <filesystem>
 #include <GLFW/glfw3.h> // Include glfw3.h after our OpenGL definitions
@@ -11,7 +12,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "Components/Camera.h"
-#include "Components/HutSpawner.h"
+#include "Helpers/aiHelpers.h"
 #include "Components/Model.h"
 #include "Helpers/stb_image.h"
 #include "Engine/Editor.h"
@@ -21,6 +22,8 @@
 #include "Engine/Shader.h"
 
 #include <windows.h>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "Animation system/RiggedModel.h"
 
@@ -156,10 +159,6 @@ void Renderer::Render(const Camera& camera)
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", view);
 			shader.setMat4("model", model);
-
-			Rig rig = riggedModelComponent->rig;
-			rig.LocalToModel(riggedModelComponent->modelPose, riggedModelComponent->localPose);
-			rig.MultiplyInverseBindPoseByModelPose(riggedModelComponent->modelPose);
 
 			riggedModelComponent->Draw(shader);
 		}

@@ -2,6 +2,8 @@
 #include "Animation system/Rig.h"
 #include <iostream>
 #include <map>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "Helpers/aiHelpers.h"
 #include "Helpers/TextureLoader.h"
@@ -14,10 +16,40 @@ RiggedModel::RiggedModel(const std::string& modelPath, const std::string& animPa
 
 void RiggedModel::Draw(Shader shader)
 {
+	// Multiply by inv bind pose
+	glm::mat4 skinningMatrices[512] = { glm::mat4(1) };
+
 	for (unsigned int i = 0; i < meshes.size(); i++)
 	{
-		//auto r = rig;
-		// shader.setMat4Array("skin.bones", rig.skinnedPose);        // TOGGLE THIS, skin?
+		rig.LocalToModel(modelPose, localPose);
+
+		for (int i = 0; i < rig.numBones; i++)
+		{
+			xform inverseBindPoseXForm, skinnedXForm;
+			glm::vec3 scale;
+			glm::quat rotation;
+			glm::vec3 translation;
+			glm::vec3 skew;
+			glm::vec4 perspective;
+			glm::decompose(rig.inverseBindPose[i], scale, rotation, translation, skew, perspective);
+
+			inverseBindPoseXForm.position = translation;
+			inverseBindPoseXForm.rotation = rotation;
+
+			skinnedXForm = modelPose[i] * inverseBindPoseXForm;
+
+			glm::mat4 skinningMatrix = glm::mat4(1.0f);
+
+			skinningMatrix = glm::translate(skinningMatrix, skinnedXForm.position);
+			skinningMatrix = skinningMatrix * glm::toMat4(skinnedXForm.rotation);
+			skinningMatrix = glm::scale(skinningMatrix, glm::vec3(1.0f));
+
+			skinningMatrices[i] = skinningMatrix;
+		}
+
+		// I FINISHED HERE: Maybe I should somehow load poses of T-pose bones at the veeery beginning?
+
+		shader.setSkinningMatrices(skinningMatrices);			// TOGGLE THIS, skin?
 		meshes[i].Draw(shader);
 	}
 }
@@ -25,7 +57,7 @@ void RiggedModel::Draw(Shader shader)
 void RiggedModel::loadModel(const std::string& path, LoadMode mode)
 {
 	Assimp::Importer import;
-	scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_PopulateArmatureData);
 
 	if ((!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) && mode == RIG)
 	{
@@ -51,29 +83,30 @@ void RiggedModel::loadModel(const std::string& path, LoadMode mode)
 		// Process meshes and use the extracted bone data
 		processNode(scene->mRootNode);
 	}
-	else // If we are loading animation, not rig
+	if (mode == ANIM) // If we are loading animation, not rig
 	{
 		// Just a pose for now
 		// TODO: Cut out to separate function
 		// TODO: Attach sampler of course lol
-	
+
 		std::cout << rig.numBones << std::endl;
-	
+
 		for (int i = 0; i < rig.numBones; i++)
 		{
 			xform transform;
-	
+
 			const aiAnimation* animation = scene->mAnimations[0]; // Get the first animation
 			const aiNodeAnim* channel = animation->mChannels[i]; // Get the first channel
-	
+
 			// Get the position, rotation, and scaling keyframes from the first keyframe
 			const aiVector3D position = channel->mPositionKeys[0].mValue;
 			const aiQuaternion rotation = channel->mRotationKeys[0].mValue;
-	
+
 			transform.position = aiPosToGLMVec3(position);
 			transform.rotation = aiQuatToGLMQuat(rotation);
-	
-			localPose.emplace_back(transform);
+
+			// localPose.emplace_back(transform);
+			localPose[i] = localPose[i] * transform;
 		}
 	}
 }
@@ -100,50 +133,57 @@ Mesh RiggedModel::processMesh(aiMesh* mesh)
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 
-	std::map<int, glm::ivec4> vertexToBoneIndices;
-	std::map<int, glm::vec4> vertexToBoneWeights;
-	Vertex vertex;
-	int vertexID = 0;
 	glm::ivec4 skinIndices = { -1, -1, -1, -1 };
 	glm::vec4 skinWeights = { 0, 0, 0, 0 };
+
+	std::map<unsigned int, glm::ivec4> vertexToBoneIndices;
+	std::map<unsigned int, glm::vec4> vertexToBoneWeights;
+	Vertex vertex;
+	unsigned int vertexID = 0;
+	unsigned int boneID = 0;
+	float weight = 0.0f;
+
+	// TODO: Optimize, reduce number of for loops used. Now I just want to make it work.
 
 	for (int i = 0; i < mesh->mNumBones; i++)
 	{
 		for (int j = 0; j < mesh->mBones[i]->mNumWeights; j++)
 		{
 			vertexID = mesh->mBones[i]->mWeights[j].mVertexId;
-			int boneID = i; // Bone ID is the index of the bone in the array
-	
-			// Initialize the ivec4 with -1s and vec4 with 0s if it doesn't exist in the map
-			vertexToBoneIndices.try_emplace(vertexID, skinIndices);
-			vertexToBoneWeights.try_emplace(vertexID, skinWeights);
-	
-			// Get the current skinIndices for the vertex
-			skinIndices = vertexToBoneIndices[vertexID];
-			skinWeights = vertexToBoneWeights[vertexID];
-	
-			// Find the first available slot in the ivec4
-			int slot = -1;
-			for (int k = 0; k < 4; k++)
+			boneID = i;
+			weight = mesh->mBones[i]->mWeights[j].mWeight;
+
+			// Initialize the ivec4 with -1s and vec4 with 0s - default values
+
+			if (!vertexToBoneIndices.contains(vertexID))
 			{
-				if (skinIndices[k] == -1)
-				{
-					slot = k;
-					break;
-				}
+				vertexToBoneIndices.try_emplace(vertexID, skinIndices);
+				vertexToBoneWeights.try_emplace(vertexID, skinWeights);
 			}
-	
-			// If there is an available slot, assign the bone ID to it
-			if (slot != -1)
+
+			// TODO: Get rid of this way of filling the ivec4.
+			if (vertexToBoneIndices[vertexID].x == -1)
 			{
-				skinIndices[slot] = boneID;
-				float boneWeight = mesh->mBones[boneID]->mWeights[vertexID].mWeight;
-				skinWeights[slot] = boneWeight;
-				vertexToBoneIndices[vertexID] = skinIndices;
+				vertexToBoneIndices[vertexID].x = i;
+				vertexToBoneWeights[vertexID].x = weight;
+			}
+			else if (vertexToBoneIndices[vertexID].y == -1)
+			{
+				vertexToBoneIndices[vertexID].y = i;
+				vertexToBoneWeights[vertexID].y = weight;
+			}
+			else if (vertexToBoneIndices[vertexID].z == -1)
+			{
+				vertexToBoneIndices[vertexID].z = i;
+				vertexToBoneWeights[vertexID].z = weight;
+			}
+			else if (vertexToBoneIndices[vertexID].w == -1)
+			{
+				vertexToBoneIndices[vertexID].w = i;
+				vertexToBoneWeights[vertexID].w = weight;
 			}
 		}
 	}
-
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -174,6 +214,9 @@ Mesh RiggedModel::processMesh(aiMesh* mesh)
 
 		vertices.push_back(vertex);
 	}
+
+	auto x = vertexToBoneIndices;
+	auto x1 = vertexToBoneWeights;
 
 	// Process indices
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
@@ -238,7 +281,7 @@ void RiggedModel::extractBoneData(aiNode* node, LoadMode mode)
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[0]]; // Assuming one mesh per node for simplicity
 		extractBoneDataFromMesh(mesh, mode);
 	}
-	
+
 	// Recursively process child nodes
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
@@ -251,32 +294,45 @@ void RiggedModel::extractBoneDataFromMesh(aiMesh* mesh, LoadMode mode)
 	// Extract bone data from the mesh
 	for (unsigned int i = 0; i < mesh->mNumBones; i++)
 	{
-		aiBone* bone = mesh->mBones[i];
-	
 		// Extract bone name, parent index, and bind pose
+		const aiBone* bone = mesh->mBones[i];
+		hstring parentBoneName;
 		hstring boneName = hash(bone->mName.C_Str());
-	
+
+		if (bone->mNode == nullptr || bone->mNode->mParent == nullptr)
+			parentBoneName = -1;
+		else
+			parentBoneName = hash(bone->mNode->mParent->mName.C_Str());
+
 		// Find parent bone in the mBones array
 		int parentIndex = -1;
-	
+
 		for (unsigned int j = 0; j < mesh->mNumBones; j++)
 		{
-			if (i != j && strcmp(mesh->mBones[j]->mName.C_Str(), bone->mName.C_Str()) == 0)
+			const hstring checkedBoneName = hash(mesh->mBones[j]->mName.C_Str());
+			if (i != j && parentBoneName == checkedBoneName)
 			{
 				// Found the parent bone
 				parentIndex = j;
 				break;
 			}
 		}
-	
+
 		const aiMatrix4x4 aiInverseBindPose = bone->mOffsetMatrix;
 		glm::mat4 inverseBindPose = aiMatrix4x4ToGlm(&aiInverseBindPose);
-	
+
 		// Add the extracted data to the Rig
+		auto bindPose = bone->mArmature->mTransformation;
+		aiQuaternion q; aiVector3D p;
+		bindPose.DecomposeNoScaling(q, p);
+		xform bindPoseXForm;
+		bindPoseXForm.position = {p.x, p.y, p.z};
+		bindPoseXForm.rotation = {q.x, q.y, q.z, q.w};
+
+		localPose.push_back(bindPoseXForm);
 		rig.boneNames.push_back(boneName);
 		rig.parents.push_back(parentIndex);
 		rig.inverseBindPose.push_back(inverseBindPose);
 	}
 	rig.numBones += mesh->mNumBones;
-	rig.skinnedPose.resize(rig.numBones);
 }

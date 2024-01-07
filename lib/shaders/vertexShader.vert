@@ -24,37 +24,37 @@ void main()
     vec4 norm = vec4(aNormal, 1.0f);
     vec4 posSkinned = vec4(aPos, 1.0f);  // Initialize to default
     
-    // // Check if there are bones influencing the vertex
-    // bool hasInfluences = false;
-    // for(int i = 0; i < 4; i++)
-    // {
-    //     if(skinIndices[i] >= 0)
-    //     {
-    //         hasInfluences = true;
-    //         break;
-    //     }
-    // }
+    // Check if there are bones influencing the vertex
+    bool hasInfluences = false;
+    for(int i = 0; i < 4; i++)
+    {
+        if(skinIndices[i] >= 0)
+        {
+            hasInfluences = true;
+            break;
+        }
+    }
 
-    // if (hasInfluences)
-    // {
-    //     // Perform skinning calculations
-    //     posSkinned = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-    //     vec4 normSkinned = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    if (hasInfluences)
+    {
+        // Perform skinning calculations
+        posSkinned = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+        vec4 normSkinned = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    //     for(int i = 0; i < 4; i++)
-    //     {
-    //         if(skinIndices[i] >= 0)
-    //         {
-    //             mat4 bone = skin.bones[skinIndices[i]];
-    //             float weight = skinWeights[i];
+        for(int i = 0; i < 4; i++)
+        {
+            if(skinIndices[i] >= 0)
+            {
+                mat4 bone = skin.bones[skinIndices[i]];
+                float weight = skinWeights[i];
 
-    //             posSkinned += (bone * pos) * weight;
-    //             normSkinned += (bone * norm) * weight;
-    //         }
-    //     }
+                posSkinned += (bone * pos) * weight;
+                normSkinned += (bone * norm) * weight;
+            }
+        }
 
-    //     posSkinned.w = 1.0f;
-    // }
+        posSkinned.w = 1.0f;
+    }
 
     gl_Position = projection * view * model * posSkinned;
     FragPos = vec3(model * vec4(aPos, 1.0));
