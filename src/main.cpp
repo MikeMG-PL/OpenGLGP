@@ -35,9 +35,11 @@ int main(int, char**)
 	/////////////////////////////////////////////////////////////////////////
 
 	auto enemy = GameObject::CreateObject();
-	enemy->AddComponent<RiggedModel>("../../res/models/enemy/enemy.gltf", "../../res/models/enemy/enemy_pose.gltf");
+	enemy->AddComponent<RiggedModel>("../../res/models/enemy/Y Bot.dae", "../../res/models/enemy/Silly Dancing.dae");
 	// enemy->AddComponent<RiggedModel>("../../res/models/enemy/enemy.dae", "../../res/models/enemy/enemy_pose.dae");
 	enemy->GetTransform()->localPosition = glm::vec3(-5, -1, 0);
+	// enemy->GetTransform()->localEulerAngles = glm::vec3(0, 0, 90);
+	enemy->GetTransform()->localScale = glm::vec3(0.01f, 0.01f, 0.01f);
 
 	// auto enemyDummy = GameObject::CreateObject();
 	// enemyDummy->AddComponent<Model>("../../res/models/enemy/enemy.gltf", glm::vec2(1, 1));

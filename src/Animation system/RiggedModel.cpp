@@ -5,6 +5,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "Engine/GameInstance.h"
 #include "Helpers/aiHelpers.h"
 #include "Helpers/TextureLoader.h"
 
@@ -16,6 +17,8 @@ RiggedModel::RiggedModel(const std::string& modelPath, const std::string& animPa
 
 void RiggedModel::Draw(Shader shader)
 {
+	time += GameInstance::Get().GetDeltaTime();
+
 	// Multiply by inv bind pose
 	glm::mat4 skinningMatrices[512] = { glm::mat4(1) };
 
@@ -23,7 +26,7 @@ void RiggedModel::Draw(Shader shader)
 	{
 		rig.LocalToModel(modelPose, localPose);
 
-		for (int i = 0; i < rig.numBones; i++)
+		for (int j = 0; j < rig.numBones; j++)
 		{
 			xform inverseBindPoseXForm, skinnedXForm;
 			glm::vec3 scale;
@@ -31,12 +34,12 @@ void RiggedModel::Draw(Shader shader)
 			glm::vec3 translation;
 			glm::vec3 skew;
 			glm::vec4 perspective;
-			glm::decompose(rig.inverseBindPose[i], scale, rotation, translation, skew, perspective);
+			glm::decompose(rig.inverseBindPose[j], scale, rotation, translation, skew, perspective);
 
 			inverseBindPoseXForm.position = translation;
 			inverseBindPoseXForm.rotation = rotation;
 
-			skinnedXForm = modelPose[i] * inverseBindPoseXForm;
+			skinnedXForm = modelPose[j] * inverseBindPoseXForm;
 
 			glm::mat4 skinningMatrix = glm::mat4(1.0f);
 
@@ -44,7 +47,15 @@ void RiggedModel::Draw(Shader shader)
 			skinningMatrix = skinningMatrix * glm::toMat4(skinnedXForm.rotation);
 			skinningMatrix = glm::scale(skinningMatrix, glm::vec3(1.0f));
 
-			skinningMatrices[i] = skinningMatrix;
+			if(j == 4)
+			{
+
+				glm::mat4 rot = glm::mat4(1.0f);
+				rot = glm::rotate(rot, glm::sin(time), glm::vec3(0, 1, 0));
+				skinningMatrices[j] = glm::inverse(rig.inverseBindPose[j]) * rot * rig.inverseBindPose[j];
+			}
+			else
+				skinningMatrices[j] = glm::inverse(rig.inverseBindPose[j]) * rig.inverseBindPose[j];
 		}
 
 		// I FINISHED HERE: Maybe I should somehow load poses of T-pose bones at the veeery beginning?
@@ -95,15 +106,15 @@ void RiggedModel::loadModel(const std::string& path, LoadMode mode)
 		{
 			xform transform;
 
-			const aiAnimation* animation = scene->mAnimations[0]; // Get the first animation
-			const aiNodeAnim* channel = animation->mChannels[i]; // Get the first channel
-
-			// Get the position, rotation, and scaling keyframes from the first keyframe
-			const aiVector3D position = channel->mPositionKeys[0].mValue;
-			const aiQuaternion rotation = channel->mRotationKeys[0].mValue;
-
-			transform.position = aiPosToGLMVec3(position);
-			transform.rotation = aiQuatToGLMQuat(rotation);
+			// const aiAnimation* animation = scene->mAnimations[0]; // Get the first animation
+			// const aiNodeAnim* channel = animation->mChannels[i]; // Get the first channel
+			//
+			// // Get the position, rotation, and scaling keyframes from the first keyframe
+			// const aiVector3D position = channel->mPositionKeys[0].mValue;
+			// const aiQuaternion rotation = channel->mRotationKeys[0].mValue;
+			//
+			// transform.position = aiPosToGLMVec3(position);
+			// transform.rotation = aiQuatToGLMQuat(rotation);
 
 			localPose.emplace_back(transform);
 		}

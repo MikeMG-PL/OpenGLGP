@@ -16,6 +16,7 @@ public:
 	RiggedModel(const std::string& modelPath, const std::string& animPath);
 	void Draw(Shader shader);
 	Rig rig;
+	float time = 0;
 
 	std::vector<xform> modelPose;
 	std::vector<xform> localPose;
