@@ -25,6 +25,7 @@ void Rig::LocalToModel(std::vector<xform>& modelPose, const std::vector<xform>& 
 	// Remember to: inv bind pose * pose in model space = skinning matrices
 }
 
+// DEPRECATED, data from the function got overriden somehow, moved to RiggedModel's Draw().
 void Rig::MultiplyInverseBindPoseByModelPose(const std::vector<xform>& modelPose)
 {
 	//skinnedPose.resize(numBones);

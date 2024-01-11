@@ -105,8 +105,7 @@ void RiggedModel::loadModel(const std::string& path, LoadMode mode)
 			transform.position = aiPosToGLMVec3(position);
 			transform.rotation = aiQuatToGLMQuat(rotation);
 
-			// localPose.emplace_back(transform);
-			localPose[i] = localPose[i] * transform;
+			localPose.emplace_back(transform);
 		}
 	}
 }
@@ -321,15 +320,6 @@ void RiggedModel::extractBoneDataFromMesh(aiMesh* mesh, LoadMode mode)
 		const aiMatrix4x4 aiInverseBindPose = bone->mOffsetMatrix;
 		glm::mat4 inverseBindPose = aiMatrix4x4ToGlm(&aiInverseBindPose);
 
-		// Add the extracted data to the Rig
-		auto bindPose = bone->mArmature->mTransformation;
-		aiQuaternion q; aiVector3D p;
-		bindPose.DecomposeNoScaling(q, p);
-		xform bindPoseXForm;
-		bindPoseXForm.position = {p.x, p.y, p.z};
-		bindPoseXForm.rotation = {q.x, q.y, q.z, q.w};
-
-		localPose.push_back(bindPoseXForm);
 		rig.boneNames.push_back(boneName);
 		rig.parents.push_back(parentIndex);
 		rig.inverseBindPose.push_back(inverseBindPose);
