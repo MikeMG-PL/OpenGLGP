@@ -29,6 +29,7 @@ public:
 	const char* GetGLSLVersion() const;
 	Shader GetShader() const;
 	Shader GetInstancedShader() const;
+	Shader GetReflectionShader() const;
 	glm::mat4 GetModelMatrix() const;
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
@@ -111,6 +112,7 @@ private:
 	Shader shader;
 	Shader instancedShader;
 	Shader cubemapShader;
+	Shader reflectionShader;
 	int windowX = 0, windowY = 0;
 	GLFWwindow* window;
 	const char* glsl_version;
@@ -119,18 +121,19 @@ private:
 	const GLchar* fragmentShaderPath = "../../lib/Shaders/fragmentShader.frag";
 	const GLchar* cubemapVertexShaderPath = "../../lib/Shaders/cubemapVertexShader.vert";
 	const GLchar* cubemapFragmentShaderPath = "../../lib/Shaders/cubemapFragmentShader.frag";
+	const GLchar* reflectionFragmentShaderPath = "../../lib/Shaders/reflectionFragmentShader.frag";
 
 	std::vector<std::shared_ptr<PointLight>> pointLights;
 	std::vector<std::shared_ptr<SpotLight>> spotLights;
-
-	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 projection = glm::mat4(1.0f);
 
 	GLuint modelLoc;
 	GLuint viewLoc;
 	GLuint projectionLoc;
 	GLint customColorLoc;
+
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 projection = glm::mat4(1.0f);
 
 	void InitUniformLocs();
 

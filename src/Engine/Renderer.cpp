@@ -74,6 +74,7 @@ bool Renderer::Init(int X, int Y)
 	shader = Shader(0, vertexShaderPath, fragmentShaderPath);
 	instancedShader = Shader(1, instancedVertexShaderPath, fragmentShaderPath);
 	cubemapShader = Shader(2, cubemapVertexShaderPath, cubemapFragmentShaderPath);
+	reflectionShader = Shader(3, vertexShaderPath, reflectionFragmentShaderPath);
 	InitUniformLocs();
 	cubemap = SetupCubemap();
 
@@ -103,6 +104,11 @@ Shader Renderer::GetShader() const
 Shader Renderer::GetInstancedShader() const
 {
 	return instancedShader;
+}
+
+Shader Renderer::GetReflectionShader() const
+{
+	return reflectionShader;
 }
 
 glm::mat4 Renderer::GetModelMatrix() const
@@ -154,7 +160,6 @@ void Renderer::Render(const Camera& camera)
 		if (const auto injector = gameObjectPtr->GetComponent<RenderInjector>())
 			injector->RenderUpdate();
 
-
 		if (const auto riggedModelComponent = gameObjectPtr->GetComponent<RiggedModel>())
 		{
 			model = gameObjectPtr->GetTransform()->modelMatrix;
@@ -166,10 +171,10 @@ void Renderer::Render(const Camera& camera)
 			riggedModelComponent->Draw(shader);
 		}
 
-
 		if (const auto modelComponent = gameObjectPtr->GetComponent<Model>())
 		{
-			if (!modelComponent->IsInstanced())
+			// Render non-reflective models
+			if (!modelComponent->IsInstanced() && !modelComponent->IsReflective())
 			{
 				model = gameObjectPtr->GetTransform()->modelMatrix;
 				shader.use();
@@ -177,6 +182,18 @@ void Renderer::Render(const Camera& camera)
 				shader.setMat4("view", view);
 				shader.setMat4("model", model);
 				modelComponent->Draw(shader);
+			}
+
+			// Render reflective models (no support for instanced reflective models YET) // TODO: Add it lol
+			if(!modelComponent->IsInstanced() && modelComponent->IsReflective())
+			{
+				model = gameObjectPtr->GetTransform()->modelMatrix;
+				reflectionShader.use();
+				reflectionShader.setMat4("projection", projection);
+				reflectionShader.setMat4("view", view);
+				reflectionShader.setMat4("model", model);
+				reflectionShader.setFloat("dimValue", modelComponent->dimValue);
+				modelComponent->Draw(reflectionShader);
 			}
 		}
 	}

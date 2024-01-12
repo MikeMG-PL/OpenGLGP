@@ -53,6 +53,16 @@ bool Model::IsInstanced() const
 	return instanced;
 }
 
+bool Model::IsReflective() const
+{
+	return reflective;
+}
+
+void Model::SetReflective(bool r)
+{
+	reflective = r;
+}
+
 std::vector<Mesh>& Model::GetMeshes()
 {
 	return meshes;

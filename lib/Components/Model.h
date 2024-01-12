@@ -21,7 +21,10 @@ public:
 	// Model(float sphereRadius, int sectors, int stacks, const std::string& texturePath, GLenum drawType);
     void Draw(Shader shader);
     bool IsInstanced() const;
+    bool IsReflective() const;
+    void SetReflective(bool r);
     std::vector<Mesh>& GetMeshes();
+    float dimValue = 0.4f;
 
 private:
 
@@ -37,6 +40,9 @@ private:
         std::string typeName);
 
     glm::vec2 tiling = {1, 1};
+
+    // Reflections
+    bool reflective = false;
 
     // Instancing
     bool instanced;

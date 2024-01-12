@@ -47,10 +47,68 @@ int main(int, char**)
 
 	//////////////////////////////////////////////////////////////////////////
 
+	const glm::vec3 initialCarPos = { -6, -1, 5 };
+	const glm::vec3 initialCarRot = glm::vec3(90, 30, 180);
+
+	auto car = GameObject::CreateObject();
+	car->AddComponent<Model>("../../res/models/car/carbase.dae", glm::vec2(1, 1));
+	car->GetTransform()->localPosition = initialCarPos;
+	car->GetTransform()->localEulerAngles = initialCarRot;
+
+	auto rightFront = GameObject::CreateObject();
+	rightFront->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
+	rightFront->GetTransform()->localPosition = { 0.65f, 1.3f, 0.35f };
+	rightFront->GetComponent<Model>()->SetReflective(true);
+
+	auto leftFront = GameObject::CreateObject();
+	leftFront->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
+	leftFront->GetTransform()->localPosition = { -0.65f, 1.3f, 0.35f };
+	leftFront->GetComponent<Model>()->SetReflective(true);
+
+	auto rightBack = GameObject::CreateObject();
+	rightBack->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
+	rightBack->GetTransform()->localPosition = { 0.65f, -1.15f, 0.35f };
+	rightBack->GetComponent<Model>()->SetReflective(true);
+
+	auto leftBack = GameObject::CreateObject();
+	leftBack->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
+	leftBack->GetTransform()->localPosition = { -0.65f, -1.15f, 0.35f };
+	leftBack->GetComponent<Model>()->SetReflective(true);
+
+	auto additionalWheel = GameObject::CreateObject();
+	additionalWheel->AddComponent<Model>("../../res/models/car/additionalWheel.dae", glm::vec2(1, 1));
+	additionalWheel->GetTransform()->localPosition = { 0, -1.75f, 0.95f };
+	additionalWheel->GetTransform()->localEulerAngles = { 0, 60, 90 };
+	additionalWheel->GetComponent<Model>()->SetReflective(true);
+
+	auto leftDoor = GameObject::CreateObject();
+	leftDoor->AddComponent<Model>("../../res/models/car/leftDoor.dae", glm::vec2(1, 1));
+	leftDoor->GetTransform()->localPosition = { -0.65f, 0.425f, 0.5f };
+	leftDoor->GetTransform()->localEulerAngles = { 0, 0, -30 };
+
+	auto rightDoor = GameObject::CreateObject();
+	rightDoor->AddComponent<Model>("../../res/models/car/rightDoor.dae", glm::vec2(1, 1));
+	rightDoor->GetTransform()->localPosition = { 0.65f, 0.425f, 0.5f };
+	rightDoor->GetTransform()->localEulerAngles = { 0, 0, 30 };
+
+	// This will be refractive not reflective
+	auto pane = GameObject::CreateObject();
+	pane->AddComponent<Model>("../../res/models/car/pane.dae", glm::vec2(1, 1));
+	pane->GetComponent<Model>()->SetReflective(true);
+
+	car->GetTransform()->AddChild(rightFront->GetTransform());
+	car->GetTransform()->AddChild(leftFront->GetTransform());
+	car->GetTransform()->AddChild(rightBack->GetTransform());
+	car->GetTransform()->AddChild(leftBack->GetTransform());
+	car->GetTransform()->AddChild(leftDoor->GetTransform());
+	car->GetTransform()->AddChild(rightDoor->GetTransform());
+	car->GetTransform()->AddChild(pane->GetTransform());
+	car->GetTransform()->AddChild(additionalWheel->GetTransform());
+
 	auto dirlight = GameObject::CreateObject();
 	dirlight->AddComponent<DirectionalLight>();
-	dirlight->GetTransform()->localEulerAngles = {-70, 0, 0};
-	dirlight->GetTransform()->localPosition = {25, 25, 25};
+	dirlight->GetTransform()->localEulerAngles = { -70, 0, 0 };
+	dirlight->GetTransform()->localPosition = { 25, 25, 25 };
 
 	auto pointLightRoot = GameObject::CreateObject();
 	pointLightRoot->GetTransform()->localPosition = { 50, 3, 50 };
