@@ -20,6 +20,7 @@ public:
 	static Renderer& Get();
 
 	bool Init(int X, int Y);
+	
 	void Render(const Camera& camera);
 	//void Unbind();
 	void Cleanup();
@@ -45,14 +46,79 @@ public:
 
 private:
 
+	// Cubemap data
+	unsigned SetupCubemap();
+	unsigned skyboxVAO, skyboxVBO;
+	void DrawCubemap(const Camera& camera);
+	unsigned int cubemap;
+
+	std::vector<std::string> texturesFaces =
+	{
+		"../../res/textures/sky/posx.jpg",
+		"../../res/textures/sky/negx.jpg",
+		"../../res/textures/sky/posy.jpg",
+		"../../res/textures/sky/negy.jpg",
+		"../../res/textures/sky/posz.jpg",
+		"../../res/textures/sky/negz.jpg"
+	};
+
+	float skyboxVertices[108] = {
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+
+	// Well, end of cubemap data
+
 	Shader shader;
 	Shader instancedShader;
+	Shader cubemapShader;
 	int windowX = 0, windowY = 0;
 	GLFWwindow* window;
 	const char* glsl_version;
 	const GLchar* vertexShaderPath = "../../lib/Shaders/vertexShader.vert";
 	const GLchar* instancedVertexShaderPath = "../../lib/Shaders/instancedVertexShader.vert";
 	const GLchar* fragmentShaderPath = "../../lib/Shaders/fragmentShader.frag";
+	const GLchar* cubemapVertexShaderPath = "../../lib/Shaders/cubemapVertexShader.vert";
+	const GLchar* cubemapFragmentShaderPath = "../../lib/Shaders/cubemapFragmentShader.frag";
 
 	std::vector<std::shared_ptr<PointLight>> pointLights;
 	std::vector<std::shared_ptr<SpotLight>> spotLights;

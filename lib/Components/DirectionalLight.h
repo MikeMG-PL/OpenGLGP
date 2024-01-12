@@ -6,9 +6,9 @@
 
 struct DirectionalLightParams
 {
-	ImVec4 ambient = { 0.05f, 0.05f, 0.05f, 1 };
-	ImVec4 diffuse = { 0.3f, 0.3f, 0.3f, 1 };
-	ImVec4 specular = { 0.4f, 0.4f, 0.4f, 1 };
+	ImVec4 ambient = { 0.03f, 0.03f, 0.03f, 1 };
+	ImVec4 diffuse = { 0.15f, 0.15f, 0.15f, 1 };
+	ImVec4 specular = { 0.2f, 0.2f, 0.2f, 1 };
 	bool enabled = true;
 };
 

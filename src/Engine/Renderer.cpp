@@ -73,9 +73,10 @@ bool Renderer::Init(int X, int Y)
 	glEnable(GL_DEPTH_TEST);
 	shader = Shader(0, vertexShaderPath, fragmentShaderPath);
 	instancedShader = Shader(1, instancedVertexShaderPath, fragmentShaderPath);
+	cubemapShader = Shader(2, cubemapVertexShaderPath, cubemapFragmentShaderPath);
 	InitUniformLocs();
-	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowX) / static_cast<float>(windowY), 0.1f, 1000.0f);
-	shader.use();
+	cubemap = SetupCubemap();
+
 	return true;
 }
 
@@ -130,9 +131,11 @@ void Renderer::Render(const Camera& camera)
 	const ImVec4 drawingColor = Editor::Get().GetDrawingColor();
 	glUniform4f(customColorLoc, drawingColor.x, drawingColor.y, drawingColor.z, drawingColor.w);
 
-	view = camera.view;
-
 	shader.use();
+
+	view = camera.view;
+	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowX) / static_cast<float>(windowY), 0.1f, 1000.0f);
+
 	shader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
 	shader.setInt("numPointLights", GetPointLights()->size());
 	shader.setInt("numSpotLights", GetSpotLights()->size());
@@ -177,12 +180,15 @@ void Renderer::Render(const Camera& camera)
 			}
 		}
 	}
+
+	DrawCubemap(camera);
 }
 
 void Renderer::Cleanup()
 {
 	shader.cleanup();
 	instancedShader.cleanup();
+	cubemapShader.cleanup();
 }
 
 void Renderer::SetBackgroundColor(ImVec4 color)
@@ -224,6 +230,67 @@ void Renderer::CloseWindow()
 void Renderer::glfw_error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
+unsigned Renderer::SetupCubemap()
+{
+	stbi_set_flip_vertically_on_load(false);
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+	int width, height, nrChannels;
+	for (unsigned int i = 0; i < texturesFaces.size(); i++)
+	{
+		unsigned char* data = stbi_load(texturesFaces[i].c_str(), &width, &height, &nrChannels, 3);
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+			);
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "Cubemap texture failed to load at path: " << texturesFaces[i] << std::endl;
+			stbi_image_free(data);
+		}
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	stbi_set_flip_vertically_on_load(true);
+
+	return textureID;
+}
+
+void Renderer::DrawCubemap(const Camera& camera)
+{
+	// skybox VAO
+	unsigned int skyboxVAO, skyboxVBO;
+	glGenVertexArrays(1, &skyboxVAO);
+	glGenBuffers(1, &skyboxVBO);
+	glBindVertexArray(skyboxVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+	cubemapShader.use();
+	view = glm::mat4(glm::mat3(camera.view)); // remove translation from the view matrix
+	cubemapShader.setMat4("view", view);
+	cubemapShader.setMat4("projection", projection);
+	// skybox cube
+	glBindVertexArray(skyboxVAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
 void Renderer::InitUniformLocs()
