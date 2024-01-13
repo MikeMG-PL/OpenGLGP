@@ -113,6 +113,7 @@ private:
 	Shader instancedShader;
 	Shader cubemapShader;
 	Shader reflectionShader;
+	Shader refractionShader;
 	int windowX = 0, windowY = 0;
 	GLFWwindow* window;
 	const char* glsl_version;
@@ -122,6 +123,7 @@ private:
 	const GLchar* cubemapVertexShaderPath = "../../lib/Shaders/cubemapVertexShader.vert";
 	const GLchar* cubemapFragmentShaderPath = "../../lib/Shaders/cubemapFragmentShader.frag";
 	const GLchar* reflectionFragmentShaderPath = "../../lib/Shaders/reflectionFragmentShader.frag";
+	const GLchar* refractionFragmentShaderPath = "../../lib/Shaders/refractionFragmentShader.frag";
 
 	std::vector<std::shared_ptr<PointLight>> pointLights;
 	std::vector<std::shared_ptr<SpotLight>> spotLights;

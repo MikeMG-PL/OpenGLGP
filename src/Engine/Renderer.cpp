@@ -75,6 +75,7 @@ bool Renderer::Init(int X, int Y)
 	instancedShader = Shader(1, instancedVertexShaderPath, fragmentShaderPath);
 	cubemapShader = Shader(2, cubemapVertexShaderPath, cubemapFragmentShaderPath);
 	reflectionShader = Shader(3, vertexShaderPath, reflectionFragmentShaderPath);
+	refractionShader = Shader(4, vertexShaderPath, refractionFragmentShaderPath);
 	InitUniformLocs();
 	cubemap = SetupCubemap();
 
@@ -174,27 +175,41 @@ void Renderer::Render(const Camera& camera)
 		if (const auto modelComponent = gameObjectPtr->GetComponent<Model>())
 		{
 			// Render non-reflective models
-			if (!modelComponent->IsInstanced() && !modelComponent->IsReflective())
+			if (!modelComponent->IsInstanced())
 			{
-				model = gameObjectPtr->GetTransform()->modelMatrix;
-				shader.use();
-				shader.setMat4("projection", projection);
-				shader.setMat4("view", view);
-				shader.setMat4("model", model);
-				modelComponent->Draw(shader);
-			}
+				switch (modelComponent->GetMaterial())
+				{
+				default:
+					model = gameObjectPtr->GetTransform()->modelMatrix;
+					shader.use();
+					shader.setMat4("projection", projection);
+					shader.setMat4("view", view);
+					shader.setMat4("model", model);
+					modelComponent->Draw(shader);
+					break;
 
-			// Render reflective models (no support for instanced reflective models YET) // TODO: Add it lol
-			if(!modelComponent->IsInstanced() && modelComponent->IsReflective())
-			{
-				model = gameObjectPtr->GetTransform()->modelMatrix;
-				reflectionShader.use();
-				reflectionShader.setMat4("projection", projection);
-				reflectionShader.setMat4("view", view);
-				reflectionShader.setMat4("model", model);
-				reflectionShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
-				reflectionShader.setFloat("dimValue", modelComponent->dimValue);
-				modelComponent->Draw(reflectionShader);
+				case REFLECTIVE:
+					model = gameObjectPtr->GetTransform()->modelMatrix;
+					reflectionShader.use();
+					reflectionShader.setMat4("projection", projection);
+					reflectionShader.setMat4("view", view);
+					reflectionShader.setMat4("model", model);
+					reflectionShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
+					reflectionShader.setFloat("dimValue", modelComponent->dimValue);
+					modelComponent->Draw(reflectionShader);
+					break;
+
+				case REFRACTIVE:
+					model = gameObjectPtr->GetTransform()->modelMatrix;
+					refractionShader.use();
+					refractionShader.setMat4("projection", projection);
+					refractionShader.setMat4("view", view);
+					refractionShader.setMat4("model", model);
+					refractionShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
+					refractionShader.setFloat("dimValue", modelComponent->dimValue);
+					modelComponent->Draw(refractionShader);
+					break;
+				}
 			}
 		}
 	}

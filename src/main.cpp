@@ -58,28 +58,28 @@ int main(int, char**)
 	auto rightFront = GameObject::CreateObject();
 	rightFront->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
 	rightFront->GetTransform()->localPosition = { 0.65f, 1.3f, 0.35f };
-	rightFront->GetComponent<Model>()->SetReflective(true);
+	rightFront->GetComponent<Model>()->SetMaterial(REFLECTIVE);
 
 	auto leftFront = GameObject::CreateObject();
 	leftFront->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
 	leftFront->GetTransform()->localPosition = { -0.65f, 1.3f, 0.35f };
-	leftFront->GetComponent<Model>()->SetReflective(true);
+	leftFront->GetComponent<Model>()->SetMaterial(REFLECTIVE);
 
 	auto rightBack = GameObject::CreateObject();
 	rightBack->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
 	rightBack->GetTransform()->localPosition = { 0.65f, -1.15f, 0.35f };
-	rightBack->GetComponent<Model>()->SetReflective(true);
+	rightBack->GetComponent<Model>()->SetMaterial(REFLECTIVE);
 
 	auto leftBack = GameObject::CreateObject();
 	leftBack->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
 	leftBack->GetTransform()->localPosition = { -0.65f, -1.15f, 0.35f };
-	leftBack->GetComponent<Model>()->SetReflective(true);
+	leftBack->GetComponent<Model>()->SetMaterial(REFLECTIVE);
 
 	auto additionalWheel = GameObject::CreateObject();
 	additionalWheel->AddComponent<Model>("../../res/models/car/additionalWheel.dae", glm::vec2(1, 1));
 	additionalWheel->GetTransform()->localPosition = { 0, -1.75f, 0.95f };
 	additionalWheel->GetTransform()->localEulerAngles = { 0, 60, 90 };
-	additionalWheel->GetComponent<Model>()->SetReflective(true);
+	additionalWheel->GetComponent<Model>()->SetMaterial(REFLECTIVE);
 
 	auto leftDoor = GameObject::CreateObject();
 	leftDoor->AddComponent<Model>("../../res/models/car/leftDoor.dae", glm::vec2(1, 1));
@@ -94,12 +94,19 @@ int main(int, char**)
 	// This will be refractive not reflective
 	auto pane = GameObject::CreateObject();
 	pane->AddComponent<Model>("../../res/models/car/pane.dae", glm::vec2(1, 1));
-	pane->GetComponent<Model>()->SetReflective(true);
+	pane->GetComponent<Model>()->SetMaterial(REFRACTIVE);
 
-	auto box = GameObject::CreateObject();
-	box->AddComponent<Model>("../../res/models/jupiter/jupiter.obj", glm::vec2(1, 1));
-	box->GetTransform()->localPosition = { 0, 8, 0 };
-	box->GetComponent<Model>()->SetReflective(true);
+	auto testSphereReflect = GameObject::CreateObject();
+	testSphereReflect->AddComponent<Model>("../../res/models/sphere.dae", glm::vec2(1, 1));
+	testSphereReflect->GetTransform()->localPosition = { -7, 2.75f, -7 };
+	testSphereReflect->GetTransform()->localScale = { 0.1f, 0.1f, 0.1f };
+	testSphereReflect->GetComponent<Model>()->SetMaterial(REFLECTIVE);
+
+	auto testSphereRefract = GameObject::CreateObject();
+	testSphereRefract->AddComponent<Model>("../../res/models/sphere.dae", glm::vec2(1, 1));
+	testSphereRefract->GetTransform()->localPosition = { -18, 2.75f, -7 };
+	testSphereRefract->GetTransform()->localScale = { 0.1f, 0.1f, 0.1f };
+	testSphereRefract->GetComponent<Model>()->SetMaterial(REFRACTIVE);
 
 	car->GetTransform()->AddChild(rightFront->GetTransform());
 	car->GetTransform()->AddChild(leftFront->GetTransform());

@@ -11,6 +11,14 @@
 #include "Engine/Mesh.h"
 #include "Engine/Shader.h"
 
+// TODO: This is a hacky way of implementing materials, do it properly.
+enum Material
+{
+	STANDARD,
+    REFLECTIVE,
+    REFRACTIVE
+};
+
 class Model : public Component
 {
 public:
@@ -21,8 +29,8 @@ public:
 	// Model(float sphereRadius, int sectors, int stacks, const std::string& texturePath, GLenum drawType);
     void Draw(Shader shader);
     bool IsInstanced() const;
-    bool IsReflective() const;
-    void SetReflective(bool r);
+    Material GetMaterial() const;
+    void SetMaterial(Material m);
     std::vector<Mesh>& GetMeshes();
     float dimValue = 0.7f;
 
@@ -41,8 +49,8 @@ private:
 
     glm::vec2 tiling = {1, 1};
 
-    // Reflections
-    bool reflective = false;
+    // Material
+    Material material = STANDARD;
 
     // Instancing
     bool instanced;

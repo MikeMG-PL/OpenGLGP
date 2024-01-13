@@ -53,14 +53,14 @@ bool Model::IsInstanced() const
 	return instanced;
 }
 
-bool Model::IsReflective() const
+Material Model::GetMaterial() const
 {
-	return reflective;
+	return material;
 }
 
-void Model::SetReflective(bool r)
+void Model::SetMaterial(Material m)
 {
-	reflective = r;
+	material = m;
 }
 
 std::vector<Mesh>& Model::GetMeshes()
