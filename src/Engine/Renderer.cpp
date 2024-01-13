@@ -153,11 +153,11 @@ void Renderer::Render(const Camera& camera)
 	view = camera.view;
 	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowX) / static_cast<float>(windowY), 0.1f, 1000.0f);
 
-	shader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
+	shader.setVector3("viewPos", camera.GetParent()->GetTransform()->GetPosParentSpace());
 	shader.setInt("numPointLights", GetPointLights()->size());
 	shader.setInt("numSpotLights", GetSpotLights()->size());
 	instancedShader.use();
-	instancedShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
+	instancedShader.setVector3("viewPos", camera.GetParent()->GetTransform()->GetPosParentSpace());
 	instancedShader.setInt("numPointLights", GetPointLights()->size());
 	instancedShader.setInt("numSpotLights", GetSpotLights()->size());
 
@@ -204,7 +204,7 @@ void Renderer::Render(const Camera& camera)
 					reflectionShader.setMat4("projection", projection);
 					reflectionShader.setMat4("view", view);
 					reflectionShader.setMat4("model", model);
-					reflectionShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
+					reflectionShader.setVector3("viewPos", camera.GetParent()->GetTransform()->GetPosParentSpace());
 					reflectionShader.setFloat("dimValue", modelComponent->dimValue);
 					modelComponent->Draw(reflectionShader);
 					break;
@@ -215,7 +215,7 @@ void Renderer::Render(const Camera& camera)
 					refractionShader.setMat4("projection", projection);
 					refractionShader.setMat4("view", view);
 					refractionShader.setMat4("model", model);
-					refractionShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
+					refractionShader.setVector3("viewPos", camera.GetParent()->GetTransform()->GetPosParentSpace());
 					refractionShader.setFloat("dimValue", modelComponent->dimValue);
 					modelComponent->Draw(refractionShader);
 					break;
