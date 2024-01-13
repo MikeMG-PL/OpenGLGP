@@ -15,7 +15,7 @@ void Car::Update()
 {
 	Component::Update();
 	processInput();
-
+	std::cout << "Car children: " << transform->GetChildren().size() << std::endl;
 	transform->localPosition.y += 0.3f * GameInstance::Get().GetDeltaTime();
 }
 
@@ -30,10 +30,31 @@ void Car::processInput()
 	// if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	// 	cameraTransform->localPosition += glm::normalize(glm::cross(camera->GetFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
 
-	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && !enterKeyWasPressed)
 	{
-		// Renderer::Get().GetCamera()->cameraMode = CAR;
-		// transform->AddChild(Renderer::Get().GetCamera()->GetParent()->GetTransform());
-		// Renderer::Get().GetCamera()->GetParent()->GetTransform()->localPosition = cameraOffset;
+		if (Renderer::Get().GetCamera()->cameraMode == FLYING)
+		{
+			Renderer::Get().GetCamera()->cameraMode = CAR;
+			transform->AddChild(Renderer::Get().GetCamera()->GetParent()->GetTransform());
+			Renderer::Get().GetCamera()->GetParent()->GetTransform()->localPosition = cameraOffset;
+		}
+		else if (Renderer::Get().GetCamera()->cameraMode == CAR)
+		{
+			Renderer::Get().GetCamera()->cameraMode = FLYING;
+			transform->RemoveLastChild();
+			Renderer::Get().GetCamera()->GetParent()->GetTransform()->localPosition = {0,8,0};
+		}
+		enterKeyWasPressed = true;
 	}
+	else if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
+	{
+		enterKeyWasPressed = false;
+	}
+
+
+	// if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && Renderer::Get().GetCamera()->cameraMode == CAR)
+	// {
+	// 	Renderer::Get().GetCamera()->cameraMode = FLYING;
+	// 	transform->RemoveLastChild();
+	// }
 }

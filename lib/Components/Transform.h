@@ -12,6 +12,7 @@ class Transform : public Component, public std::enable_shared_from_this<Transfor
 public:
 
 	const std::vector<std::shared_ptr<Transform>>& GetChildren() const; // Is const a problem here?
+	void RemoveLastChild();
 	glm::mat4 GetLocalModelMatrix() const;
 	void UpdateSelfAndChild();
 	void AddChild(const std::shared_ptr<Transform>& child);

@@ -24,7 +24,13 @@ void CameraMovement::Update()
 	Component::Update();
 	baseCameraSpeed = Editor::Get().cameraSpeed;
 	mouseSensitivity = Editor::Get().cameraSensitivity;
-	processInput();
+
+	std::cout << camera->cameraMode << std::endl;
+
+	if (camera->cameraMode == FLYING)
+		processInput();
+	else
+		processDrivingInput();
 }
 
 void CameraMovement::SwitchInput()
@@ -45,7 +51,6 @@ void CameraMovement::SwitchInput()
 void CameraMovement::processInput()
 {
 	if (!cursorHidden)
-	
 		return;
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -65,6 +70,35 @@ void CameraMovement::processInput()
 		cameraTransform->localPosition -= cameraSpeed * camera->GetWorldUp() * GameInstance::Get().GetDeltaTime();
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		cameraTransform->localPosition += cameraSpeed * camera->GetWorldUp() * GameInstance::Get().GetDeltaTime();
+
+	// Get the current cursor position
+	double currentMouseX, currentMouseY;
+	glfwGetCursorPos(window, &currentMouseX, &currentMouseY);
+
+	// Calculate mouse movement since last frame
+	double deltaX = currentMouseX - lastMouseX;
+	double deltaY = currentMouseY - lastMouseY;
+
+	// Update last mouse position
+	lastMouseX = currentMouseX;
+	lastMouseY = currentMouseY;
+
+	// Apply mouse sensitivity
+	deltaX *= mouseSensitivity;
+	deltaY *= mouseSensitivity;
+
+	// Update camera rotation
+	cameraTransform->localEulerAngles.y += static_cast<float>(deltaX) * GameInstance::Get().GetDeltaTime();
+	cameraTransform->localEulerAngles.x -= static_cast<float>(deltaY) * GameInstance::Get().GetDeltaTime();
+
+	// Clamp camera pitch to prevent flip over
+	cameraTransform->localEulerAngles.x = glm::clamp(cameraTransform->localEulerAngles.x, -89.0f, 89.0f);
+}
+
+void CameraMovement::processDrivingInput()
+{
+	if (!cursorHidden)
+		return;
 
 	// Get the current cursor position
 	double currentMouseX, currentMouseY;

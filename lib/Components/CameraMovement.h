@@ -26,5 +26,5 @@ private:
 	float cameraSpeed = baseCameraSpeed;
 
 	void processInput();
-
+	void processDrivingInput();
 };

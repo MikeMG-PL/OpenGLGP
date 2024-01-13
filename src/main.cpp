@@ -121,8 +121,6 @@ int main(int, char**)
 	car->GetTransform()->AddChild(pane->GetTransform());
 	car->GetTransform()->AddChild(additionalWheel->GetTransform());
 
-	car->GetTransform()->AddChild(camera->GetTransform());
-
 	auto dirlight = GameObject::CreateObject();
 	dirlight->AddComponent<DirectionalLight>();
 	dirlight->GetTransform()->localEulerAngles = { -70, 0, 0 };

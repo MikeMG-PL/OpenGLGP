@@ -11,6 +11,14 @@ const std::vector<std::shared_ptr<Transform>>& Transform::GetChildren() const
 	return children;
 }
 
+void Transform::RemoveLastChild()
+{
+	children[children.size() - 1]->parentNode = nullptr;
+
+	if (!children.empty())
+		children.pop_back();
+}
+
 glm::mat4 Transform::GetLocalModelMatrix() const
 {
 	const glm::mat4 transformX = glm::rotate(glm::mat4(1.0f),
