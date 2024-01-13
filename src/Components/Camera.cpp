@@ -40,7 +40,13 @@ glm::vec3 Camera::GetFront() const
 void Camera::cameraLogic()
 {
 	direction = eulerToDirectionVector(parent->GetTransform()->localEulerAngles);
-	target = parent->GetTransform()->GetPosParentSpace() + direction;
+
+	if (cameraMode == FLYING)
+		target = parent->GetTransform()->GetPosParentSpace() + direction;
+	else
+		target = parent->GetTransform()->parentNode->GetPosParentSpace() + glm::vec3(0,2,0);
+
+
 	right = glm::normalize(glm::cross(worldUp, direction));
 	up = glm::cross(direction, right);
 

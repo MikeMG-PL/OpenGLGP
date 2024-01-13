@@ -25,8 +25,6 @@ void CameraMovement::Update()
 	baseCameraSpeed = Editor::Get().cameraSpeed;
 	mouseSensitivity = Editor::Get().cameraSensitivity;
 
-	std::cout << camera->cameraMode << std::endl;
-
 	if (camera->cameraMode == FLYING)
 		processInput();
 	else
@@ -97,6 +95,8 @@ void CameraMovement::processInput()
 
 void CameraMovement::processDrivingInput()
 {
+	cameraTransform->localEulerAngles = { 0,0,0 };
+
 	if (!cursorHidden)
 		return;
 
@@ -116,10 +116,10 @@ void CameraMovement::processDrivingInput()
 	deltaX *= mouseSensitivity;
 	deltaY *= mouseSensitivity;
 
-	// Update camera rotation
-	cameraTransform->localEulerAngles.y += static_cast<float>(deltaX) * GameInstance::Get().GetDeltaTime();
-	cameraTransform->localEulerAngles.x -= static_cast<float>(deltaY) * GameInstance::Get().GetDeltaTime();
-
-	// Clamp camera pitch to prevent flip over
-	cameraTransform->localEulerAngles.x = glm::clamp(cameraTransform->localEulerAngles.x, -89.0f, 89.0f);
+	// // Update camera rotation
+	// cameraTransform->localEulerAngles.y += static_cast<float>(deltaX) * GameInstance::Get().GetDeltaTime();
+	// cameraTransform->localEulerAngles.x -= static_cast<float>(deltaY) * GameInstance::Get().GetDeltaTime();
+	//
+	// // Clamp camera pitch to prevent flip over
+	// cameraTransform->localEulerAngles.x = glm::clamp(cameraTransform->localEulerAngles.x, -89.0f, 89.0f);
 }

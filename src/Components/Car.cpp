@@ -15,7 +15,6 @@ void Car::Update()
 {
 	Component::Update();
 	processInput();
-	std::cout << "Car children: " << transform->GetChildren().size() << std::endl;
 	transform->localPosition.y += 0.3f * GameInstance::Get().GetDeltaTime();
 }
 
@@ -50,11 +49,4 @@ void Car::processInput()
 	{
 		enterKeyWasPressed = false;
 	}
-
-
-	// if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && Renderer::Get().GetCamera()->cameraMode == CAR)
-	// {
-	// 	Renderer::Get().GetCamera()->cameraMode = FLYING;
-	// 	transform->RemoveLastChild();
-	// }
 }

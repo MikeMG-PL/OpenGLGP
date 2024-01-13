@@ -10,7 +10,7 @@ public:
 	void Start() override;
 	void Update() override;
 
-	glm::vec3 cameraOffset = { 0, -6, 2 };
+	glm::vec3 cameraOffset = { 0, -7, 1.75f };
 
 private:
 
