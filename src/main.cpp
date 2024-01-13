@@ -96,6 +96,11 @@ int main(int, char**)
 	pane->AddComponent<Model>("../../res/models/car/pane.dae", glm::vec2(1, 1));
 	pane->GetComponent<Model>()->SetReflective(true);
 
+	auto box = GameObject::CreateObject();
+	box->AddComponent<Model>("../../res/models/jupiter/jupiter.obj", glm::vec2(1, 1));
+	box->GetTransform()->localPosition = { 0, 8, 0 };
+	box->GetComponent<Model>()->SetReflective(true);
+
 	car->GetTransform()->AddChild(rightFront->GetTransform());
 	car->GetTransform()->AddChild(leftFront->GetTransform());
 	car->GetTransform()->AddChild(rightBack->GetTransform());

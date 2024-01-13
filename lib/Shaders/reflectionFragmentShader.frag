@@ -89,11 +89,15 @@ void main()
             result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);
     }
 
+    // float ratio = 1.0f/1.52f;
+    // vec3 I = normalize(FragPos - viewPos);
+    // vec3 R = refract(I, normalize(Normal), ratio);
+
     vec3 I = normalize(FragPos - viewPos);
     vec3 R = reflect(I, normalize(Normal));
 
     if(wireframe == 0)
-        color = vec4(texture(skybox, R).rgb, 1.0) * dimValue;
+        color = vec4(texture(skybox, R).rgb, 1.0); // * dimValue;
     else
         color = customColor;
 

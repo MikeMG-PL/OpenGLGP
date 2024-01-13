@@ -24,7 +24,7 @@ public:
     bool IsReflective() const;
     void SetReflective(bool r);
     std::vector<Mesh>& GetMeshes();
-    float dimValue = 0.4f;
+    float dimValue = 0.7f;
 
 private:
 

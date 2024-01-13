@@ -192,6 +192,7 @@ void Renderer::Render(const Camera& camera)
 				reflectionShader.setMat4("projection", projection);
 				reflectionShader.setMat4("view", view);
 				reflectionShader.setMat4("model", model);
+				reflectionShader.setVector3("viewPos", camera.GetParent()->GetTransform()->localPosition);
 				reflectionShader.setFloat("dimValue", modelComponent->dimValue);
 				modelComponent->Draw(reflectionShader);
 			}
