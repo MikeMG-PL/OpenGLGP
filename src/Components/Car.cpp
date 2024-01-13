@@ -14,21 +14,15 @@ void Car::Start()
 void Car::Update()
 {
 	Component::Update();
+
 	processInput();
-	transform->localPosition.y += 0.3f * GameInstance::Get().GetDeltaTime();
+
+	if (Renderer::Get().GetCamera()->cameraMode == CAR)
+		steering();
 }
 
 void Car::processInput()
 {
-	// if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-	// 	cameraTransform->localPosition += cameraSpeed * camera->GetFront() * GameInstance::Get().GetDeltaTime();
-	// if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	// 	cameraTransform->localPosition -= cameraSpeed * camera->GetFront() * GameInstance::Get().GetDeltaTime();
-	// if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	// 	cameraTransform->localPosition -= glm::normalize(glm::cross(camera->GetFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
-	// if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	// 	cameraTransform->localPosition += glm::normalize(glm::cross(camera->GetFront(), camera->GetWorldUp())) * cameraSpeed * GameInstance::Get().GetDeltaTime();
-
 	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && !enterKeyWasPressed)
 	{
 		if (Renderer::Get().GetCamera()->cameraMode == FLYING)
@@ -50,3 +44,32 @@ void Car::processInput()
 		enterKeyWasPressed = false;
 	}
 }
+
+void Car::steering()
+{
+	float acc = GameInstance::Get().GetDeltaTime() * 2.5f;
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		currentSpeed = glm::clamp(currentSpeed + acc, -speed, speed);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		currentSpeed = glm::clamp(currentSpeed - acc, -speed, speed);
+	}
+	else // Neither 'W' nor 'S' is pressed
+	{
+		if (currentSpeed > 0.0f)
+		{
+			currentSpeed = glm::clamp(currentSpeed - acc, 0.0f, currentSpeed);
+		}
+		else if (currentSpeed < 0.0f)
+		{
+			currentSpeed = glm::clamp(currentSpeed + acc, currentSpeed, 0.0f);
+		}
+	}
+
+	transform->localPosition.y += currentSpeed * acc;
+}
+
+
