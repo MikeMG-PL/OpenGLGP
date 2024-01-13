@@ -1,5 +1,15 @@
 #include "Components/Camera.h"
+
+#include <memory>
+
 #include "Engine/GameObject.h"
+#include "Engine/Renderer.h"
+
+void Camera::Start()
+{
+	Component::Start();
+	Renderer::Get().SetCamera(shared_from_this());
+}
 
 void Camera::Update()
 {

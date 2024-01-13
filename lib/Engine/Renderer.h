@@ -27,6 +27,8 @@ public:
 	glm::vec2 GetWindowSize() const;
 	GLFWwindow* GetWindow() const;
 	const char* GetGLSLVersion() const;
+	std::shared_ptr<Camera> GetCamera() const;
+	void SetCamera(const std::shared_ptr<Camera>& cam);
 	Shader GetShader() const;
 	Shader GetInstancedShader() const;
 	Shader GetReflectionShader() const;
@@ -46,6 +48,8 @@ public:
 	static void glfw_error_callback(int error, const char* description);
 
 private:
+
+	std::shared_ptr<Camera> camera;
 
 	// Cubemap data
 	unsigned SetupCubemap();

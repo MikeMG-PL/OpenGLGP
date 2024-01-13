@@ -4,11 +4,6 @@
 #include <glm/detail/type_quat.hpp>
 
 #include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
-#include "Camera.h"
 #include "Engine/Component.h"
 
 class Transform : public Component, public std::enable_shared_from_this<Transform>

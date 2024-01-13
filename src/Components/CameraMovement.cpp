@@ -88,5 +88,4 @@ void CameraMovement::processInput()
 
 	// Clamp camera pitch to prevent flip over
 	cameraTransform->localEulerAngles.x = glm::clamp(cameraTransform->localEulerAngles.x, -89.0f, 89.0f);
-
 }

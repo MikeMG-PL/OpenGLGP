@@ -97,6 +97,16 @@ const char* Renderer::GetGLSLVersion() const
 	return glsl_version;
 }
 
+std::shared_ptr<Camera> Renderer::GetCamera() const
+{
+	return camera;
+}
+
+void Renderer::SetCamera(const std::shared_ptr<Camera>& cam)
+{
+	camera = cam;
+}
+
 Shader Renderer::GetShader() const
 {
 	return shader;

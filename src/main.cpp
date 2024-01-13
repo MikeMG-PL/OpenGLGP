@@ -12,6 +12,7 @@
 #include "Engine/Renderer.h"
 #include "Components/Camera.h"
 #include "Components/CameraMovement.h"
+#include "Components/Car.h"
 #include "Components/DirectionalLight.h"
 #include "Components/HutSpawner.h"
 #include "Components/Planet.h"
@@ -50,10 +51,13 @@ int main(int, char**)
 	const glm::vec3 initialCarPos = { -6, -1, 5 };
 	const glm::vec3 initialCarRot = glm::vec3(90, 30, 180);
 
+	auto carParent = GameObject::CreateObject();
+	carParent->GetTransform()->localPosition = initialCarPos;
+	carParent->GetTransform()->localEulerAngles = initialCarRot;
+
 	auto car = GameObject::CreateObject();
 	car->AddComponent<Model>("../../res/models/car/carbase.dae", glm::vec2(1, 1));
-	car->GetTransform()->localPosition = initialCarPos;
-	car->GetTransform()->localEulerAngles = initialCarRot;
+	car->AddComponent<Car>();
 
 	auto rightFront = GameObject::CreateObject();
 	rightFront->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
@@ -91,7 +95,6 @@ int main(int, char**)
 	rightDoor->GetTransform()->localPosition = { 0.65f, 0.425f, 0.5f };
 	rightDoor->GetTransform()->localEulerAngles = { 0, 0, 30 };
 
-	// This will be refractive not reflective
 	auto pane = GameObject::CreateObject();
 	pane->AddComponent<Model>("../../res/models/car/pane.dae", glm::vec2(1, 1));
 	pane->GetComponent<Model>()->SetMaterial(REFRACTIVE);
@@ -108,6 +111,7 @@ int main(int, char**)
 	testSphereRefract->GetTransform()->localScale = { 0.1f, 0.1f, 0.1f };
 	testSphereRefract->GetComponent<Model>()->SetMaterial(REFRACTIVE);
 
+	carParent->GetTransform()->AddChild(car->GetTransform());
 	car->GetTransform()->AddChild(rightFront->GetTransform());
 	car->GetTransform()->AddChild(leftFront->GetTransform());
 	car->GetTransform()->AddChild(rightBack->GetTransform());
@@ -116,6 +120,8 @@ int main(int, char**)
 	car->GetTransform()->AddChild(rightDoor->GetTransform());
 	car->GetTransform()->AddChild(pane->GetTransform());
 	car->GetTransform()->AddChild(additionalWheel->GetTransform());
+
+	car->GetTransform()->AddChild(camera->GetTransform());
 
 	auto dirlight = GameObject::CreateObject();
 	dirlight->AddComponent<DirectionalLight>();
