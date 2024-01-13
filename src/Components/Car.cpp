@@ -47,6 +47,7 @@ void Car::processInput()
 
 void Car::steering()
 {
+	// Forward, back
 	float acc = GameInstance::Get().GetDeltaTime() * 2.5f;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -69,7 +70,18 @@ void Car::steering()
 		}
 	}
 
-	transform->localPosition.y += currentSpeed * acc;
+	transform->localPosition.z += currentSpeed * acc;
+
+	// Left, right
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		transform->parentNode->localEulerAngles.y -= 10 * GameInstance::Get().GetDeltaTime() * currentSpeed;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		transform->parentNode->localEulerAngles.y += 10 * GameInstance::Get().GetDeltaTime() * currentSpeed;
+	}
 }
 
 

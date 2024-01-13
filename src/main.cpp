@@ -88,12 +88,12 @@ int main(int, char**)
 	auto leftDoor = GameObject::CreateObject();
 	leftDoor->AddComponent<Model>("../../res/models/car/leftDoor.dae", glm::vec2(1, 1));
 	leftDoor->GetTransform()->localPosition = { -0.65f, 0.425f, 0.5f };
-	leftDoor->GetTransform()->localEulerAngles = { 0, 0, -30 };
+	leftDoor->GetTransform()->localEulerAngles = { 0, 0, -45 };
 
 	auto rightDoor = GameObject::CreateObject();
 	rightDoor->AddComponent<Model>("../../res/models/car/rightDoor.dae", glm::vec2(1, 1));
 	rightDoor->GetTransform()->localPosition = { 0.65f, 0.425f, 0.5f };
-	rightDoor->GetTransform()->localEulerAngles = { 0, 0, 30 };
+	rightDoor->GetTransform()->localEulerAngles = { 0, 0, 45 };
 
 	auto pane = GameObject::CreateObject();
 	pane->AddComponent<Model>("../../res/models/car/pane.dae", glm::vec2(1, 1));
