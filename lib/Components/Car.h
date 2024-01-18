@@ -11,8 +11,15 @@ public:
 	void Update() override;
 
 	float maxSpeed = 15;
-
 	glm::vec3 cameraOffset = { 0, -7, 1.75f };
+
+	std::shared_ptr<Transform> leftFront;
+	std::shared_ptr<Transform> rightFront;
+	std::shared_ptr<Transform> leftBack;
+	std::shared_ptr<Transform> rightBack;
+
+	std::shared_ptr<Transform> leftDoor;
+	std::shared_ptr<Transform> rightDoor;
 
 private:
 

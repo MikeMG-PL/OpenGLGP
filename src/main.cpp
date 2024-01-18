@@ -54,28 +54,33 @@ int main(int, char**)
 	auto car = GameObject::CreateObject();
 	car->AddComponent<Model>("../../res/models/car/carbase.dae", glm::vec2(1, 1));
 	car->AddComponent<Car>();
+	const auto carComp = car->GetComponent<Car>();
 	car->GetTransform()->localPosition = initialCarPos;
 	car->GetTransform()->localEulerAngles = initialCarRot;
 
 	auto rightFront = GameObject::CreateObject();
 	rightFront->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
-	rightFront->GetTransform()->localPosition = { 0.65f, 1.3f, 0.35f };
+	rightFront->GetTransform()->localPosition = { 0.8f, 1.3f, 0.35f };
 	rightFront->GetComponent<Model>()->SetMaterial(REFLECTIVE);
+	carComp->rightFront = rightFront->GetTransform();
 
 	auto leftFront = GameObject::CreateObject();
 	leftFront->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
-	leftFront->GetTransform()->localPosition = { -0.65f, 1.3f, 0.35f };
+	leftFront->GetTransform()->localPosition = { -0.8f, 1.3f, 0.35f };
 	leftFront->GetComponent<Model>()->SetMaterial(REFLECTIVE);
+	carComp->leftFront = leftFront->GetTransform();
 
 	auto rightBack = GameObject::CreateObject();
 	rightBack->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
-	rightBack->GetTransform()->localPosition = { 0.65f, -1.15f, 0.35f };
+	rightBack->GetTransform()->localPosition = { 0.8f, -1.15f, 0.35f };
 	rightBack->GetComponent<Model>()->SetMaterial(REFLECTIVE);
+	carComp->rightBack = rightBack->GetTransform();
 
 	auto leftBack = GameObject::CreateObject();
 	leftBack->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
-	leftBack->GetTransform()->localPosition = { -0.65f, -1.15f, 0.35f };
+	leftBack->GetTransform()->localPosition = { -0.8f, -1.15f, 0.35f };
 	leftBack->GetComponent<Model>()->SetMaterial(REFLECTIVE);
+	carComp->leftBack = leftBack->GetTransform();
 
 	auto additionalWheel = GameObject::CreateObject();
 	additionalWheel->AddComponent<Model>("../../res/models/car/additionalWheel.dae", glm::vec2(1, 1));
@@ -87,11 +92,13 @@ int main(int, char**)
 	leftDoor->AddComponent<Model>("../../res/models/car/leftDoor.dae", glm::vec2(1, 1));
 	leftDoor->GetTransform()->localPosition = { -0.65f, 0.425f, 0.5f };
 	leftDoor->GetTransform()->localEulerAngles = { 0, 0, -45 };
+	carComp->leftDoor = leftDoor->GetTransform();
 
 	auto rightDoor = GameObject::CreateObject();
 	rightDoor->AddComponent<Model>("../../res/models/car/rightDoor.dae", glm::vec2(1, 1));
 	rightDoor->GetTransform()->localPosition = { 0.65f, 0.425f, 0.5f };
 	rightDoor->GetTransform()->localEulerAngles = { 0, 0, 45 };
+	carComp->rightDoor = rightDoor->GetTransform();
 
 	auto pane = GameObject::CreateObject();
 	pane->AddComponent<Model>("../../res/models/car/pane.dae", glm::vec2(1, 1));

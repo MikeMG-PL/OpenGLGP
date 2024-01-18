@@ -31,12 +31,16 @@ void Car::processInput()
 			Renderer::Get().GetCamera()->cameraMode = CAR;
 			transform->AddChild(Renderer::Get().GetCamera()->GetParent()->GetTransform());
 			Renderer::Get().GetCamera()->GetParent()->GetTransform()->localPosition = cameraOffset;
+			leftDoor->localEulerAngles.z = 0;
+			rightDoor->localEulerAngles.z = 0;
 		}
 		else if (Renderer::Get().GetCamera()->cameraMode == CAR)
 		{
 			Renderer::Get().GetCamera()->cameraMode = FLYING;
 			transform->RemoveLastChild();
 			Renderer::Get().GetCamera()->GetParent()->GetTransform()->localPosition = {0,8,0};
+			leftDoor->localEulerAngles.z = -45;
+			rightDoor->localEulerAngles.z = 45;
 		}
 		enterKeyWasPressed = true;
 	}
@@ -71,6 +75,7 @@ void Car::steering()
 		}
 	}
 
+	std::shared_ptr<Transform> wheels[4] = { leftFront, rightFront, leftBack, rightBack };
 	const glm::vec3 v = glm::normalize(glm::vec3(1, 0, 1));
 	const glm::vec3 dirVec = {glm::sin(glm::radians(- transform->localEulerAngles.y)), 0, glm::sin(glm::radians(transform->localEulerAngles.y + 90))};
 	const glm::vec3 front = currentSpeed * acc * dirVec;
@@ -80,14 +85,35 @@ void Car::steering()
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		transform->localEulerAngles.y -= turnValue;
+
+		leftFront->localEulerAngles.z = 45;
+		rightFront->localEulerAngles.z = 45;
+	}
+	else
+	{
+		leftFront->localEulerAngles.z = 0;
+		rightFront->localEulerAngles.z = 0;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		transform->localEulerAngles.y += turnValue;
+
+		leftFront->localEulerAngles.z = -45;
+		rightFront->localEulerAngles.z = -45;
+	}
+	else
+	{
+		leftFront->localEulerAngles.z = 0;
+		rightFront->localEulerAngles.z = 0;
 	}
 
 	transform->localPosition += front;
+
+	for(const auto w : wheels)
+	{
+		w->localEulerAngles.x -= currentSpeed;
+	}
 }
 
 
