@@ -10,7 +10,7 @@ public:
 	void Start() override;
 	void Update() override;
 
-	float speed = 50;
+	float maxSpeed = 15;
 
 	glm::vec3 cameraOffset = { 0, -7, 1.75f };
 

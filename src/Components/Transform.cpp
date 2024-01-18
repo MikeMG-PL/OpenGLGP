@@ -84,7 +84,7 @@ glm::vec3 Transform::GetRotParentSpace() const
 	glm::vec3 skew;
 	glm::vec4 persp;
 	glm::decompose(modelMatrix, scl, quat, trans, skew, persp);
-	return glm::eulerAngles(quat);
+	return glm::degrees(glm::eulerAngles(quat));
 }
 
 glm::vec3 Transform::GetScaleParentSpace() const

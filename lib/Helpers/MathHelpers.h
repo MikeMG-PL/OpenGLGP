@@ -20,7 +20,7 @@ inline glm::vec3 eulerToVector(const glm::vec3& euler)
 	directionalVector = rotation * directionalVector;
 
 	// Extract the resulting vector from the rotated directional vector
-	return glm::vec3(directionalVector);
+	return directionalVector;
 }
 
 inline glm::vec3 ImVec4ToVec3(const ImVec4& imvec4) {

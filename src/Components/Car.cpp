@@ -3,6 +3,7 @@
 #include "Engine/GameObject.h"
 #include "Engine/Renderer.h"
 #include "GLFW/glfw3.h"
+#include "Helpers/MathHelpers.h"
 
 void Car::Start()
 {
@@ -48,15 +49,15 @@ void Car::processInput()
 void Car::steering()
 {
 	// Forward, back
-	float acc = GameInstance::Get().GetDeltaTime() * 2.5f;
+	float acc = GameInstance::Get().GetDeltaTime() * 4.0f;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		currentSpeed = glm::clamp(currentSpeed + acc, -speed, speed);
+		currentSpeed = glm::clamp(currentSpeed + acc, -maxSpeed, maxSpeed);
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		currentSpeed = glm::clamp(currentSpeed - acc, -speed, speed);
+		currentSpeed = glm::clamp(currentSpeed - acc, -maxSpeed, maxSpeed);
 	}
 	else // Neither 'W' nor 'S' is pressed
 	{
@@ -70,18 +71,23 @@ void Car::steering()
 		}
 	}
 
-	transform->localPosition.z += currentSpeed * acc;
+	const glm::vec3 v = glm::normalize(glm::vec3(1, 0, 1));
+	const glm::vec3 dirVec = {glm::sin(glm::radians(- transform->localEulerAngles.y)), 0, glm::sin(glm::radians(transform->localEulerAngles.y + 90))};
+	const glm::vec3 front = currentSpeed * acc * dirVec;
+	const float turnValue = glm::clamp(10 * GameInstance::Get().GetDeltaTime() * currentSpeed, -1.0f, 1.0f);
 
 	// Left, right
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		transform->parentNode->localEulerAngles.y -= 10 * GameInstance::Get().GetDeltaTime() * currentSpeed;
+		transform->localEulerAngles.y -= turnValue;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		transform->parentNode->localEulerAngles.y += 10 * GameInstance::Get().GetDeltaTime() * currentSpeed;
+		transform->localEulerAngles.y += turnValue;
 	}
+
+	transform->localPosition += front;
 }
 
 

@@ -49,15 +49,13 @@ int main(int, char**)
 	//////////////////////////////////////////////////////////////////////////
 
 	const glm::vec3 initialCarPos = { -6, -1, 5 };
-	const glm::vec3 initialCarRot = glm::vec3(90, 30, 180);
-
-	auto carParent = GameObject::CreateObject();
-	carParent->GetTransform()->localPosition = initialCarPos;
-	carParent->GetTransform()->localEulerAngles = initialCarRot;
+	const glm::vec3 initialCarRot = glm::vec3(90, 0, 180);
 
 	auto car = GameObject::CreateObject();
 	car->AddComponent<Model>("../../res/models/car/carbase.dae", glm::vec2(1, 1));
 	car->AddComponent<Car>();
+	car->GetTransform()->localPosition = initialCarPos;
+	car->GetTransform()->localEulerAngles = initialCarRot;
 
 	auto rightFront = GameObject::CreateObject();
 	rightFront->AddComponent<Model>("../../res/models/car/wheel.dae", glm::vec2(1, 1));
@@ -111,7 +109,6 @@ int main(int, char**)
 	testSphereRefract->GetTransform()->localScale = { 0.1f, 0.1f, 0.1f };
 	testSphereRefract->GetComponent<Model>()->SetMaterial(REFRACTIVE);
 
-	carParent->GetTransform()->AddChild(car->GetTransform());
 	car->GetTransform()->AddChild(rightFront->GetTransform());
 	car->GetTransform()->AddChild(leftFront->GetTransform());
 	car->GetTransform()->AddChild(rightBack->GetTransform());
